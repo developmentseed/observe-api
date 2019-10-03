@@ -1,0 +1,11 @@
+version: '3'
+services:
+  postgresql-observe-dev:
+    image: mdillon/postgis:11-alpine
+    ports:
+      - "15432:5432"
+    environment:
+      POSTGRES_USER: observe-api-dev
+      POSTGRES_PASSWORD: observe-api-dev
+    volumes:
+      - ./data/postgresql-dev:/var/lib/postgresql/data
