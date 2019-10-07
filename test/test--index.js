@@ -1,15 +1,23 @@
 import { expect } from 'chai';
 import request from 'request-promise-native';
-import initServer from '../app';
+import startServer from '../app';
+import db from '../app/services/db';
+import logger from '../app/services/logger';
 
-let server;
 const apiUrl = `http://localhost:${process.env.PORT || 3000}`;
+global.apiUrl = apiUrl;
 
 describe('Observe API', function () {
   before(async function () {
-    server = await initServer();
-    global.server = server;
-    global.apiUrl = apiUrl;
+    logger.info('Clearing database...');
+    await db.schema.dropTable('knex_migrations');
+    await db.schema.dropTable('users');
+    await db.migrate.latest();
+
+    logger.info('Starting server...');
+    global.server = await startServer();
+
+    logger.info('Running tests...');
   });
 
   describe('GET /', function () {
@@ -18,14 +26,12 @@ describe('Observe API', function () {
         uri: apiUrl + '/',
         resolveWithFullResponse: true
       });
-
       expect(statusCode).to.equal(200);
-
       expect(body).to.equal('Observe API');
     });
   });
 
   after(async function () {
-    await server.stop();
+    await global.server.stop();
   });
 });
