@@ -8,5 +8,9 @@
       "password": "observe-api-test",
       "port": 15433
     }
+  },
+  "osmOAuth": {
+    "clientSecret": "mockClientSecret",
+    "clientId": "mockClientId"
   }
 }
