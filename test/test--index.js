@@ -10,8 +10,8 @@ global.apiUrl = apiUrl;
 describe('Observe API', function () {
   before(async function () {
     logger.info('Clearing database...');
-    await db.schema.dropTable('knex_migrations');
-    await db.schema.dropTable('users');
+    await db.schema.dropTableIfExists('knex_migrations');
+    await db.schema.dropTableIfExists('users');
     await db.migrate.latest();
 
     logger.info('Starting server...');
