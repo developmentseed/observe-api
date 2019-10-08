@@ -26,9 +26,9 @@ There are two ways of passing application options for PostgreSQL and OAuth:
 
 1) Using environment variables, full list available at [config/custom-environment-variables.json](config/custom-environment-variables.json)
 
-2) Adding file `config/local-development.json`. It will not be git-tracked and will override options for `development` environment. 
+2) Adding configuration file `config/local-development.json`. It will not be git-tracked and will override options for `development` environment. Please refer to this [example](config/local-development.json.example).
 
-This application uses [config module](https://www.npmjs.com/package/config), please refer to the [documentation](https://github.com/lorenwest/node-config/wiki) for usage details.
+This application uses [config module](https://www.npmjs.com/package/config), please check the [documentation](https://github.com/lorenwest/node-config/wiki) for usage details.
 
 ### Development
 
@@ -36,7 +36,7 @@ Start development database:
 
     npm run start-dev-db
 
-Open to a new terminal and migrate the database:
+Open a new terminal and migrate the database:
 
     npm run migrate-dev-db
 
@@ -56,7 +56,7 @@ Start test database:
 
 There is no need to migrate the test database, it will be reset on every test run.
 
-Run tests:
+Open a new terminal and run tests:
 
     npm run test
 
