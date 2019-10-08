@@ -1,12 +1,15 @@
+import config from 'config';
 import Hapi from '@hapi/hapi';
 import hapiRouter from 'hapi-router';
 import Boom from '@hapi/boom';
 import setupAuth from './services/auth';
 
+const port = config.get('port');
+
 export default async function () {
   // Init server
   const server = Hapi.server({
-    port: process.env.PORT || 3000,
+    port: port,
     host: '0.0.0.0',
     routes: {
       cors: true,
