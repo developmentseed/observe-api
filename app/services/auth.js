@@ -1,7 +1,6 @@
 import config from 'config';
 import Bell from '@hapi/bell';
 import { xml2js } from 'xml-js';
-import request from 'request-promise-native';
 import logger from './logger';
 import users from '../models/users';
 
@@ -14,21 +13,6 @@ const {
   authorizeUrl,
   profileUrl
 } = config.get('osmOAuth');
-
-// Create OAuth instance to fetch OSM user profile. See:
-// - https://github.com/hapijs/bell/issues/440
-const OAuth = require('oauth-1.0a');
-const crypto = require('crypto');
-const oauth = OAuth({
-  consumer: { key: clientId, secret: clientSecret },
-  signature_method: 'HMAC-SHA1',
-  hash_function (baseString, key) {
-    return crypto
-      .createHmac('sha1', key)
-      .update(baseString)
-      .digest('base64');
-  }
-});
 
 /**
  * Setup OAuth provider for hapi-bell.
@@ -46,37 +30,41 @@ async function setupAuth (server) {
   // Register Bell
   await server.register(Bell);
 
+  // Client to get profile as raw XML
+  const oauthClient = new Bell.oauth.Client({
+    name: 'osm',
+    provider: {
+      protocol: 'oauth',
+      signatureMethod: 'HMAC-SHA1',
+      temporary: requestTokenUrl,
+      token: accessTokenUrl,
+      auth: authorizeUrl
+    },
+    clientId,
+    clientSecret
+  });
+
   const osmStrategy = {
     protocol: 'oauth',
     temporary: requestTokenUrl,
     token: accessTokenUrl,
     auth: authorizeUrl,
     profile: async (credentials, params, get) => {
-      let profileXml, profile;
+      let profile;
 
-      // Get user profile from OpenStreetMap
+      // Get and parse user profile XML
       try {
-        const requestData = {
-          url: profileUrl,
-          method: 'GET'
-        };
-
-        const token = {
-          key: credentials.token,
-          secret: credentials.secret
-        };
-
-        profileXml = await request({
-          uri: profileUrl,
-          headers: oauth.toHeader(oauth.authorize(requestData, token))
-        });
-      } catch {
-        throw Error('Could not get user profile from OpenStreetMap.');
-      }
-
-      // Parse user profile XML
-      try {
-        profile = xml2js(profileXml).elements[0].elements[0].attributes;
+        const { payload } = await oauthClient.resource(
+          'GET',
+          profileUrl,
+          null,
+          {
+            token: credentials.token,
+            secret: credentials.secret,
+            raw: true
+          }
+        );
+        profile = xml2js(payload).elements[0].elements[0].attributes;
         profile.id = parseInt(profile.id);
       } catch (error) {
         logger.error(error);
