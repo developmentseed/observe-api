@@ -1,0 +1,11 @@
+version: '3'
+services:
+  postgresql-observe-test:
+    image: mdillon/postgis:11-alpine
+    ports:
+      - "15433:5432"
+    environment:
+      POSTGRES_USER: observe-api-test
+      POSTGRES_PASSWORD: observe-api-test
+    volumes:
+      - ./data/postgresql-test:/var/lib/postgresql/data

@@ -3,6 +3,12 @@ jobs:
   build:
     docker:
       - image: circleci/node:10
+        environment:
+          PG_CONNECTION_STRING: postgresql://observe:observe@localhost/circle_test
+      - image: circleci/postgres:11-alpine-postgis
+        environment:
+          POSTGRES_USER: observe
+          POSTGRES_PASSWORD: observe
 
     working_directory: ~/repo
 

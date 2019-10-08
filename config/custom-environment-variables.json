@@ -1,0 +1,11 @@
+{
+  "knex": "PG_CONNECTION_STRING",
+  "osmOAuth": {
+    "clientId": "OSM_OAUTH_CONSUMER_KEY",
+    "clientSecret": "OSM_OAUTH_CONSUMER_SECRET",
+    "requestTokenUrl": "OSM_OAUTH_TOKEN_URL",
+    "accessTokenUrl": "OSM_OAUTH_ACCESS_TOKEN_URL",
+    "authorizeUrl": "OSM_OAUTH_AUTHORIZE_URL",
+    "profileUrl": "OSM_OAUTH_PROFILE_URL"
+  }
+}

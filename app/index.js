@@ -1,6 +1,7 @@
 import Hapi from '@hapi/hapi';
 import hapiRouter from 'hapi-router';
 import Boom from '@hapi/boom';
+import setupAuth from './services/auth';
 
 export default async function () {
   // Init server
@@ -30,6 +31,9 @@ export default async function () {
       request: ['error']
     } : false
   });
+
+  // Setup auth
+  await setupAuth(server);
 
   // Init routes
   await server.register({
