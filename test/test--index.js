@@ -1,10 +1,12 @@
+import config from 'config';
 import { expect } from 'chai';
 import request from 'request-promise-native';
 import startServer from '../app';
 import db from '../app/services/db';
 import logger from '../app/services/logger';
 
-const apiUrl = `http://localhost:${process.env.PORT || 3000}`;
+const port = config.get('port');
+const apiUrl = `http://localhost:${port}`;
 global.apiUrl = apiUrl;
 
 describe('Observe API', function () {

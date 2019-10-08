@@ -1,4 +1,5 @@
 {
+  "port": "PORT",
   "knex": "PG_CONNECTION_STRING",
   "osmOAuth": {
     "clientId": "OSM_OAUTH_CONSUMER_KEY",
