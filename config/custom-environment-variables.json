@@ -8,5 +8,6 @@
     "accessTokenUrl": "OSM_OAUTH_ACCESS_TOKEN_URL",
     "authorizeUrl": "OSM_OAUTH_AUTHORIZE_URL",
     "profileUrl": "OSM_OAUTH_PROFILE_URL"
-  }
+  },
+  "jwtSecret": "JWT_SECRET"
 }

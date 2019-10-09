@@ -1,9 +1,9 @@
 import config from 'config';
 import { expect } from 'chai';
-import request from 'request-promise-native';
 import startServer from '../app';
 import db from '../app/services/db';
 import logger from '../app/services/logger';
+import { Client } from './utils';
 
 const port = config.get('port');
 const apiUrl = `http://localhost:${port}`;
@@ -24,14 +24,14 @@ describe('Observe API', function () {
 
   describe('GET /', function () {
     it('should have status code 200', async function () {
-      const { body, statusCode } = await request({
-        uri: apiUrl + '/',
-        resolveWithFullResponse: true
-      });
-      expect(statusCode).to.equal(200);
-      expect(body).to.equal('Observe API');
+      const client = new Client({ apiUrl });
+      const { status, data } = await client.get('/');
+      expect(status).to.equal(200);
+      expect(data).to.equal('Observe API');
     });
   });
+
+  require('./test-users');
 
   after(async function () {
     await global.server.stop();

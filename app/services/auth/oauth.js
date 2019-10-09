@@ -1,8 +1,9 @@
 import config from 'config';
 import Bell from '@hapi/bell';
 import { xml2js } from 'xml-js';
-import logger from './logger';
-import users from '../models/users';
+import logger from '../logger';
+import users from '../../models/users';
+import { getAccessToken } from './jwt';
 
 // Get OAuth settings
 const {
@@ -19,11 +20,15 @@ const {
  *
  * @param {object} server
  */
-async function setupAuth (server) {
-  // Add a simulated provided for testing
+async function setupOAuth (server) {
+  // Add a simulated provider for testing
   if (process.env.NODE_ENV === 'test') {
-    Bell.simulate(() => {
-      return { some: 'value' };
+    Bell.simulate(async (req) => {
+      const { osmId } = req.query;
+
+      const accessToken = await getAccessToken(parseInt(osmId));
+
+      return { accessToken };
     });
   }
 
@@ -49,7 +54,7 @@ async function setupAuth (server) {
     temporary: requestTokenUrl,
     token: accessTokenUrl,
     auth: authorizeUrl,
-    profile: async (credentials, params, get) => {
+    profile: async (credentials) => {
       let profile;
 
       // Get and parse user profile XML
@@ -103,4 +108,4 @@ async function setupAuth (server) {
   });
 }
 
-export default setupAuth;
+export default setupOAuth;
