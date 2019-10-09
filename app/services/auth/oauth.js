@@ -1,8 +1,9 @@
 import config from 'config';
 import Bell from '@hapi/bell';
 import { xml2js } from 'xml-js';
-import logger from './logger';
-import users from '../models/users';
+import logger from '../logger';
+import users from '../../models/users';
+import { getAccessToken } from './jwt';
 
 // Get OAuth settings
 const {
@@ -19,11 +20,15 @@ const {
  *
  * @param {object} server
  */
-async function setupAuth (server) {
-  // Add a simulated provided for testing
+async function setupOAuth (server) {
+  // Add a simulated provider for testing
   if (process.env.NODE_ENV === 'test') {
-    Bell.simulate(() => {
-      return { some: 'value' };
+    Bell.simulate(async req => {
+      const { osmId } = req.query;
+
+      const accessToken = await getAccessToken(parseInt(osmId));
+
+      return { accessToken };
     });
   }
 
@@ -49,7 +54,7 @@ async function setupAuth (server) {
     temporary: requestTokenUrl,
     token: accessTokenUrl,
     auth: authorizeUrl,
-    profile: async (credentials, params, get) => {
+    profile: async credentials => {
       let profile;
 
       // Get and parse user profile XML
@@ -72,24 +77,37 @@ async function setupAuth (server) {
       }
 
       // Retrieve user from database
-      const [user] = await users.findByOsmId(profile.id);
+      let [user] = await users.findByOsmId(profile.id);
 
       // Upsert user
       if (!user) {
         // Create new user, if none found
-        await users.create({
-          osmId: profile.id,
-          osmDisplayName: profile.display_name,
-          osmCreatedAt: profile.account_created
-        });
+        user = await users
+          .create({
+            osmId: profile.id,
+            osmDisplayName: profile.display_name,
+            osmCreatedAt: profile.account_created
+          })
+          .returning('*');
       } else {
         // Update display name of existing user, if it has changed in OSM.
         if (user.osmDisplayName !== profile.display_name) {
-          await users.updateFromOsmId(profile.id, {
-            osmDisplayName: profile.display_name
-          });
+          user = await users
+            .updateFromOsmId(profile.id, {
+              osmDisplayName: profile.display_name
+            })
+            .returning('*');
         }
       }
+
+      credentials.profile = {
+        osmId: user.osmId,
+        osmDisplayName: user.osmDisplayName,
+        osmCreatedAt: user.osmCreatedAt.toISOString()
+      };
+      credentials.accessToken = await getAccessToken(profile.id);
+
+      return credentials;
     }
   };
 
@@ -103,4 +121,4 @@ async function setupAuth (server) {
   });
 }
 
-export default setupAuth;
+export default setupOAuth;

@@ -8,5 +8,6 @@
       "password": "observe-api-dev",
       "port": 15432
     }
-  }
+  },
+  "jwtSecret": "secret-dev"
 }

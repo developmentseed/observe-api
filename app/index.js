@@ -9,7 +9,7 @@ const port = config.get('port');
 export default async function () {
   // Init server
   const server = Hapi.server({
-    port: port,
+    port,
     host: '0.0.0.0',
     routes: {
       cors: true,

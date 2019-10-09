@@ -13,5 +13,6 @@
   "osmOAuth": {
     "clientSecret": "mockClientSecret",
     "clientId": "mockClientId"
-  }
+  },
+  "jwtSecret": "secret-test"
 }
