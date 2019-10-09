@@ -23,7 +23,7 @@ const {
 async function setupOAuth (server) {
   // Add a simulated provider for testing
   if (process.env.NODE_ENV === 'test') {
-    Bell.simulate(async (req) => {
+    Bell.simulate(async req => {
       const { osmId } = req.query;
 
       const accessToken = await getAccessToken(parseInt(osmId));
@@ -54,7 +54,7 @@ async function setupOAuth (server) {
     temporary: requestTokenUrl,
     token: accessTokenUrl,
     auth: authorizeUrl,
-    profile: async (credentials) => {
+    profile: async credentials => {
       let profile;
 
       // Get and parse user profile XML
@@ -77,24 +77,37 @@ async function setupOAuth (server) {
       }
 
       // Retrieve user from database
-      const [user] = await users.findByOsmId(profile.id);
+      let [user] = await users.findByOsmId(profile.id);
 
       // Upsert user
       if (!user) {
         // Create new user, if none found
-        await users.create({
-          osmId: profile.id,
-          osmDisplayName: profile.display_name,
-          osmCreatedAt: profile.account_created
-        });
+        user = await users
+          .create({
+            osmId: profile.id,
+            osmDisplayName: profile.display_name,
+            osmCreatedAt: profile.account_created
+          })
+          .returning('*');
       } else {
         // Update display name of existing user, if it has changed in OSM.
         if (user.osmDisplayName !== profile.display_name) {
-          await users.updateFromOsmId(profile.id, {
-            osmDisplayName: profile.display_name
-          });
+          user = await users
+            .updateFromOsmId(profile.id, {
+              osmDisplayName: profile.display_name
+            })
+            .returning('*');
         }
       }
+
+      credentials.profile = {
+        osmId: user.osmId,
+        osmDisplayName: user.osmDisplayName,
+        osmCreatedAt: user.osmCreatedAt.toISOString()
+      };
+      credentials.accessToken = await getAccessToken(profile.id);
+
+      return credentials;
     }
   };
 
