@@ -21,18 +21,17 @@ export async function createMockUser () {
  * HTTP Client class.
  */
 export class Client {
-  constructor ({ apiUrl, osmId }) {
+  constructor (apiUrl) {
     this.apiUrl = apiUrl;
-    this.osmId = osmId;
     this.axios = axios.create({
       baseURL: apiUrl
     });
   }
 
-  async login () {
+  async login (osmId) {
     const {
       data: { accessToken }
-    } = await this.axios.get(`/login?osmId=${this.osmId}`);
+    } = await this.axios.get(`/login?osmId=${osmId}`);
 
     // Replace axios instance with an authenticated one
     this.axios = axios.create({

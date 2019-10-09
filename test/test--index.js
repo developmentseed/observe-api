@@ -24,7 +24,7 @@ describe('Observe API', function () {
 
   describe('GET /', function () {
     it('should have status code 200', async function () {
-      const client = new Client({ apiUrl });
+      const client = new Client(apiUrl);
       const { status, data } = await client.get('/');
       expect(status).to.equal(200);
       expect(data).to.equal('Observe API');

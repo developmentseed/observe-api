@@ -7,7 +7,7 @@ describe('User management', function () {
   describe('GET /users', function () {
     it('should return 400 for non-authenticated user', async function () {
       try {
-        const client = new Client({ apiUrl });
+        const client = new Client(apiUrl);
         await client.get('/users');
 
         // The test should never reach here, force execute catch block.
@@ -19,9 +19,9 @@ describe('User management', function () {
     });
 
     it('should return 200 for an authenticated user', async function () {
-      const regularUser = await createMockUser();
-      const client = new Client({ apiUrl, osmId: regularUser.osmId });
-      await client.login();
+      const { osmId } = await createMockUser();
+      const client = new Client(apiUrl);
+      await client.login(osmId);
       const { status } = await client.get('/users');
       expect(status).to.equal(200);
     });
