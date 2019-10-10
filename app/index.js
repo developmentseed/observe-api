@@ -29,10 +29,13 @@ export default async function () {
         }
       }
     },
-    debug: process.env.NODE_ENV !== 'test' ? {
-      log: ['error'],
-      request: ['error']
-    } : false
+    debug:
+      process.env.NODE_ENV !== 'test'
+        ? {
+          log: ['error'],
+          request: ['error']
+        }
+        : false
   });
 
   // Setup auth
@@ -43,6 +46,21 @@ export default async function () {
     plugin: hapiRouter,
     options: {
       routes: 'app/routes/*.js'
+    }
+  });
+
+  // Setup pagination
+  await server.register({
+    plugin: require('hapi-pagination'),
+    options: {
+      query: {
+        limit: {
+          default: config.get('pagination.limit')
+        }
+      },
+      routes: {
+        include: ['/users']
+      }
     }
   });
 
