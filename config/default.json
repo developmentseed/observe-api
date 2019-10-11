@@ -7,6 +7,7 @@
     "requestTokenUrl": "https://master.apis.dev.openstreetmap.org/oauth/request_token",
     "accessTokenUrl": "https://master.apis.dev.openstreetmap.org/oauth/access_token",
     "authorizeUrl": "https://master.apis.dev.openstreetmap.org/oauth/authorize",
-    "profileUrl": "https://master.apis.dev.openstreetmap.org/api/0.6/user/details"
+    "profileUrl": "https://master.apis.dev.openstreetmap.org/api/0.6/user/details",
+    "mobileCallbackUrl": "https://www.wikipedia.org"
   }
 }
