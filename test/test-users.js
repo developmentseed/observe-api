@@ -78,12 +78,11 @@ describe('User management', function () {
       const res2 = await client.get('/users', {
         params: {
           page,
-          orderBy: 'osmCreatedAt'
+          sort: { osmCreatedAt: 'asc' }
         }
       });
       expect(res2.data.meta.totalCount).to.eq(50);
       expect(res2.data.results).to.deep.equal(expectedResponse2);
     });
-
   });
 });

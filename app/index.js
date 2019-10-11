@@ -3,6 +3,7 @@ import Hapi from '@hapi/hapi';
 import hapiRouter from 'hapi-router';
 import Boom from '@hapi/boom';
 import setupAuth from './services/auth';
+import qs from 'qs';
 
 const port = config.get('port');
 
@@ -11,6 +12,9 @@ export default async function () {
   const server = Hapi.server({
     port,
     host: '0.0.0.0',
+    query: {
+      parser: q => qs.parse(q)
+    },
     routes: {
       cors: true,
       validate: {

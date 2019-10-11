@@ -7,14 +7,32 @@ module.exports = [
     options: {
       auth: 'jwt',
       handler: async function (request, h) {
-        const { limit, page, orderBy } = request.query;
+        const { limit, page, sort } = request.query;
         const offset = limit * (page - 1);
-        const defaultOrderBy = ['osmDisplayName'];
+        let orderBy = ['osmDisplayName'];
+
+        /**
+         * This block parses the sort parameter and to the format used
+         * by Knex: https://knexjs.org/#Builder-orderBy
+         *
+         * Example:
+         *   - input: sort[osmDisplayName]=asc
+         *   - output: { column: 'osmDisplayName', order: 'asc' }
+         *
+         */
+        if (sort) {
+          orderBy = Object.keys(sort).map(key => {
+            return {
+              column: key,
+              order: sort[key]
+            };
+          });
+        }
 
         const results = await users.list({
           offset,
           limit,
-          orderBy: orderBy || defaultOrderBy
+          orderBy
         });
         const count = await users.count();
 

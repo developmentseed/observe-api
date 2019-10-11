@@ -1,5 +1,11 @@
 import axios from 'axios';
 import users from '../app/models/users';
+import Qs from 'qs';
+
+// Set default serializer for axios
+axios.defaults.paramsSerializer = function (params) {
+  return Qs.stringify(params, { arrayFormat: 'brackets' });
+};
 
 /**
  * Generate random integer number up to "max" value.
