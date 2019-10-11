@@ -8,6 +8,35 @@ const paginationLimit = config.get('pagination.limit');
 /* global apiUrl */
 
 describe('User management', function () {
+  const users = [];
+  let adminUser;
+  let regularUser;
+
+  before(async function () {
+    await db('users').delete();
+
+    // Create 5 admins
+    for (let i = 0; i < 5; i++) {
+      users.push(await createMockUser({ isAdmin: true }));
+    }
+
+    // Get admin user for testing
+    adminUser = users[0];
+
+    // Create more 45 users
+    for (let i = 0; i < 45; i++) {
+      users.push(await createMockUser());
+    }
+
+    regularUser = users[users.length];
+
+    // Parse date to string for easy comparison
+    users.map(r => {
+      r.osmCreatedAt = r.osmCreatedAt.toISOString();
+      return r;
+    });
+  });
+
   describe('GET /users', function () {
     it('should return 400 for non-authenticated user', async function () {
       try {
@@ -22,39 +51,16 @@ describe('User management', function () {
       }
     });
 
-    it('should return 200 for an authenticated user', async function () {
-      const { osmId } = await createMockUser();
+    it('should return 200 for admin user', async function () {
       const client = new Client(apiUrl);
-      await client.login(osmId);
+      await client.login(adminUser.osmId);
       const { status } = await client.get('/users');
       expect(status).to.equal(200);
     });
 
     it('default query should order by display name and limit results', async function () {
-      const users = [];
-
-      await db('users').delete();
-
-      // Create 5 admins
-      for (let i = 0; i < 5; i++) {
-        users.push(await createMockUser({ isAdmin: true }));
-      }
-
-      // Create a HTTP client with an admin authenticated
-      const { osmId } = users[0];
       const client = new Client(apiUrl);
-      client.login(osmId);
-
-      // Create more 45 users
-      for (let i = 0; i < 45; i++) {
-        users.push(await createMockUser());
-      }
-
-      // Parse date to string for easy comparison
-      users.map(r => {
-        r.osmCreatedAt = r.osmCreatedAt.toISOString();
-        return r;
-      });
+      await client.login(adminUser.osmId);
 
       // Prepare expected response for default query
       let expectedResponse1 = orderBy(users, 'osmDisplayName').slice(
