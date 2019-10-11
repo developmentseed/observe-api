@@ -46,7 +46,8 @@
   "dependencies": {
     "@hapi/bell": "^11.1.0",
     "@hapi/boom": "^7.4.3",
-    "@hapi/hapi": "^18.3.2",
+    "@hapi/hapi": "^18.4.0",
+    "@hapi/joi": "^16.1.7",
     "config": "^3.2.2",
     "esm": "^3.2.25",
     "fs-extra": "^8.1.0",

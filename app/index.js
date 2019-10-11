@@ -1,7 +1,6 @@
 import config from 'config';
 import Hapi from '@hapi/hapi';
 import hapiRouter from 'hapi-router';
-import Boom from '@hapi/boom';
 import setupAuth from './services/auth';
 import qs from 'qs';
 
@@ -16,22 +15,7 @@ export default async function () {
       parser: q => qs.parse(q)
     },
     routes: {
-      cors: true,
-      validate: {
-        failAction: async (request, h, err) => {
-          if (process.env.NODE_ENV === 'production') {
-            // In prod, log a limited error message and throw the default Bad Request error.
-            /* eslint-disable-next-line no-console */
-            console.error('ValidationError:', err.message);
-            throw Boom.badRequest('Invalid request payload input');
-          } else {
-            // During development, log and respond with the full error.
-            /* eslint-disable-next-line no-console */
-            console.error(err);
-            throw err;
-          }
-        }
-      }
+      cors: true
     },
     debug:
       process.env.NODE_ENV !== 'test'

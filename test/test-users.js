@@ -133,5 +133,31 @@ describe('User management', function () {
       expect(res.data.meta.totalCount).to.eq(50);
       expect(res.data.results).to.deep.equal(expectedResponse);
     });
+
+    it('invalid query params should 400 and return proper error', async function () {
+      try {
+        const client = new Client(apiUrl);
+        await client.login(adminUser.osmId);
+
+        const page = 2;
+        const invalidSort = {
+          invalidColumn: 'asc'
+        };
+
+        await client.get('/users', {
+          params: {
+            page,
+            sort: invalidSort
+          }
+        });
+
+        // The test should never reach here, force execute catch block.
+        throw Error('An error was expected.');
+      } catch (error) {
+        // Check for the appropriate status response
+        expect(error.response.data.message).to.equal('Invalid request query input');
+        expect(error.response.status).to.equal(400);
+      }
+    });
   });
 });
