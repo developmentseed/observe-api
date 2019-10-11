@@ -78,7 +78,7 @@ describe('User management', function () {
       await client.login(adminUser.osmId);
 
       // Prepare expected response for default query
-      let expectedResponse1 = orderBy(users, 'osmDisplayName').slice(
+      let expectedResponse = orderBy(users, 'osmDisplayName').slice(
         0,
         paginationLimit
       );
@@ -86,7 +86,7 @@ describe('User management', function () {
       // Default query, should be order by display name and match limit
       const res = await client.get('/users');
       expect(res.data.meta.totalCount).to.eq(50);
-      expect(res.data.results).to.deep.equal(expectedResponse1);
+      expect(res.data.results).to.deep.equal(expectedResponse);
     });
 
     it('check paginated query and sorting by one column', async function () {
