@@ -1,3 +1,4 @@
+import Boom from '@hapi/boom';
 import users from '../models/users';
 
 module.exports = [
@@ -7,13 +8,20 @@ module.exports = [
     options: {
       auth: 'jwt',
       handler: async function (request, h) {
+        // Check if user has proper credentials
+        const { credentials } = request.auth;
+        if (!credentials.isAdmin) {
+          return Boom.unauthorized('Restricted to admin users.');
+        }
+
+        // Get query params
         const { limit, page, sort } = request.query;
         const offset = limit * (page - 1);
         let orderBy = ['osmDisplayName'];
 
         /**
-         * This block parses the sort parameter and to the format used
-         * by Knex: https://knexjs.org/#Builder-orderBy
+         * Parses the sort parameter to format used by Knex:
+         *   - https://knexjs.org/#Builder-orderBy
          *
          * Example:
          *   - input: sort[osmDisplayName]=asc

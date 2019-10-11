@@ -41,7 +41,7 @@ const validate = async function (decoded) {
     user.osmId === osmId &&
     user.osmCreatedAt.toISOString() === osmCreatedAt
   ) {
-    return { isValid: true };
+    return { isValid: true, credentials: user };
   }
 
   return { isValid: false };

@@ -28,7 +28,8 @@ describe('User management', function () {
       users.push(await createMockUser());
     }
 
-    regularUser = users[users.length];
+    // Get regular user for testing
+    regularUser = users[users.length - 1];
 
     // Parse date to string for easy comparison
     users.map(r => {
@@ -38,9 +39,23 @@ describe('User management', function () {
   });
 
   describe('GET /users', function () {
-    it('should return 400 for non-authenticated user', async function () {
+    it('should return 401 for non-authenticated user', async function () {
       try {
         const client = new Client(apiUrl);
+        await client.get('/users');
+
+        // The test should never reach here, force execute catch block.
+        throw Error('An error was expected.');
+      } catch (error) {
+        // Check for the appropriate status response
+        expect(error.response.status).to.equal(401);
+      }
+    });
+
+    it('should return 401 for regular user', async function () {
+      try {
+        const client = new Client(apiUrl);
+        await client.login(regularUser.osmId);
         await client.get('/users');
 
         // The test should never reach here, force execute catch block.
