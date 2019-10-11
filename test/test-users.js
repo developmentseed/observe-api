@@ -58,7 +58,7 @@ describe('User management', function () {
       expect(status).to.equal(200);
     });
 
-    it('default query should order by display name and limit results', async function () {
+    it('default query should order by osmDisplayName and follow default limit', async function () {
       const client = new Client(apiUrl);
       await client.login(adminUser.osmId);
 
@@ -69,26 +69,54 @@ describe('User management', function () {
       );
 
       // Default query, should be order by display name and match limit
-      const res1 = await client.get('/users');
-      expect(res1.data.meta.totalCount).to.eq(50);
-      expect(res1.data.results).to.deep.equal(expectedResponse1);
+      const res = await client.get('/users');
+      expect(res.data.meta.totalCount).to.eq(50);
+      expect(res.data.results).to.deep.equal(expectedResponse1);
+    });
+
+    it('check paginated query and sorting by one column', async function () {
+      const client = new Client(apiUrl);
+      await client.login(adminUser.osmId);
 
       // Prepare expected response for page 3, ordering by creation date
       const page = 3;
       const offset = paginationLimit * (page - 1);
-      const expectedResponse2 = orderBy(users, 'osmCreatedAt').slice(
+      const expectedResponse = orderBy(users, 'osmCreatedAt').slice(
         offset,
         offset + paginationLimit
       );
 
-      const res2 = await client.get('/users', {
+      const res = await client.get('/users', {
         params: {
           page,
           sort: { osmCreatedAt: 'asc' }
         }
       });
-      expect(res2.data.meta.totalCount).to.eq(50);
-      expect(res2.data.results).to.deep.equal(expectedResponse2);
+      expect(res.data.meta.totalCount).to.eq(50);
+      expect(res.data.results).to.deep.equal(expectedResponse);
+    });
+
+    it('check another page and sorting by two columns', async function () {
+      const client = new Client(apiUrl);
+      await client.login(adminUser.osmId);
+
+      // Prepare expected response for page 3, ordering by creation date
+      const page = 2;
+      const offset = paginationLimit * (page - 1);
+      const expectedResponse = orderBy(
+        users,
+        ['osmDisplayName', 'osmCreatedAt'],
+        ['desc', 'asc']
+      ).slice(offset, offset + paginationLimit);
+
+      const res = await client.get('/users', {
+        params: {
+          page,
+          sort: { osmDisplayName: 'desc', osmCreatedAt: 'asc' }
+        }
+      });
+      expect(res.data.meta.totalCount).to.eq(50);
+      expect(res.data.results).to.deep.equal(expectedResponse);
     });
   });
 });
