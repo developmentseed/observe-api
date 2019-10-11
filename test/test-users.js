@@ -155,7 +155,9 @@ describe('User management', function () {
         throw Error('An error was expected.');
       } catch (error) {
         // Check for the appropriate status response
-        expect(error.response.data.message).to.equal('Invalid request query input');
+        expect(error.response.data.message).to.equal(
+          'Invalid request query input'
+        );
         expect(error.response.status).to.equal(400);
       }
     });

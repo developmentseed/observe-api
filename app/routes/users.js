@@ -2,6 +2,51 @@ import Boom from '@hapi/boom';
 import Joi from '@hapi/joi';
 import users from '../models/users';
 
+/**
+ * @api {get} /users GET
+ * @apiGroup Users
+ * @apiDescription Provides a simple listing of users.
+ *
+ * @apiParam {number} [page=1] Paginate through results.
+ * @apiParam {number} [limit=15] Change the number of results returned, max is 100.
+ * @apiParam {object} [sort=asc] Define sort order for one or more fields (ex. `sort[osmDisplayName]=asc&sort[osmCreatedAt]=desc`).
+ *
+ * @apiSuccess {string}   name        Name of the city
+ * @apiSuccess {string}   city        Name of the city (DEPRECATED: use "name" instead)
+ * @apiSuccess {string}   country     Country containing city, in 2 letter ISO code
+ * @apiSuccess {number}   count       Number of measurements for this city
+ * @apiSuccess {number}   locations   Number of locations in this city
+ * @apiSuccessExample {json} Success Response:
+ *
+ *   [
+ *     {
+ *       id: 'ef6133bb-ade4-43a8-a230-f23b324828d6',
+ *       osmId: 35366,
+ *       osmDisplayName: 'User95714',
+ *       osmCreatedAt: '2019-10-11T11:18:18.582Z',
+ *       isAdmin: false
+ *     },
+ *     {
+ *       id: '9a03458d-3514-41f7-a850-729896c60cdd',
+ *       osmId: 43533,
+ *       osmDisplayName: 'User79416',
+ *       osmCreatedAt: '2019-10-11T11:18:18.577Z',
+ *       isAdmin: false
+ *     },
+ *     ...
+ *   ]
+ *
+ * @apiError statusCode     The error code
+ * @apiError error          Error name
+ * @apiError message        Error message
+ * @apiErrorExample {json} Error Response:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *      "statusCode": 400,
+ *      "error": "Bad Request",
+ *      "message": "Oops!"
+ *     }
+ */
 module.exports = [
   {
     path: '/users',
