@@ -103,7 +103,8 @@ async function setupOAuth (server) {
       credentials.profile = {
         osmId: user.osmId,
         osmDisplayName: user.osmDisplayName,
-        osmCreatedAt: user.osmCreatedAt.toISOString()
+        osmCreatedAt: user.osmCreatedAt.toISOString(),
+        isAdmin: user.isAdmin
       };
       credentials.accessToken = await getAccessToken(profile.id);
 
