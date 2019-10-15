@@ -56,8 +56,10 @@
     "hapi-router": "^5.0.0",
     "jsonwebtoken": "^8.5.1",
     "knex": "^0.19.4",
+    "lodash.clonedeep": "^4.5.0",
     "pg": "^7.12.1",
     "qs": "^6.9.0",
+    "shortid": "^2.2.15",
     "uuid": "^3.3.3",
     "winston": "^3.2.1",
     "xml-js": "^1.6.11"

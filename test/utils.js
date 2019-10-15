@@ -55,4 +55,8 @@ export class Client {
   get (route, params) {
     return this.axios.get(route, params);
   }
+
+  post (route, data) {
+    return this.axios.post(route, data);
+  }
 }
