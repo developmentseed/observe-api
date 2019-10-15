@@ -48,9 +48,19 @@ function update (id, data) {
   return get(id).update(data);
 }
 
+function del (id) {
+  return get(id).del();
+}
+
+async function count () {
+  return parseInt((await db('traces').count())[0].count);
+}
+
 export default {
   get,
   create,
   update,
+  del,
+  count,
   asTraceJson
 };

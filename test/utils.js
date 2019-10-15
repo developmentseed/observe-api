@@ -79,4 +79,8 @@ export class Client {
   patch (route, data) {
     return this.axios.patch(route, data);
   }
+
+  del (route) {
+    return this.axios.delete(route);
+  }
 }

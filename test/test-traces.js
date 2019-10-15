@@ -3,6 +3,7 @@ import { expect } from 'chai';
 import { createMockUser, Client, createMockTrace } from './utils';
 import validTraceJson from './fixtures/valid-trace.json';
 import cloneDeep from 'lodash.clonedeep';
+import traces from '../app/models/traces';
 
 /* global apiUrl */
 
@@ -18,7 +19,8 @@ describe('Traces endpoints', async function () {
         const client = new Client(apiUrl);
         await client.post('/traces', {});
 
-        // The test should never reach here, force execute catch block.
+        // This line should be reached, force executing the catch block with
+        // generic error.
         throw Error('An error was expected.');
       } catch (error) {
         // Check for the appropriate status response
@@ -60,7 +62,8 @@ describe('Traces endpoints', async function () {
         await client.login(regularUser.osmId);
         await client.post('/traces', { tracejson: invalidTraceJson });
 
-        // The test should never reach here, force execute catch block.
+        // This line should be reached, force executing the catch block with
+        // generic error.
         throw Error('An error was expected.');
       } catch (error) {
         // Check for the appropriate status response
@@ -80,7 +83,8 @@ describe('Traces endpoints', async function () {
           description: 'a new description'
         });
 
-        // The test should never reach here, force execute catch block.
+        // This line should be reached, force executing the catch block with
+        // generic error.
         throw Error('An error was expected.');
       } catch (error) {
         // Check for the appropriate status response
@@ -100,7 +104,8 @@ describe('Traces endpoints', async function () {
           description: 'a new description'
         });
 
-        // The test should never reach here, force execute catch block.
+        // This line should be reached, force executing the catch block with
+        // generic error.
         throw Error('An error was expected.');
       } catch (error) {
         // Check for the appropriate status response
@@ -108,7 +113,7 @@ describe('Traces endpoints', async function () {
       }
     });
 
-    it('should return 200 for valid payload', async function () {
+    it('should return 200 for owner', async function () {
       // Data to be patched
       const newDescription = 'a new description';
 
@@ -141,6 +146,96 @@ describe('Traces endpoints', async function () {
 
       expect(data.geometry).to.deep.equal(validTraceJson.geometry);
       expect(data.geometry).to.deep.equal(validTraceJson.geometry);
+    });
+  describe('DEL /traces', async function () {
+    it('should return 401 for non-authenticated user', async function () {
+      try {
+        const client = new Client(apiUrl);
+        await client.del(`/traces/abcdefghi`);
+
+        // This line should be reached, force executing the catch block with
+        // generic error.
+        throw Error('An error was expected.');
+      } catch (error) {
+        // Check for the appropriate status response
+        expect(error.response.status).to.equal(401);
+      }
+    });
+
+    it('should return 403 for non-owner user', async function () {
+      try {
+        const regularUser1 = await createMockUser();
+        const regularUser2 = await createMockUser();
+        const trace = await createMockTrace(regularUser1.osmId);
+
+        const client = new Client(apiUrl);
+        await client.login(regularUser2.osmId);
+        await client.del(`/traces/${trace.id}`);
+
+        // This line should be reached, force executing the catch block with
+        // generic error.
+        throw Error('An error was expected.');
+      } catch (error) {
+        // Check for the appropriate status response
+        expect(error.response.status).to.equal(403);
+      }
+    });
+
+    it('should return 200 for owner', async function () {
+      // Create client
+      const regularUser = await createMockUser();
+      const client = new Client(apiUrl);
+      await client.login(regularUser.osmId);
+
+      // Create mock trace
+      const trace = await createMockTrace(regularUser.osmId);
+      await createMockTrace(regularUser.osmId);
+
+      // Get trace count
+      const beforeCount = await traces.count();
+
+      // Do the request
+      const { status } = await client.del(`/traces/${trace.id}`);
+
+      // Check status
+      expect(status).to.equal(200);
+
+      // Check if trace was deleted
+      const deletedTrace = await traces.get(trace.id);
+      expect(deletedTrace).to.have.length(0);
+
+      // Check if traces count was reduced by one
+      const afterCount = await traces.count();
+      expect(afterCount).to.eq(beforeCount - 1);
+    });
+
+    it('should return 200 for non-owner admin', async function () {
+      // Create client
+      const regularUser = await createMockUser();
+      const adminUser = await createMockUser({isAdmin: true});
+      const client = new Client(apiUrl);
+      await client.login(adminUser.osmId);
+
+      // Create mock trace
+      const trace = await createMockTrace(regularUser.osmId);
+      await createMockTrace(regularUser.osmId);
+
+      // Get trace count
+      const beforeCount = await traces.count();
+
+      // Do the request
+      const { status } = await client.del(`/traces/${trace.id}`);
+
+      // Check status
+      expect(status).to.equal(200);
+
+      // Check if trace was deleted
+      const deletedTrace = await traces.get(trace.id);
+      expect(deletedTrace).to.have.length(0);
+
+      // Check if traces count was reduced by one
+      const afterCount = await traces.count();
+      expect(afterCount).to.eq(beforeCount - 1);
     });
   });
 });
