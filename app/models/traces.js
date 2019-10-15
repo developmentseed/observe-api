@@ -1,5 +1,5 @@
 import db from '../services/db';
-import shortid from 'shortid';
+import { generateId } from './utils';
 
 function get (id) {
   return db('traces').where('id', id);
@@ -15,7 +15,7 @@ function create (tracejson, ownerId) {
   const wkt = `LINESTRING (${coordinates.map(p => p.join(' ')).join(',')})`;
 
   return db('traces').insert({
-    id: shortid.generate(),
+    id: generateId(),
     ownerId,
     description,
     geometry: wkt,

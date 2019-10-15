@@ -3,6 +3,9 @@ import traces from '../models/traces';
 import logger from '../services/logger';
 import db from '../services/db';
 import Boom from '@hapi/boom';
+import config from 'config';
+
+const idLength = config.get('idLength');
 
 /**
  * @api {post} /traces POST
@@ -115,7 +118,7 @@ module.exports = [
       auth: 'jwt',
       validate: {
         params: Joi.object({
-          id: Joi.string().min(7).max(14)
+          id: Joi.string().length(idLength)
         }),
         payload: Joi.object({
           description: Joi.string()
