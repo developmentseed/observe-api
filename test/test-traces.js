@@ -147,6 +147,44 @@ describe('Traces endpoints', async function () {
       expect(data.geometry).to.deep.equal(validTraceJson.geometry);
       expect(data.geometry).to.deep.equal(validTraceJson.geometry);
     });
+
+    it('should return 200 for non-owner admin', async function () {
+      // Data to be patched
+      const newDescription = 'a new description';
+
+      // Create client
+      const regularUser = await createMockUser();
+      const adminUser = await createMockUser({ isAdmin: true });
+      const client = new Client(apiUrl);
+      await client.login(adminUser.osmId);
+
+      // Create mock trace
+      const trace = await createMockTrace(regularUser.osmId);
+
+      // Do the request
+      const { status, data } = await client.patch(`/traces/${trace.id}`, {
+        description: 'a new description'
+      });
+
+      // Check status
+      expect(status).to.equal(200);
+
+      // Check response
+      const { timestamps } = validTraceJson.properties;
+      const recordedAt = new Date(timestamps[0]).toISOString();
+      expect(data.properties).to.have.property('id');
+      expect(data.properties).to.have.property('uploadedAt');
+      expect(data.properties).to.have.property('updatedAt');
+      expect(data.properties.length).greaterThan(0);
+      expect(data.properties.description).to.deep.equal(newDescription);
+      expect(data.properties.timestamps).to.deep.equal(timestamps);
+      expect(data.properties.recordedAt).to.deep.equal(recordedAt);
+
+      expect(data.geometry).to.deep.equal(validTraceJson.geometry);
+      expect(data.geometry).to.deep.equal(validTraceJson.geometry);
+    });
+  });
+
   describe('DEL /traces', async function () {
     it('should return 401 for non-authenticated user', async function () {
       try {
