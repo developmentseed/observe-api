@@ -1,6 +1,8 @@
 import axios from 'axios';
 import users from '../app/models/users';
+import traces from '../app/models/traces';
 import Qs from 'qs';
+import validTraceJson from './fixtures/valid-trace.json';
 
 // Set default serializer for axios
 axios.defaults.paramsSerializer = function (params) {
@@ -30,6 +32,16 @@ export async function createMockUser (data) {
 }
 
 /**
+ * Factory to create mock traces at the database.
+ */
+export async function createMockTrace (ownerId) {
+  const [trace] = await traces
+    .create(validTraceJson, ownerId)
+    .returning(['id', 'ownerId', 'description']);
+  return trace;
+}
+
+/**
  * HTTP Client class.
  */
 export class Client {
@@ -41,6 +53,10 @@ export class Client {
   }
 
   async login (osmId) {
+    if (!osmId) {
+      throw Error('Client needs a osmId to login.');
+    }
+
     const {
       data: { accessToken }
     } = await this.axios.get(`/login?osmId=${osmId}`);
@@ -58,5 +74,9 @@ export class Client {
 
   post (route, data) {
     return this.axios.post(route, data);
+  }
+
+  patch (route, data) {
+    return this.axios.patch(route, data);
   }
 }

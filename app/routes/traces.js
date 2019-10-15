@@ -83,31 +83,13 @@ module.exports = [
 
           // Get properties from TraceJson
           const { tracejson } = request.payload;
-          const {
-            geometry: { coordinates },
-            properties: { timestamps, description }
-          } = tracejson;
-
-          // Transform GeoJSON feature to WKT
-          const wkt = `LINESTRING (${coordinates
-            .map(p => p.join(' '))
-            .join(',')})`;
 
           // Insert trace
           const [trace] = await traces
-            .create({
-              creatorId: osmId,
-              description,
-              geometry: wkt,
-              length: db.raw(`ST_Length(
-                ST_GeogFromText('SRID=4326;${wkt}'),true)
-              `),
-              timestamps,
-              recordedAt: new Date(timestamps[0])
-            })
+            .create(tracejson, osmId)
             .returning([
               'id',
-              'creatorId',
+              'ownerId',
               'description',
               'length',
               'recordedAt',
@@ -118,20 +100,57 @@ module.exports = [
             ]);
 
           // Return as TraceJSON
-          return {
-            type: 'Feature',
-            properties: {
-              id: trace.id,
-              creatorId: trace.creatorId,
-              description: trace.description,
-              length: trace.length,
-              recordedAt: trace.recordedAt,
-              uploadedAt: trace.uploadedAt,
-              updatedAt: trace.updatedAt,
-              timestamps: trace.timestamps
-            },
-            geometry: JSON.parse(trace.geometry)
-          };
+          return traces.asTraceJson(trace);
+        } catch (error) {
+          logger.error(error);
+          return Boom.badImplementation('Unexpected error.');
+        }
+      }
+    }
+  },
+  {
+    path: '/traces/{id}',
+    method: ['PATCH'],
+    options: {
+      auth: 'jwt',
+      validate: {
+        params: Joi.object({
+          id: Joi.string().min(7).max(14)
+        }),
+        payload: Joi.object({
+          description: Joi.string()
+        })
+      },
+      handler: async function (request) {
+        try {
+          // Get trace
+          const { id } = request.params;
+          const [trace] = await traces.get(id);
+
+          // Verify ownership
+          const { osmId, isAdmin } = request.auth.credentials;
+          if (trace.ownerId !== osmId && !isAdmin) {
+            return Boom.forbidden('Must be owner or admin to edit a trace.');
+          }
+
+          // Patch
+          const { description } = request.payload;
+          const [patchedTrace] = await traces
+            .update(id, { description })
+            .returning([
+              'id',
+              'ownerId',
+              'description',
+              'length',
+              'recordedAt',
+              'uploadedAt',
+              'updatedAt',
+              'timestamps',
+              db.raw('ST_AsGeoJSON(geometry) as geometry')
+            ]);
+
+          // Return as TraceJSON
+          return traces.asTraceJson(patchedTrace);
         } catch (error) {
           logger.error(error);
           return Boom.badImplementation('Unexpected error.');

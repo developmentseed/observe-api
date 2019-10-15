@@ -8,7 +8,7 @@ exports.up = function (knex) {
     table.timestamp('recordedAt');
     table.timestamp('uploadedAt').defaultTo(knex.fn.now());
     table.timestamp('updatedAt').defaultTo(knex.fn.now());
-    table.integer('creatorId');
+    table.integer('ownerId');
   });
 };
 
