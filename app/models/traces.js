@@ -1,8 +1,8 @@
 import db from '../services/db';
 import { generateId } from './utils';
 
-function get (id) {
-  return db('traces').where('id', id);
+function get (id, select) {
+  return db('traces').select(select).where('id', id);
 }
 
 function create (tracejson, ownerId) {

@@ -78,7 +78,7 @@ describe('Traces endpoints', async function () {
     });
   });
 
-  describe('PATCH /traces', async function () {
+  describe('PATCH /traces/{id}', async function () {
     it('should return 401 for non-authenticated user', async function () {
       try {
         const client = new Client(apiUrl);
@@ -188,7 +188,7 @@ describe('Traces endpoints', async function () {
     });
   });
 
-  describe('DEL /traces', async function () {
+  describe('DEL /traces/{id}', async function () {
     it('should return 401 for non-authenticated user', async function () {
       try {
         const client = new Client(apiUrl);
@@ -416,6 +416,67 @@ describe('Traces endpoints', async function () {
         );
         expect(error.response.status).to.equal(400);
       }
+    });
+  });
+
+  describe('GET /traces/{id}', function () {
+    it('should return 401 for non-authenticated user', async function () {
+      try {
+        const client = new Client(apiUrl);
+        await client.get('/traces/abcdefghij');
+
+        // The test should never reach here, force execute catch block.
+        throw Error('An error was expected.');
+      } catch (error) {
+        // Check for the appropriate status response
+        expect(error.response.status).to.equal(401);
+      }
+    });
+
+    it('return 404 for non-existing trace', async function () {
+      try {
+        // Create client
+        const regularUser = await createMockUser();
+        const client = new Client(apiUrl);
+        await client.login(regularUser.osmId);
+
+        // Fetch resource
+        await client.get('/traces/abcdefghij');
+
+        // The test should never reach here, force execute catch block.
+        throw Error('An error was expected.');
+      } catch (error) {
+        // Check for the appropriate status response
+        expect(error.response.status).to.equal(404);
+      }
+    });
+
+    it('return 200 for existing trace, formated as tracejson', async function () {
+      // Create mock data
+      const regularUser = await createMockUser();
+      const trace = await createMockTrace(regularUser.osmId);
+
+      // Create a client
+      const client = new Client(apiUrl);
+      await client.login(regularUser.osmId);
+
+      // Fetch resource
+      const { status, data } = await client.get(`/traces/${trace.id}`);
+
+      expect(status).to.equal(200);
+
+      const { timestamps, description } = validTraceJson.properties;
+      const recordedAt = new Date(timestamps[0]).toISOString();
+      expect(data.properties).to.have.property('id');
+      expect(data.properties).to.have.property('uploadedAt');
+      expect(data.properties).to.have.property('updatedAt');
+      expect(data.properties.length).greaterThan(0);
+      expect(data.properties.description).to.deep.equal(description);
+      expect(data.properties.timestamps).to.deep.equal(timestamps);
+      expect(data.properties.recordedAt).to.deep.equal(recordedAt);
+
+      expect(data.geometry).to.deep.equal(validTraceJson.geometry);
+      expect(data.geometry).to.deep.equal(validTraceJson.geometry);
     });
   });
 });
