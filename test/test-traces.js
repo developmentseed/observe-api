@@ -16,8 +16,69 @@ describe('Traces endpoints', async function () {
     await db('traces').delete();
   });
 
+  describe('GET /traces/{id}', function () {
+    it('return 401 for non-authenticated user', async function () {
+      try {
+        const client = new Client(apiUrl);
+        await client.get('/traces/abcdefghij');
+
+        // The test should never reach here, force execute catch block.
+        throw Error('An error was expected.');
+      } catch (error) {
+        // Check for the appropriate status response
+        expect(error.response.status).to.equal(401);
+      }
+    });
+
+    it('return 404 for non-existing trace', async function () {
+      try {
+        // Create client
+        const regularUser = await createMockUser();
+        const client = new Client(apiUrl);
+        await client.login(regularUser.osmId);
+
+        // Fetch resource
+        await client.get('/traces/abcdefghij');
+
+        // The test should never reach here, force execute catch block.
+        throw Error('An error was expected.');
+      } catch (error) {
+        // Check for the appropriate status response
+        expect(error.response.status).to.equal(404);
+      }
+    });
+
+    it('return 200 for existing trace, formated as tracejson', async function () {
+      // Create mock data
+      const regularUser = await createMockUser();
+      const trace = await createMockTrace(regularUser.osmId);
+
+      // Create a client
+      const client = new Client(apiUrl);
+      await client.login(regularUser.osmId);
+
+      // Fetch resource
+      const { status, data } = await client.get(`/traces/${trace.id}`);
+
+      expect(status).to.equal(200);
+
+      const { timestamps, description } = validTraceJson.properties;
+      const recordedAt = new Date(timestamps[0]).toISOString();
+      expect(data.properties).to.have.property('id');
+      expect(data.properties).to.have.property('uploadedAt');
+      expect(data.properties).to.have.property('updatedAt');
+      expect(data.properties.length).greaterThan(0);
+      expect(data.properties.description).to.deep.equal(description);
+      expect(data.properties.timestamps).to.deep.equal(timestamps);
+      expect(data.properties.recordedAt).to.deep.equal(recordedAt);
+
+      expect(data.geometry).to.deep.equal(validTraceJson.geometry);
+      expect(data.geometry).to.deep.equal(validTraceJson.geometry);
+    });
+  });
+
   describe('POST /traces', function () {
-    it('should return 401 for non-authenticated user', async function () {
+    it('return 401 for non-authenticated user', async function () {
       try {
         const client = new Client(apiUrl);
         await client.post('/traces', {});
@@ -31,7 +92,7 @@ describe('Traces endpoints', async function () {
       }
     });
 
-    it('should return 200 for authenticated user and store trace', async function () {
+    it('return 200 for authenticated user and store trace', async function () {
       const regularUser = await createMockUser();
       const client = new Client(apiUrl);
       await client.login(regularUser.osmId);
@@ -79,7 +140,7 @@ describe('Traces endpoints', async function () {
   });
 
   describe('PATCH /traces/{id}', async function () {
-    it('should return 401 for non-authenticated user', async function () {
+    it('return 401 for non-authenticated user', async function () {
       try {
         const client = new Client(apiUrl);
         await client.patch(`/traces/abcdefghi`, {
@@ -95,7 +156,7 @@ describe('Traces endpoints', async function () {
       }
     });
 
-    it('should return 403 for non-owner user', async function () {
+    it('return 403 for non-owner user', async function () {
       try {
         const regularUser1 = await createMockUser();
         const regularUser2 = await createMockUser();
@@ -116,7 +177,7 @@ describe('Traces endpoints', async function () {
       }
     });
 
-    it('should return 200 for owner', async function () {
+    it('return 200 for owner', async function () {
       // Data to be patched
       const newDescription = 'a new description';
 
@@ -151,7 +212,7 @@ describe('Traces endpoints', async function () {
       expect(data.geometry).to.deep.equal(validTraceJson.geometry);
     });
 
-    it('should return 200 for non-owner admin', async function () {
+    it('return 200 for non-owner admin', async function () {
       // Data to be patched
       const newDescription = 'a new description';
 
@@ -189,7 +250,7 @@ describe('Traces endpoints', async function () {
   });
 
   describe('DEL /traces/{id}', async function () {
-    it('should return 401 for non-authenticated user', async function () {
+    it('return 401 for non-authenticated user', async function () {
       try {
         const client = new Client(apiUrl);
         await client.del(`/traces/abcdefghi`);
@@ -203,7 +264,7 @@ describe('Traces endpoints', async function () {
       }
     });
 
-    it('should return 403 for non-owner user', async function () {
+    it('return 403 for non-owner user', async function () {
       try {
         const regularUser1 = await createMockUser();
         const regularUser2 = await createMockUser();
@@ -222,7 +283,7 @@ describe('Traces endpoints', async function () {
       }
     });
 
-    it('should return 200 for owner', async function () {
+    it('return 200 for owner', async function () {
       // Create client
       const regularUser = await createMockUser();
       const client = new Client(apiUrl);
@@ -250,7 +311,7 @@ describe('Traces endpoints', async function () {
       expect(afterCount).to.eq(beforeCount - 1);
     });
 
-    it('should return 200 for non-owner admin', async function () {
+    it('return 200 for non-owner admin', async function () {
       // Create client
       const regularUser = await createMockUser();
       const adminUser = await createMockUser({ isAdmin: true });
@@ -302,7 +363,7 @@ describe('Traces endpoints', async function () {
       }
     });
 
-    it('should return 401 for non-authenticated user', async function () {
+    it('return 401 for non-authenticated user', async function () {
       try {
         const client = new Client(apiUrl);
         await client.get('/traces');
@@ -315,21 +376,21 @@ describe('Traces endpoints', async function () {
       }
     });
 
-    it('should return 200 for regular user', async function () {
+    it('return 200 for regular user', async function () {
       const client = new Client(apiUrl);
       await client.login(regularUser.osmId);
       const { status } = await client.get('/traces');
       expect(status).to.equal(200);
     });
 
-    it('should return 200 for admin user', async function () {
+    it('return 200 for admin user', async function () {
       const client = new Client(apiUrl);
       await client.login(adminUser.osmId);
       const { status } = await client.get('/traces');
       expect(status).to.equal(200);
     });
 
-    it('default query should order by "uploadedAt" and follow default limit', async function () {
+    it('default query order by "uploadedAt", follow limit default', async function () {
       const client = new Client(apiUrl);
       await client.login(adminUser.osmId);
 
@@ -390,7 +451,7 @@ describe('Traces endpoints', async function () {
       expect(res.data.results).to.deep.equal(expectedResponse);
     });
 
-    it('invalid query params should 400 and return proper error', async function () {
+    it('invalid query params return 400 status and proper error', async function () {
       try {
         const client = new Client(apiUrl);
         await client.login(adminUser.osmId);
@@ -416,67 +477,6 @@ describe('Traces endpoints', async function () {
         );
         expect(error.response.status).to.equal(400);
       }
-    });
-  });
-
-  describe('GET /traces/{id}', function () {
-    it('should return 401 for non-authenticated user', async function () {
-      try {
-        const client = new Client(apiUrl);
-        await client.get('/traces/abcdefghij');
-
-        // The test should never reach here, force execute catch block.
-        throw Error('An error was expected.');
-      } catch (error) {
-        // Check for the appropriate status response
-        expect(error.response.status).to.equal(401);
-      }
-    });
-
-    it('return 404 for non-existing trace', async function () {
-      try {
-        // Create client
-        const regularUser = await createMockUser();
-        const client = new Client(apiUrl);
-        await client.login(regularUser.osmId);
-
-        // Fetch resource
-        await client.get('/traces/abcdefghij');
-
-        // The test should never reach here, force execute catch block.
-        throw Error('An error was expected.');
-      } catch (error) {
-        // Check for the appropriate status response
-        expect(error.response.status).to.equal(404);
-      }
-    });
-
-    it('return 200 for existing trace, formated as tracejson', async function () {
-      // Create mock data
-      const regularUser = await createMockUser();
-      const trace = await createMockTrace(regularUser.osmId);
-
-      // Create a client
-      const client = new Client(apiUrl);
-      await client.login(regularUser.osmId);
-
-      // Fetch resource
-      const { status, data } = await client.get(`/traces/${trace.id}`);
-
-      expect(status).to.equal(200);
-
-      const { timestamps, description } = validTraceJson.properties;
-      const recordedAt = new Date(timestamps[0]).toISOString();
-      expect(data.properties).to.have.property('id');
-      expect(data.properties).to.have.property('uploadedAt');
-      expect(data.properties).to.have.property('updatedAt');
-      expect(data.properties.length).greaterThan(0);
-      expect(data.properties.description).to.deep.equal(description);
-      expect(data.properties.timestamps).to.deep.equal(timestamps);
-      expect(data.properties.recordedAt).to.deep.equal(recordedAt);
-
-      expect(data.geometry).to.deep.equal(validTraceJson.geometry);
-      expect(data.geometry).to.deep.equal(validTraceJson.geometry);
     });
   });
 });
