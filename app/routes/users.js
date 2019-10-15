@@ -11,11 +11,11 @@ import users from '../models/users';
  * @apiParam {number} [limit=15] Change the number of results returned, max is 100.
  * @apiParam {object} [sort=asc] Define sort order for one or more fields (ex. `sort[osmDisplayName]=asc&sort[osmCreatedAt]=desc`).
  *
- * @apiSuccess {string}   name        Name of the city
- * @apiSuccess {string}   city        Name of the city (DEPRECATED: use "name" instead)
- * @apiSuccess {string}   country     Country containing city, in 2 letter ISO code
- * @apiSuccess {number}   count       Number of measurements for this city
- * @apiSuccess {number}   locations   Number of locations in this city
+ * @apiSuccess {string}   id              User id
+ * @apiSuccess {integer}  osmId           User id in OSM
+ * @apiSuccess {string}   osmDisplayName  Display name in OSM
+ * @apiSuccess {string}   osmCreatedAt    User creation data in OSM
+ * @apiSuccess {boolean}  isAdmin         True if user has admin status
  * @apiSuccessExample {json} Success Response:
  *
  *   [
