@@ -52,6 +52,28 @@ function del (id) {
   return get(id).del();
 }
 
+function list ({ offset, limit, orderBy }) {
+  return db('traces')
+    .select([
+      'id',
+      'ownerId',
+      'description',
+      'length',
+      'recordedAt',
+      'uploadedAt',
+      'updatedAt'
+    ])
+    .offset(offset)
+    .orderBy(orderBy)
+    .limit(limit)
+    .map(r => {
+      r.recordedAt = r.recordedAt.toISOString();
+      r.uploadedAt = r.uploadedAt.toISOString();
+      r.updatedAt = r.updatedAt.toISOString();
+      return r;
+    });
+}
+
 async function count () {
   return parseInt((await db('traces').count())[0].count);
 }
@@ -61,6 +83,7 @@ export default {
   create,
   update,
   del,
+  list,
   count,
   asTraceJson
 };

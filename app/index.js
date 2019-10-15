@@ -47,7 +47,7 @@ export default async function () {
         }
       },
       routes: {
-        include: ['/users']
+        include: ['/users', '/traces']
       }
     }
   });

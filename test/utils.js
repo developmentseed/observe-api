@@ -36,8 +36,24 @@ export async function createMockUser (data) {
  */
 export async function createMockTrace (ownerId) {
   const [trace] = await traces
-    .create(validTraceJson, ownerId)
-    .returning(['id', 'ownerId', 'description']);
+    .create({
+      ...validTraceJson
+    }, ownerId)
+    .returning([
+      'id',
+      'ownerId',
+      'description',
+      'length',
+      'recordedAt',
+      'uploadedAt',
+      'updatedAt'
+    ])
+    .map(r => {
+      r.recordedAt = r.recordedAt.toISOString();
+      r.uploadedAt = r.uploadedAt.toISOString();
+      r.updatedAt = r.updatedAt.toISOString();
+      return r;
+    });
   return trace;
 }
 
