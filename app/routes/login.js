@@ -1,18 +1,17 @@
 import Boom from '@hapi/boom';
 import config from 'config';
-const mobileCallbackUrl = config.get('osmOAuth.mobileCallbackUrl');
 
 const handler = function (request, h) {
   const { isAuthenticated, credentials } = request.auth;
-
+  const redirectTo = credentials.query.redirect;
   if (!isAuthenticated) {
     return Boom.unauthorized('Could not authenticate at OpenStreetMap.');
   }
 
-  // Redirect based on the route
-  if (request.url.pathname === '/login/mobile') {
+  // Redirect based on redirect query parameter
+  if (redirectTo) { // FIXME: Check if redirect URL is part of allowed redirect URLs
     return h.redirect(
-      `${mobileCallbackUrl}?#accessToken=${credentials.accessToken}`
+      `${redirectTo}?accessToken=${credentials.accessToken}`
     );
   } else {
     return {
