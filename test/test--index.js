@@ -14,6 +14,7 @@ describe('Observe API', function () {
     logger.info('Clearing database...');
     await db.schema.dropTableIfExists('knex_migrations');
     await db.schema.dropTableIfExists('users');
+    await db.schema.dropTableIfExists('traces');
     await db.migrate.latest();
 
     logger.info('Starting server...');
@@ -32,6 +33,7 @@ describe('Observe API', function () {
   });
 
   require('./test-users');
+  require('./test-traces');
 
   after(async function () {
     await global.server.stop();

@@ -23,13 +23,16 @@
     "start-dev-db": "docker-compose -f docker-compose-dev.yml up",
     "start-test-db": "docker-compose -f docker-compose-test.yml up",
     "migrate-dev-db": "NODE_ENV=development node_modules/.bin/knex migrate:latest",
-    "test-lint": "npm run lint && npm run test"
+    "test-lint": "npm run lint && npm run test",
+    "generate-docs": "apidoc -i app/ -o docs/",
+    "view-docs": "npm run generate-docs && http-server docs/"
   },
   "engines": {
     "node": "10.x"
   },
   "type": "module",
   "devDependencies": {
+    "apidoc": "^0.17.7",
     "axios": "^0.19.0",
     "chai": "^4.2.0",
     "eslint": "^5.4.0",
@@ -48,14 +51,18 @@
     "@hapi/boom": "^7.4.3",
     "@hapi/hapi": "^18.4.0",
     "@hapi/joi": "^16.1.7",
+    "api-doc": "^4.0.3",
     "config": "^3.2.2",
     "esm": "^3.2.25",
     "fs-extra": "^8.1.0",
     "hapi-auth-jwt2": "^8.7.0",
     "hapi-pagination": "^3.0.0",
     "hapi-router": "^5.0.0",
+    "http-server": "^0.11.1",
     "jsonwebtoken": "^8.5.1",
     "knex": "^0.19.4",
+    "lodash.clonedeep": "^4.5.0",
+    "nanoid": "^2.1.3",
     "pg": "^7.12.1",
     "qs": "^6.9.0",
     "uuid": "^3.3.3",

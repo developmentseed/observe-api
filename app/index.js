@@ -33,7 +33,7 @@ export default async function () {
   await server.register({
     plugin: hapiRouter,
     options: {
-      routes: 'app/routes/*.js'
+      routes: ['app/routes/*.js', 'app/routes/traces/*.js']
     }
   });
 
@@ -47,7 +47,7 @@ export default async function () {
         }
       },
       routes: {
-        include: ['/users']
+        include: ['/users', '/traces']
       }
     }
   });

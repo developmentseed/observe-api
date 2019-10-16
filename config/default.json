@@ -3,6 +3,7 @@
   "pagination": {
     "limit": 15
   },
+  "idLength": 10,
   "osmOAuth": {
     "requestTokenUrl": "https://master.apis.dev.openstreetmap.org/oauth/request_token",
     "accessTokenUrl": "https://master.apis.dev.openstreetmap.org/oauth/access_token",

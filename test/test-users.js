@@ -7,12 +7,13 @@ const paginationLimit = config.get('pagination.limit');
 
 /* global apiUrl */
 
-describe('User management', function () {
+describe('Users endpoints', function () {
   const users = [];
   let adminUser;
   let regularUser;
 
   before(async function () {
+    // Clear existing users
     await db('users').delete();
 
     // Create 5 admins
@@ -20,7 +21,7 @@ describe('User management', function () {
       users.push(await createMockUser({ isAdmin: true }));
     }
 
-    // Get admin user for testing
+    // Get one admin for testing
     adminUser = users[0];
 
     // Create more 45 users

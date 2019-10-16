@@ -62,11 +62,13 @@ Open a new terminal and run tests:
 
 When finished, go back to the first terminal session and kill the database container with Ctrl+C.
 
-## Routes
+## API Documentation
 
-### GET /
+Start documentation server:
 
-Returns 200 status and "Observe API" text body.
+    npm run view-docs
+
+Visit http://localhost:8080.    
 
 ## License
 
