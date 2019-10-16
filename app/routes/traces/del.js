@@ -6,6 +6,18 @@ import traces from '../../models/traces';
 
 const idLength = config.get('idLength');
 
+/**
+ * @apiGroup Traces
+ *
+ * @api {del} /traces/:id 5. DEL /traces/:id
+ * @apiDescription Delete trace, user must be logged as admin or trace owner.
+ *
+ * @apiParam {string} id Trace id.
+ *
+ * @apiUse AuthorizationHeader
+ * @apiUse Success200
+ * @apiUse Error4xx
+ */
 export default [
   {
     path: '/traces/{id}',

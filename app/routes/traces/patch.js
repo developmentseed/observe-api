@@ -7,6 +7,20 @@ import config from 'config';
 
 const idLength = config.get('idLength');
 
+/**
+ * @apiGroup Traces
+ *
+ * @api {patch} /traces/:id 4. PATCH /traces/:id
+ * @apiDescription Update trace description, user must be logged as admin or trace owner.
+ *
+ * @apiParam {string} :id Trace id.
+ * @apiParam {string} description Trace description.
+ *
+ * @apiUse AuthorizationHeader
+ * @apiUse Success200
+ * @apiUse Error4xx
+ */
+
 export default [
   {
     path: '/traces/{id}',

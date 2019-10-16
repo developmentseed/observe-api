@@ -5,25 +5,19 @@ import logger from '../../services/logger';
 import traces from '../../models/traces';
 
 /**
- * @api {post} /traces POST
- * @apiGroup traces
- * @apiDescription Upload a trace.
+ * @apiGroup Traces
  *
- * @apiParam {object} [tracejson] TraceJSON object.
+ * @api {post} /traces/:id 3. POST /traces/:id
  *
- * @apiSuccess {object}   tracejson       TraceJSON object, with properties populated with id, timestamps and description.
+ * @apiDescription Upload a trace in TraceJSON format, user must be logged.
  *
- * @apiError statusCode     The error code
- * @apiError error          Error name
- * @apiError message        Error message
- * @apiErrorExample {json} Error Response:
- *     HTTP/1.1 400 Bad Request
- *     {
- *      "statusCode": 400,
- *      "error": "Bad Request",
- *      "message": "Oops!"
- *     }
+ * @apiParam {object} tracejson TraceJSON object.
+ *
+ * @apiUse AuthorizationHeader
+ * @apiUse Success200TraceJSON
+ * @apiUse Error4xx
  */
+
 export default [
   {
     path: '/traces',

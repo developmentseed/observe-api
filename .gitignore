@@ -114,3 +114,4 @@ tmp
 data/**/*
 !data/.gitkeep
 data-prep
+docs

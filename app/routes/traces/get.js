@@ -7,6 +7,17 @@ import db from '../../services/db';
 
 const idLength = config.get('idLength');
 
+/**
+ * @apiGroup Traces
+ *
+ * @api {get} /traces/:id 2. GET /traces/:id
+ * @apiDescription Get trace in TraceJSON format.
+ *
+ * @apiParam {string} id Trace id.
+ *
+ * @apiUse Success200TraceJSON
+ * @apiUse Error4xx
+ */
 export default [
   {
     path: '/traces/{id}',
