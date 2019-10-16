@@ -44,7 +44,10 @@ export default [
           // Perform delete
           await traces.del(id);
 
-          return 'ok';
+          return {
+            statusCode: 200,
+            message: 'Trace deleted successfully.'
+          };
         } catch (error) {
           logger.error(error);
           return Boom.badImplementation('Unexpected error.');
