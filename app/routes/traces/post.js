@@ -37,13 +37,13 @@ export default [
             properties: Joi.object({
               description: Joi.string(),
               timestamps: Joi.array()
-                .min(1)
+                .min(2)
                 .items(Joi.number())
             }).required(),
             geometry: Joi.object({
               type: Joi.valid('LineString'),
               coordinates: Joi.array()
-                .min(1)
+                .min(2)
                 .items(
                   Joi.array().ordered(
                     Joi.number()
