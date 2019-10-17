@@ -7,7 +7,7 @@ import traces from '../../models/traces';
 /**
  * @apiGroup Traces
  *
- * @api {post} /traces/:id 3. POST /traces/:id
+ * @api {post} /traces 3. POST /traces
  *
  * @apiDescription Upload a trace in TraceJSON format, user must be logged.
  *
