@@ -1,13 +1,16 @@
+import { ensureDir } from 'fs-extra';
 import config from 'config';
 import Hapi from '@hapi/hapi';
 import hapiRouter from 'hapi-router';
-import setupAuth from './services/auth';
+import Inert from '@hapi/inert';
+import logger from './services/logger';
+import path from 'path';
 import qs from 'qs';
-
-const port = config.get('port');
+import setupAuth from './services/auth';
 
 export default async function () {
   // Init server
+  const port = config.get('port');
   const server = Hapi.server({
     port,
     host: '0.0.0.0',
@@ -51,6 +54,32 @@ export default async function () {
       }
     }
   });
+
+  // Setup media store
+  const mediaStore = config.get('media.store');
+  if (mediaStore.type === 'local') {
+    // Get media path from config
+    const mediaPath = path.join(__dirname, '..', mediaStore.path);
+
+    logger.info(`Uploaded media will be stored locally at ${mediaPath}`);
+
+    // Create dir if not exists
+    await ensureDir(mediaPath);
+
+    // Setup file serving
+    await server.register(Inert);
+    server.route({
+      method: 'GET',
+      path: '/media/{param*}',
+      handler: {
+        directory: {
+          path: mediaPath,
+          redirectToSlash: true,
+          index: false
+        }
+      }
+    });
+  }
 
   await server.start();
 

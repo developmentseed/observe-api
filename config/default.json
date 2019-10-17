@@ -10,5 +10,11 @@
     "authorizeUrl": "https://master.apis.dev.openstreetmap.org/oauth/authorize",
     "profileUrl": "https://master.apis.dev.openstreetmap.org/api/0.6/user/details",
     "allowedRedirectURLs": ["http://localhost:3030"]
+  },
+  "media": {
+    "store": {
+      "type": "local",
+      "path": "./data/media"
+    }
   }
 }
