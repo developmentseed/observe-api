@@ -2,7 +2,8 @@ import config from 'config';
 import orderBy from 'lodash.orderby';
 import db from '../app/services/db';
 import { expect } from 'chai';
-import { createMockUser, Client } from './utils';
+import { createMockUser } from './utils/mock-factory';
+import Client from './utils/http-client';
 const paginationLimit = config.get('pagination.limit');
 
 /* global apiUrl */

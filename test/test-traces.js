@@ -1,7 +1,8 @@
 import config from 'config';
 import db from '../app/services/db';
 import { expect } from 'chai';
-import { createMockUser, Client, createMockTrace } from './utils';
+import { createMockUser, createMockTrace } from './utils/mock-factory';
+import Client from './utils/http-client';
 import validTraceJson from './fixtures/valid-trace.json';
 import cloneDeep from 'lodash.clonedeep';
 import orderBy from 'lodash.orderby';

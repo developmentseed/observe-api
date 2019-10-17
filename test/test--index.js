@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import startServer from '../app';
 import db from '../app/services/db';
 import logger from '../app/services/logger';
-import { Client } from './utils';
+import Client from './utils/http-client';
 
 const port = config.get('port');
 const apiUrl = `http://localhost:${port}`;
