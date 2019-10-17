@@ -3,6 +3,7 @@ import { expect } from 'chai';
 import startServer from '../app';
 import db from '../app/services/db';
 import logger from '../app/services/logger';
+import { clearMediaStore } from '../app/services/media-store';
 import Client from './utils/http-client';
 
 const port = config.get('port');
@@ -15,7 +16,9 @@ describe('Observe API', function () {
     await db.schema.dropTableIfExists('knex_migrations');
     await db.schema.dropTableIfExists('users');
     await db.schema.dropTableIfExists('traces');
+    await db.schema.dropTableIfExists('photos');
     await db.migrate.latest();
+    await clearMediaStore();
 
     logger.info('Starting server...');
     global.server = await startServer();
