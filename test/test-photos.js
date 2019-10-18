@@ -57,6 +57,7 @@ describe('Photos endpoints', async function () {
 
       expect(data).to.have.property('id');
       expect(data).to.have.property('uploadedAt');
+      expect(data).to.have.property('ownerId', regularUser.osmId);
       expect(data).to.have.property('createdAt', metadata.createdAt);
       expect(data).to.have.property('bearing', metadata.bearing);
       expect(data.location).to.deep.equal({
