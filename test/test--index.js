@@ -37,6 +37,7 @@ describe('Observe API', function () {
 
   require('./test-users');
   require('./test-traces');
+  require('./test-photos');
 
   after(async function () {
     await global.server.stop();

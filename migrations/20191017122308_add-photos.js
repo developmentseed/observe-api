@@ -3,7 +3,6 @@ exports.up = function (knex) {
     table.string('id').primary();
     table.string('description');
     table.specificType('osmObjects', 'text[]');
-    table.specificType('exif', 'json');
     table.specificType('location', 'GEOGRAPHY(Point, 4326)');
     table.float('bearing');
     table.timestamp('createdAt');

@@ -44,7 +44,8 @@
     "lodash.orderby": "^4.6.0",
     "mocha": "^6.2.0",
     "nodemon": "^1.19.2",
-    "prettier": "^1.18.2"
+    "prettier": "^1.18.2",
+    "sharp": "^0.23.1"
   },
   "dependencies": {
     "@hapi/bell": "^11.1.0",
@@ -55,6 +56,8 @@
     "api-doc": "^4.0.3",
     "config": "^3.2.2",
     "esm": "^3.2.25",
+    "exif-js": "^2.3.0",
+    "exiftool-vendored": "^8.22.0",
     "fs-extra": "^8.1.0",
     "hapi-auth-jwt2": "^8.7.0",
     "hapi-pagination": "^3.0.0",
