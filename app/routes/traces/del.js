@@ -35,6 +35,8 @@ export default [
           const { id } = request.params;
           const [trace] = await traces.get(id);
 
+          if (!trace) return Boom.notFound('Trace not found.');
+
           // Verify ownership
           const { osmId, isAdmin } = request.auth.credentials;
           if (trace.ownerId !== osmId && !isAdmin) {

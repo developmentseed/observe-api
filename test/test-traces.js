@@ -178,6 +178,26 @@ describe('Traces endpoints', async function () {
       }
     });
 
+    it('return 404 for non-existing trace', async function () {
+      try {
+        // Create client
+        const regularUser = await createMockUser();
+        const client = new Client(apiUrl);
+        await client.login(regularUser.osmId);
+
+        // Fetch resource
+        await client.patch('/traces/abcdefghij', {
+          description: 'a new description'
+        });
+
+        // The test should never reach here, force execute catch block.
+        throw Error('An error was expected.');
+      } catch (error) {
+        // Check for the appropriate status response
+        expect(error.response.status).to.equal(404);
+      }
+    });
+
     it('return 200 for owner', async function () {
       // Data to be patched
       const newDescription = 'a new description';
@@ -281,6 +301,24 @@ describe('Traces endpoints', async function () {
       } catch (error) {
         // Check for the appropriate status response
         expect(error.response.status).to.equal(403);
+      }
+    });
+
+    it('return 404 for non-existing trace', async function () {
+      try {
+        // Create client
+        const regularUser = await createMockUser();
+        const client = new Client(apiUrl);
+        await client.login(regularUser.osmId);
+
+        // Fetch resource
+        await client.del('/traces/abcdefghij');
+
+        // The test should never reach here, force execute catch block.
+        throw Error('An error was expected.');
+      } catch (error) {
+        // Check for the appropriate status response
+        expect(error.response.status).to.equal(404);
       }
     });
 
