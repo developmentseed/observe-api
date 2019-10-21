@@ -1,11 +1,16 @@
+import config from 'config';
 import db from '../app/services/db';
 import { expect } from 'chai';
 import { createMockUser } from './utils/mock-factory';
 import Client from './utils/http-client';
 import { readFile } from 'fs-extra';
 import path from 'path';
+import { getAllMediaUrls } from '../app/services/media-store';
+import axios from 'axios';
 
 /* global apiUrl */
+
+const mediaSizes = config.get('media.sizes');
 
 describe('Photos endpoints', async function () {
   before(async function () {
@@ -61,11 +66,20 @@ describe('Photos endpoints', async function () {
       expect(data).to.have.property('ownerId', regularUser.osmId);
       expect(data).to.have.property('createdAt', metadata.createdAt);
       expect(data).to.have.property('bearing', metadata.bearing);
+      expect(data.urls).to.deep.equal(getAllMediaUrls(data.id));
       expect(data.osmObjects).to.deep.equal(metadata.osmObjects);
       expect(data.location).to.deep.equal({
         type: 'Point',
         coordinates: [metadata.lon, metadata.lat]
       });
+
+      // Check if media file is available at URLs provided
+      for (let i = 0; i < mediaSizes.length; i++) {
+        const size = mediaSizes[i].id;
+        const url = data.urls[size];
+        const { status } = await axios.get(url);
+        expect(status).to.equal(200);
+      }
     });
   });
 

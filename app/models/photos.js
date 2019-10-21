@@ -1,6 +1,27 @@
 import db from '../services/db';
-import { persistImageBase64 } from '../services/media-store';
+import { persistImageBase64, getAllMediaUrls } from '../services/media-store';
 import { generateId } from './utils';
+import cloneDeep from 'lodash.clonedeep';
+
+// Utility function for JSON responses
+export function photoToJson (originalPhoto) {
+  const photo = cloneDeep(originalPhoto);
+
+  // Populate media URLs
+  photo.urls = getAllMediaUrls(photo.id);
+
+  // Parse GeoJSON if string
+  if (typeof photo.location === 'string') {
+    photo.location = JSON.parse(photo.location);
+  }
+  return photo;
+}
+
+export function getPhoto (id, select) {
+  return db('photos')
+    .select(select)
+    .where('id', id);
+}
 
 export async function createPhoto (data) {
   const id = generateId();
