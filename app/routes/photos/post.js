@@ -28,7 +28,9 @@ export default [
       },
       validate: {
         payload: Joi.object({
-          createdAt: Joi.date().iso().required(),
+          createdAt: Joi.date()
+            .iso()
+            .required(),
           bearing: Joi.number()
             .max(360)
             .required(),
@@ -42,7 +44,10 @@ export default [
             .required(),
           file: Joi.string()
             .base64()
-            .required()
+            .required(),
+          osmObjects: Joi.array().items(
+            Joi.string().pattern(/^(node|way|relation)\/[0-9]+$/)
+          ).optional()
         }).required()
       },
       handler: async function (request) {

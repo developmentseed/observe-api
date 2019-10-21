@@ -44,7 +44,8 @@ describe('Photos endpoints', async function () {
         lon: 30,
         lat: -30,
         bearing: 8,
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        osmObjects: ['way/677949489', 'node/677949489', 'relation/10203930293']
       };
 
       // Post request
@@ -66,4 +67,6 @@ describe('Photos endpoints', async function () {
       });
     });
   });
+
+
 });
