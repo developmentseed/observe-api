@@ -58,18 +58,17 @@ export async function createPhoto (data) {
       return r;
     });
 }
-    })
+
+export async function updatePhoto (id, data) {
+  return getPhoto(id)
+    .update(data)
     .returning([
       'id',
       db.raw('ST_AsGeoJSON(location) as location'),
       'bearing',
       'ownerId',
       'createdAt',
-      'uploadedAt'
-    ])
-    .map(r => {
-      // Parse GeoJSON
-      r.location = JSON.parse(r.location);
-      return r;
-    });
+      'uploadedAt',
+      'osmObjects'
+    ]);
 }
