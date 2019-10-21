@@ -61,6 +61,7 @@ describe('Photos endpoints', async function () {
       expect(data).to.have.property('ownerId', regularUser.osmId);
       expect(data).to.have.property('createdAt', metadata.createdAt);
       expect(data).to.have.property('bearing', metadata.bearing);
+      expect(data.osmObjects).to.deep.equal(metadata.osmObjects);
       expect(data.location).to.deep.equal({
         type: 'Point',
         coordinates: [metadata.lon, metadata.lat]
