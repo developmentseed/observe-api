@@ -17,14 +17,14 @@
       "type": "local",
       "path": "./data/media"
     },
-    "resolutions": [
+    "sizes": [
       {
-        "suffix": "-thumb",
+        "id": "thumb",
         "width": 100,
         "height": 100
       },
       {
-        "suffix": "-default",
+        "id": "default",
         "width": 800,
         "height": 600
       }

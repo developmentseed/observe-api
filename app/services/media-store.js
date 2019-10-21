@@ -3,12 +3,25 @@ import path from 'path';
 import { emptyDir, remove } from 'fs-extra';
 import sharp from 'sharp';
 import { exiftool } from 'exiftool-vendored';
+import { mediaUrl } from '../utils';
 
-const { store, resolutions } = config.get('media');
+const { store, sizes } = config.get('media');
 const mediaPath = path.join(__dirname, '..', '..', store.path);
 
 export async function clearMediaStore () {
   await emptyDir(mediaPath);
+}
+
+export function getMediaSizeUrl (id, size) {
+  // Include suffix, if passed.
+  return `${mediaUrl()}/${id}-${size}.jpg`;
+}
+
+export function getAllMediaUrls (id) {
+  return sizes.reduce((acc, i) => {
+    acc[i.id] = getMediaSizeUrl(id, i.id);
+    return acc;
+  }, {});
 }
 
 export async function persistImageBase64 (name, data, meta) {
@@ -37,9 +50,9 @@ export async function persistImageBase64 (name, data, meta) {
     });
 
     // Write resized files
-    for (let i = 0; i < resolutions.length; i++) {
-      const { width, height, suffix } = resolutions[i];
-      const resizedFilePath = `${baseFilePath}${suffix}.jpg`;
+    for (let i = 0; i < sizes.length; i++) {
+      const { width, height, id } = sizes[i];
+      const resizedFilePath = `${baseFilePath}-${id}.jpg`;
       await sharp(originalFilePath)
         .withMetadata()
         .resize(width, height, { fit: 'inside' })
