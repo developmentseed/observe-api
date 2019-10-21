@@ -10,10 +10,9 @@ import setupAuth from './services/auth';
 
 export default async function () {
   // Init server
-  const port = config.get('port');
   const server = Hapi.server({
-    port,
-    host: '0.0.0.0',
+    port: config.get('port'),
+    host: config.get('host'),
     query: {
       parser: q => qs.parse(q)
     },
