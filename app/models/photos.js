@@ -7,10 +7,11 @@ const defaultSelect = [
   'id',
   db.raw('ST_AsGeoJSON(location) as location'),
   'bearing',
-  'ownerId',
   'createdAt',
-  'uploadedAt',
-  'osmObjects'
+  'description',
+  'osmObjects',
+  'ownerId',
+  'uploadedAt'
 ];
 
 // Utility function for JSON responses
@@ -58,34 +59,14 @@ export async function createPhoto (data) {
       createdAt,
       osmObjects
     })
-    .returning([
-      'id',
-      db.raw('ST_AsGeoJSON(location) as location'),
-      'bearing',
-      'ownerId',
-      'createdAt',
-      'uploadedAt',
-      'osmObjects'
-    ])
-    .map(r => {
-      // Parse GeoJSON
-      r.location = JSON.parse(r.location);
-      return r;
-    });
+    .returning(defaultSelect)
+    .map(photoToJson);
 }
 
 export async function updatePhoto (id, data) {
   return getPhoto(id)
     .update(data)
-    .returning([
-      'id',
-      db.raw('ST_AsGeoJSON(location) as location'),
-      'bearing',
-      'ownerId',
-      'createdAt',
-      'uploadedAt',
-      'osmObjects'
-    ]);
+    .returning(defaultSelect);
 }
 
 export async function deletePhoto (id) {

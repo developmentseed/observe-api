@@ -1,7 +1,7 @@
 import Boom from '@hapi/boom';
 import Joi from '@hapi/joi';
 import logger from '../../services/logger';
-import { createPhoto, photoToJson } from '../../models/photos';
+import { createPhoto } from '../../models/photos';
 
 /**
  * @apiGroup Photos
@@ -62,7 +62,7 @@ export default [
             ownerId: osmId
           });
 
-          return photoToJson(photo);
+          return photo;
         } catch (error) {
           logger.error(error);
           return Boom.badImplementation('Unexpected error.');
