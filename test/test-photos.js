@@ -1,12 +1,13 @@
 import config from 'config';
 import db from '../app/services/db';
 import { expect } from 'chai';
-import { createMockUser } from './utils/mock-factory';
+import { createMockUser, createMockPhoto } from './utils/mock-factory';
 import Client from './utils/http-client';
 import { readFile } from 'fs-extra';
 import path from 'path';
 import { getAllMediaUrls } from '../app/services/media-store';
 import axios from 'axios';
+import { countPhotos, getPhoto } from '../app/models/photos';
 
 /* global apiUrl */
 
@@ -355,6 +356,114 @@ describe('Photos endpoints', async function () {
         coordinates: [40, -13]
       });
       expect(data.osmObjects).to.deep.equal(patchData.osmObjects);
+    });
+  });
+
+  describe('DEL /photos/{id}', async function () {
+    it('return 401 for non-authenticated user', async function () {
+      try {
+        const client = new Client(apiUrl);
+        await client.del(`/photos/abcdefghi`);
+
+        // This line should be reached, force executing the catch block with
+        // generic error.
+        throw Error('An error was expected.');
+      } catch (error) {
+        // Check for the appropriate status response
+        expect(error.response.status).to.equal(401);
+      }
+    });
+
+    it('return 403 for non-owner user', async function () {
+      try {
+        const regularUser1 = await createMockUser();
+        const regularUser2 = await createMockUser();
+        const photo = await createMockPhoto(regularUser1.osmId);
+
+        const client = new Client(apiUrl);
+        await client.login(regularUser2.osmId);
+        await client.del(`/photos/${photo.id}`);
+
+        // This line should be reached, force executing the catch block with
+        // generic error.
+        throw Error('An error was expected.');
+      } catch (error) {
+        // Check for the appropriate status response
+        expect(error.response.status).to.equal(403);
+      }
+    });
+
+    it('return 404 for non-existing photo', async function () {
+      try {
+        // Create client
+        const regularUser = await createMockUser();
+        const client = new Client(apiUrl);
+        await client.login(regularUser.osmId);
+
+        // Fetch resource
+        await client.del('/photos/abcdefghij');
+
+        // The test should never reach here, force execute catch block.
+        throw Error('An error was expected.');
+      } catch (error) {
+        // Check for the appropriate status response
+        expect(error.response.status).to.equal(404);
+      }
+    });
+
+    it('return 200 for owner', async function () {
+      // Create client
+      const regularUser = await createMockUser();
+      const client = new Client(apiUrl);
+      await client.login(regularUser.osmId);
+
+      // Create mock photo
+      const photo = await createMockPhoto(regularUser.osmId);
+
+      // Get photo count
+      const beforeCount = await countPhotos();
+
+      // Do the request
+      const { status } = await client.del(`/photos/${photo.id}`);
+
+      // Check status
+      expect(status).to.equal(200);
+
+      // Check if photo was deleted
+      const deletedPhoto = await getPhoto(photo.id);
+      expect(deletedPhoto).to.have.length(0);
+
+      // Check if photos count was reduced by one
+      const afterCount = await countPhotos();
+      expect(afterCount).to.eq(beforeCount - 1);
+    });
+
+    it('return 200 for non-owner admin', async function () {
+      // Create client
+      const regularUser = await createMockUser();
+      const adminUser = await createMockUser({ isAdmin: true });
+      const adminClient = new Client(apiUrl);
+      await adminClient.login(adminUser.osmId);
+
+      // Create mock photo
+      const photo = await createMockPhoto(regularUser.osmId);
+
+      // Get photo count
+      const beforeCount = await countPhotos();
+
+      // Do the request
+      const { status } = await adminClient.del(`/photos/${photo.id}`);
+
+      // Check status
+      expect(status).to.equal(200);
+
+      // Check if photo was deleted
+      const deletedPhoto = await getPhoto(photo.id);
+      expect(deletedPhoto).to.have.length(0);
+
+      // Check if photos count was reduced by one
+      const afterCount = await countPhotos();
+      expect(afterCount).to.eq(beforeCount - 1);
     });
   });
 });

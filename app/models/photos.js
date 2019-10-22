@@ -72,3 +72,11 @@ export async function updatePhoto (id, data) {
       'osmObjects'
     ]);
 }
+
+export async function deletePhoto (id) {
+  return getPhoto(id).del();
+}
+
+export async function countPhotos () {
+  return parseInt((await db('photos').count())[0].count);
+}
