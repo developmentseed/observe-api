@@ -10,8 +10,8 @@ const idLength = config.get('idLength');
 /**
  * @apiGroup Traces
  *
- * @api {patch} /traces/:id 4. PATCH /traces/:id
- * @apiDescription Update trace description, user must be logged as admin or trace owner.
+ * @api {patch} /traces/:id 2. PATCH /traces/:id
+ * @apiDescription Update trace, must be owner or admin.
  *
  * @apiParam {string} :id Trace id.
  * @apiParam {string} description Trace description.

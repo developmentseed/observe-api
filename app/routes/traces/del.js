@@ -9,8 +9,8 @@ const idLength = config.get('idLength');
 /**
  * @apiGroup Traces
  *
- * @api {del} /traces/:id 5. DEL /traces/:id
- * @apiDescription Delete trace, user must be logged as admin or trace owner.
+ * @api {del} /traces/:id 3. DEL /traces/:id
+ * @apiDescription Delete trace, must be owner or admin.
  *
  * @apiParam {string} id Trace id.
  *
