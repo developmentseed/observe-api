@@ -1,13 +1,16 @@
+import axios from 'axios';
+import Client from './utils/http-client';
 import config from 'config';
 import db from '../app/services/db';
-import { expect } from 'chai';
-import { createMockUser, createMockPhoto } from './utils/mock-factory';
-import Client from './utils/http-client';
-import { readFile } from 'fs-extra';
+import orderBy from 'lodash.orderby';
 import path from 'path';
-import { getAllMediaUrls } from '../app/services/media-store';
-import axios from 'axios';
 import { countPhotos, getPhoto } from '../app/models/photos';
+import { createMockUser, createMockPhoto } from './utils/mock-factory';
+import { expect } from 'chai';
+import { getAllMediaUrls } from '../app/services/media-store';
+import { readFile } from 'fs-extra';
+
+const paginationLimit = config.get('pagination.limit');
 
 /* global apiUrl */
 
@@ -464,6 +467,146 @@ describe('Photos endpoints', async function () {
       // Check if photos count was reduced by one
       const afterCount = await countPhotos();
       expect(afterCount).to.eq(beforeCount - 1);
+    });
+  });
+
+  describe('GET /photos', async function () {
+    const photos = [];
+    let regularUser, adminUser;
+
+    before(async function () {
+      regularUser = await createMockUser();
+      adminUser = await createMockUser({ isAdmin: true });
+
+      // Clear existing users
+      await db('photos').delete();
+
+      // Create 20 photos for regular user
+      for (let i = 0; i < 20; i++) {
+        photos.push(await createMockPhoto(regularUser.osmId));
+      }
+
+      // Create 30 photos for admin user
+      for (let i = 0; i < 30; i++) {
+        photos.push(await createMockPhoto(adminUser.osmId));
+      }
+    });
+
+    it('return 401 for non-authenticated user', async function () {
+      try {
+        const client = new Client(apiUrl);
+        await client.get('/photos');
+
+        // The test should never reach here, force execute catch block.
+        throw Error('An error was expected.');
+      } catch (error) {
+        // Check for the appropriate status response
+        expect(error.response.status).to.equal(401);
+      }
+    });
+
+    it('return 200 for regular user', async function () {
+      const client = new Client(apiUrl);
+      await client.login(regularUser.osmId);
+      const { status } = await client.get('/photos');
+      expect(status).to.equal(200);
+    });
+
+    it('return 200 for admin user', async function () {
+      const client = new Client(apiUrl);
+      await client.login(adminUser.osmId);
+      const { status } = await client.get('/photos');
+      expect(status).to.equal(200);
+    });
+
+    it('default query order by "uploadedAt", follow limit default', async function () {
+      const client = new Client(apiUrl);
+      await client.login(adminUser.osmId);
+
+      // Prepare expected response for default query
+      let expectedResponse = orderBy(photos, 'uploadedAt', 'desc').slice(
+        0,
+        paginationLimit
+      );
+
+      // Default query, should be order by display name and match limit
+      const { status, data } = await client.get('/photos');
+      expect(status).to.equal(200);
+      expect(data.meta.totalCount).to.eq(50);
+      expect(data.results).to.deep.equal(expectedResponse);
+    });
+
+    it('check paginated query and sorting by one column', async function () {
+      const client = new Client(apiUrl);
+      await client.login(adminUser.osmId);
+
+      // Prepare expected response for page 3, ordering by creation date
+      const page = 3;
+      const offset = paginationLimit * (page - 1);
+      const expectedResponse = orderBy(photos, 'uploadedAt').slice(
+        offset,
+        offset + paginationLimit
+      );
+
+      const res = await client.get('/photos', {
+        params: {
+          page,
+          sort: { uploadedAt: 'asc' }
+        }
+      });
+      expect(res.data.meta.totalCount).to.eq(50);
+      expect(res.data.results).to.deep.equal(expectedResponse);
+    });
+
+    it('check another page and sorting by two columns', async function () {
+      const client = new Client(apiUrl);
+      await client.login(adminUser.osmId);
+
+      // Prepare expected response for page 3, ordering by creation date
+      const page = 2;
+      const offset = paginationLimit * (page - 1);
+      const expectedResponse = orderBy(
+        photos,
+        ['createdAt', 'uploadedAt'],
+        ['desc', 'asc']
+      ).slice(offset, offset + paginationLimit);
+
+      const res = await client.get('/photos', {
+        params: {
+          page,
+          sort: { createdAt: 'desc', uploadedAt: 'asc' }
+        }
+      });
+      expect(res.data.meta.totalCount).to.eq(50);
+      expect(res.data.results).to.deep.equal(expectedResponse);
+    });
+
+    it('invalid query params return 400 status and proper error', async function () {
+      try {
+        const client = new Client(apiUrl);
+        await client.login(adminUser.osmId);
+
+        const page = 2;
+        const invalidSort = {
+          invalidColumn: 'asc'
+        };
+
+        await client.get('/photos', {
+          params: {
+            page,
+            sort: invalidSort
+          }
+        });
+
+        // The test should never reach here, force execute catch block.
+        throw Error('An error was expected.');
+      } catch (error) {
+        // Check for the appropriate status response
+        expect(error.response.data.message).to.equal(
+          'Invalid request query input'
+        );
+        expect(error.response.status).to.equal(400);
+      }
     });
   });
 });

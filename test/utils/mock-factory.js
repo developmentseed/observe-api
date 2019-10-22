@@ -1,7 +1,7 @@
 import users from '../../app/models/users';
 import traces from '../../app/models/traces';
 import validTraceJson from '../fixtures/valid-trace.json';
-import { createPhoto } from '../../app/models/photos';
+import { createPhoto, photoToJson } from '../../app/models/photos';
 
 /**
  * Generate random integer number up to "max" value.
@@ -67,5 +67,5 @@ export async function createMockPhoto (ownerId) {
 
   const [photo] = await createPhoto({ ...data, ownerId });
 
-  return photo;
+  return photoToJson(photo);
 }

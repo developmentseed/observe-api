@@ -53,7 +53,7 @@ export default async function () {
         }
       },
       routes: {
-        include: ['/users', '/traces']
+        include: ['/users', '/traces', '/photos']
       }
     }
   });

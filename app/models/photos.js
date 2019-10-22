@@ -3,6 +3,16 @@ import { persistImageBase64, getAllMediaUrls } from '../services/media-store';
 import { generateId } from './utils';
 import cloneDeep from 'lodash.clonedeep';
 
+const defaultSelect = [
+  'id',
+  db.raw('ST_AsGeoJSON(location) as location'),
+  'bearing',
+  'ownerId',
+  'createdAt',
+  'uploadedAt',
+  'osmObjects'
+];
+
 // Utility function for JSON responses
 export function photoToJson (originalPhoto) {
   const photo = cloneDeep(originalPhoto);
@@ -14,6 +24,11 @@ export function photoToJson (originalPhoto) {
   if (typeof photo.location === 'string') {
     photo.location = JSON.parse(photo.location);
   }
+
+  // Dates to string
+  photo.createdAt = photo.createdAt.toISOString();
+  photo.uploadedAt = photo.uploadedAt.toISOString();
+
   return photo;
 }
 
@@ -79,4 +94,13 @@ export async function deletePhoto (id) {
 
 export async function countPhotos () {
   return parseInt((await db('photos').count())[0].count);
+}
+
+export async function listPhotos ({ offset, limit, orderBy }) {
+  return db('photos')
+    .select(defaultSelect)
+    .offset(offset)
+    .orderBy(orderBy)
+    .limit(limit)
+    .map(photoToJson);
 }

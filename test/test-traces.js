@@ -9,6 +9,7 @@ import orderBy from 'lodash.orderby';
 import traces from '../app/models/traces';
 
 const paginationLimit = config.get('pagination.limit');
+
 /* global apiUrl */
 
 describe('Traces endpoints', async function () {
