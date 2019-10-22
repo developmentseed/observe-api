@@ -33,15 +33,7 @@ export default [
       try {
         const { id } = request.params;
 
-        const [photo] = await getPhoto(id, [
-          'id',
-          'bearing',
-          'ownerId',
-          'createdAt',
-          'uploadedAt',
-          'osmObjects',
-          db.raw('ST_AsGeoJSON(location) as location')
-        ]);
+        const [photo] = await getPhoto(id);
 
         if (!photo) return Boom.notFound(`photo ${id} not found`);
 

@@ -35,7 +35,7 @@ export function photoToJson (originalPhoto) {
 
 export function getPhoto (id, select) {
   return db('photos')
-    .select(select)
+    .select(select || defaultSelect)
     .where('id', id);
 }
 

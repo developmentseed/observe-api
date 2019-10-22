@@ -270,6 +270,7 @@ describe('Photos endpoints', async function () {
       });
 
       const patchData = {
+        description: 'A new description',
         bearing: 50,
         lon: 30,
         lat: 22,
@@ -298,6 +299,7 @@ describe('Photos endpoints', async function () {
       expect(data).to.have.property('id');
       expect(data).to.have.property('createdAt');
       expect(data).to.have.property('uploadedAt');
+      expect(data.description).to.equal(patchData.description);
       expect(data.bearing).to.equal(patchData.bearing);
       expect(data.location).to.deep.equal({
         type: 'Point',
