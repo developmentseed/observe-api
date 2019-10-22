@@ -72,6 +72,7 @@ export default [
             .integer()
             .min(1),
           sort: Joi.object({
+            description: Joi.string().valid('asc', 'desc'),
             uploadedAt: Joi.string().valid('asc', 'desc'),
             createdAt: Joi.string().valid('asc', 'desc')
           })

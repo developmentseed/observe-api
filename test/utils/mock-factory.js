@@ -62,6 +62,7 @@ export async function createMockPhoto (ownerId) {
     lat: Math.random() * 180 - 90,
     bearing: Math.random() * 360,
     createdAt: new Date(),
+    description: 'A randomized description with number ' + getRandomInt(100000),
     osmObjects: ['way/62239489', 'node/55555', 'relation/9999999']
   };
 

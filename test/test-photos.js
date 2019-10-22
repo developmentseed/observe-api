@@ -567,14 +567,14 @@ describe('Photos endpoints', async function () {
       const offset = paginationLimit * (page - 1);
       const expectedResponse = orderBy(
         photos,
-        ['createdAt', 'uploadedAt'],
+        ['description', 'uploadedAt'],
         ['desc', 'asc']
       ).slice(offset, offset + paginationLimit);
 
       const res = await client.get('/photos', {
         params: {
           page,
-          sort: { createdAt: 'desc', uploadedAt: 'asc' }
+          sort: { description: 'desc', uploadedAt: 'asc' }
         }
       });
       expect(res.data.meta.totalCount).to.eq(50);
