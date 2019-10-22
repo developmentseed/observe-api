@@ -3,17 +3,16 @@ import Boom from '@hapi/boom';
 import Joi from '@hapi/joi';
 import { getPhoto, photoToJson } from '../../models/photos';
 import logger from '../../services/logger';
-import db from '../../services/db';
 
 const idLength = config.get('idLength');
 
 /**
  * @apiGroup Photos
  *
- * @api {get} /photos/:id 2. GET /photos/:id
- * @apiDescription Get photo as JSON.
+ * @api {get} /photos/:id  4. GET /photos/:id
+ * @apiDescription Get photo, must be owner or admin.
  *
- * @apiParam {string} id photo id.
+ * @apiParam {string} id Photo id.
  *
  * @apiUse Error4xx
  */

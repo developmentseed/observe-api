@@ -7,12 +7,12 @@ import { deletePhoto, getPhoto } from '../../models/photos';
 const idLength = config.get('idLength');
 
 /**
- * @apiGroup photos
+ * @apiGroup Photos
  *
- * @api {del} /photos/:id 5. DEL /photos/:id
- * @apiDescription Delete photo, user must be logged as admin or photo owner.
+ * @api {del} /photos/:id 3. DEL /photos/:id
+ * @apiDescription Delete photo, must be owner or admin.
  *
- * @apiParam {string} id photo id.
+ * @apiParam {string} id Photo id.
  *
  * @apiUse AuthorizationHeader
  * @apiUse Success200

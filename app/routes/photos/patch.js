@@ -6,11 +6,16 @@ import { getPhoto, updatePhoto, photoToJson } from '../../models/photos';
 /**
  * @apiGroup Photos
  *
- * @api {patch} /photos 3. POST /photos
+ * @api {patch} /photos 2. PATCH /photos/:id
  *
- * @apiDescription Update a photo, user must be logged.
+ * @apiDescription Update a photo, must be owner or admin.
  *
- * @apiParam {object} osmObjects Array of OSM ids
+ * @apiParam {string} id Photo id.
+ * @apiParam {float} bearing Bearing.
+ * @apiParam {string} description Description.
+ * @apiParam {float} lon Longitude.
+ * @apiParam {float} lat Latitude.
+ * @apiParam {object} osmObjects Array of OpenStreetMap ids.
  * @apiParamExample {json} Example:
  * {
  *  osmObjects: ['way/677949489', 'node/677949489', 'relation/10230293']
@@ -32,6 +37,7 @@ export default [
           bearing: Joi.number()
             .max(360)
             .message('Invalid bearing.'),
+          description: Joi.string(),
           lon: Joi.number()
             .min(-180)
             .max(180),

@@ -6,11 +6,20 @@ import { createPhoto } from '../../models/photos';
 /**
  * @apiGroup Photos
  *
- * @api {post} /photos 3. POST /photos
+ * @api {post} /photos 1. POST /photos
  *
- * @apiDescription Upload a photo, user must be logged.
+ * @apiDescription Upload a new photo.
  *
- * @apiParam {string} file Photo in base64 format.
+ * @apiParam {string} file Image in base64 format.
+ * @apiParam {float} bearing Bearing.
+ * @apiParam {string} description Description.
+ * @apiParam {float} lon Longitude.
+ * @apiParam {float} lat Latitude.
+ * @apiParam {object} osmObjects Array of OpenStreetMap ids.
+ * @apiParamExample {json} Example:
+ * {
+ *  osmObjects: ['way/677949489', 'node/677949489', 'relation/10230293']
+ * }
  *
  * @apiUse AuthorizationHeader
  * @apiUse Success200
@@ -45,9 +54,9 @@ export default [
           file: Joi.string()
             .base64()
             .required(),
-          osmObjects: Joi.array().items(
-            Joi.string().pattern(/^(node|way|relation)\/[0-9]+$/)
-          ).optional()
+          osmObjects: Joi.array()
+            .items(Joi.string().pattern(/^(node|way|relation)\/[0-9]+$/))
+            .optional()
         }).required()
       },
       handler: async function (request) {

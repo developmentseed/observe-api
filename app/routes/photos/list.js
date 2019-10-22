@@ -6,8 +6,8 @@ import logger from '../../services/logger';
 /**
  * @apiGroup Photos
  *
- * @api {get} /photos 1. GET /photos
- * @apiDescription Get a list of photos and pagination metadata.
+ * @api {get} /photos 5. GET /photos
+ * @apiDescription List photos.
  *
  * @apiUse AuthorizationHeader
  *
