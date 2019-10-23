@@ -10,7 +10,7 @@ const idLength = config.get('idLength');
  * @apiGroup Photos
  *
  * @api {get} /photos/:id  4. GET /photos/:id
- * @apiDescription Get photo, must be owner or admin.
+ * @apiDescription Get photo.
  *
  * @apiParam {string} id Photo id.
  *
