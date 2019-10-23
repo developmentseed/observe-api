@@ -14,5 +14,11 @@
     "clientSecret": "mockClientSecret",
     "clientId": "mockClientId"
   },
-  "jwtSecret": "secret-test"
+  "jwtSecret": "secret-test",
+  "media": {
+    "store": {
+      "type": "local",
+      "path": "./data/media-test"
+    }
+  }
 }

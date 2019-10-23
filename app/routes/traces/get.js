@@ -10,8 +10,8 @@ const idLength = config.get('idLength');
 /**
  * @apiGroup Traces
  *
- * @api {get} /traces/:id 2. GET /traces/:id
- * @apiDescription Get trace in TraceJSON format.
+ * @api {get} /traces/:id 4. GET /traces/:id
+ * @apiDescription Get trace, must be owner or admin.
  *
  * @apiParam {string} id Trace id.
  *

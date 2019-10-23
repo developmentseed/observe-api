@@ -1,7 +1,6 @@
 exports.up = function (knex) {
   return knex.schema.createTable('users', function (table) {
-    table.uuid('id').primary();
-    table.integer('osmId').unique();
+    table.integer('osmId').primary();
     table.string('osmDisplayName');
     table.timestamp('osmCreatedAt');
     table.boolean('isAdmin').defaultTo(false);

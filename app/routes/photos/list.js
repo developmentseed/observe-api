@@ -1,66 +1,56 @@
 import Boom from '@hapi/boom';
 import Joi from '@hapi/joi';
-import traces from '../../models/traces';
+import { countPhotos, listPhotos } from '../../models/photos';
 import logger from '../../services/logger';
 
 /**
- * @apiGroup Traces
+ * @apiGroup Photos
  *
- * @api {get} /traces 5. GET /traces
- * @apiDescription Get a list of photos.
+ * @api {get} /photos 5. GET /photos
+ * @apiDescription List photos.
  *
  * @apiUse AuthorizationHeader
  *
  * @apiUse PaginationParams
  *
  * @apiSuccess {object} meta Pagination metadata.
- * @apiSuccess {object} results List of traces.
+ * @apiSuccess {object} results List of photos.
  * @apiSuccessExample {json} Success response:
  * { meta:
  *  { count: 15,
  *    pageCount: 5,
  *    totalCount: 50,
- *    next: 'http://0.0.0.0:3001/traces?page=4&sort=&limit=15',
- *    previous: 'http://0.0.0.0:3001/traces?page=2&sort=&limit=15',
- *    self: 'http://0.0.0.0:3001/traces?page=3&sort=&limit=15',
- *    first: 'http://0.0.0.0:3001/traces?page=1&sort=&limit=15',
- *    last: 'http://0.0.0.0:3001/traces?page=4&sort=&limit=15' },
+ *    next: 'http://0.0.0.0:3001/photos?page=4&sort=&limit=15',
+ *    previous: 'http://0.0.0.0:3001/photos?page=2&sort=&limit=15',
+ *    self: 'http://0.0.0.0:3001/photos?page=3&sort=&limit=15',
+ *    first: 'http://0.0.0.0:3001/photos?page=1&sort=&limit=15',
+ *    last: 'http://0.0.0.0:3001/photos?page=4&sort=&limit=15' },
  *  results:
  *    [ { id: '_OeLSdc-nf',
  *        ownerId: 87008,
- *        description: 'This is a TraceJSON file.',
- *        length: 534.717,
- *        recordedAt: '2019-07-24T23:34:20.021Z',
+ *        description: 'Photo description.',
  *        uploadedAt: '2019-10-16T10:44:16.321Z',
- *        updatedAt: '2019-10-16T10:44:16.321Z' },
+ *        createdAt: '2019-10-16T10:44:16.321Z' },
  *      { id: '2kWAlmk_Ev',
  *        ownerId: 87008,
- *        description: 'This is a TraceJSON file.',
- *        length: 534.717,
- *        recordedAt: '2019-07-24T23:34:20.021Z',
+ *        description: 'Photo description.',
  *        uploadedAt: '2019-10-16T10:44:16.326Z',
- *        updatedAt: '2019-10-16T10:44:16.326Z' },
+ *        createdAt: '2019-10-16T10:44:16.326Z' },
  *      { id: '9jF9mT4llR',
  *        ownerId: 87008,
- *        description: 'This is a TraceJSON file.',
- *        length: 534.717,
- *        recordedAt: '2019-07-24T23:34:20.021Z',
+ *        description: 'Photo description.',
  *        uploadedAt: '2019-10-16T10:44:16.330Z',
- *        updatedAt: '2019-10-16T10:44:16.330Z' },
+ *        createdAt: '2019-10-16T10:44:16.330Z' },
  *      { id: '0qGqe-jZ5a',
  *        ownerId: 87008,
- *        description: 'This is a TraceJSON file.',
- *        length: 534.717,
- *        recordedAt: '2019-07-24T23:34:20.021Z',
+ *        description: 'Photo description.',
  *        uploadedAt: '2019-10-16T10:44:16.334Z',
- *        updatedAt: '2019-10-16T10:44:16.334Z' },
+ *        createdAt: '2019-10-16T10:44:16.334Z' },
  *      { id: 'O1HDf5mOhQ',
  *        ownerId: 87008,
- *        description: 'This is a TraceJSON file.',
- *        length: 534.717,
- *        recordedAt: '2019-07-24T23:34:20.021Z',
+ *        description: 'Photo description.',
  *        uploadedAt: '2019-10-16T10:44:16.339Z',
- *        updatedAt: '2019-10-16T10:44:16.339Z' },
+ *        createdAt: '2019-10-16T10:44:16.339Z' },
  *  ]}
  * }
  *
@@ -68,7 +58,7 @@ import logger from '../../services/logger';
  */
 export default [
   {
-    path: '/traces',
+    path: '/photos',
     method: ['GET'],
     options: {
       auth: 'jwt',
@@ -82,12 +72,9 @@ export default [
             .integer()
             .min(1),
           sort: Joi.object({
-            recordedAt: Joi.string().valid('asc', 'desc'),
             description: Joi.string().valid('asc', 'desc'),
-            length: Joi.string().valid('asc', 'desc'),
             uploadedAt: Joi.string().valid('asc', 'desc'),
-            updatedAt: Joi.string().valid('asc', 'desc'),
-            ownerId: Joi.string().valid('asc', 'desc')
+            createdAt: Joi.string().valid('asc', 'desc')
           })
         })
       }
@@ -117,12 +104,13 @@ export default [
           });
         }
 
-        const results = await traces.list({
+        const results = await listPhotos({
           offset,
           limit,
           orderBy
         });
-        const count = await traces.count();
+
+        const count = await countPhotos();
 
         return h.paginate(results, count);
       } catch (error) {

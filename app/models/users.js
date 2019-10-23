@@ -1,4 +1,3 @@
-const uuidv4 = require('uuid/v4');
 const db = require('../services/db');
 
 function findByOsmId (osmId) {
@@ -10,7 +9,7 @@ async function count () {
 }
 
 function create (data) {
-  return db('users').insert({ ...data, id: uuidv4() });
+  return db('users').insert({ ...data });
 }
 
 function updateFromOsmId (osmId, data) {

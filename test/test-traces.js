@@ -1,13 +1,15 @@
 import config from 'config';
 import db from '../app/services/db';
 import { expect } from 'chai';
-import { createMockUser, Client, createMockTrace } from './utils';
+import { createMockUser, createMockTrace } from './utils/mock-factory';
+import Client from './utils/http-client';
 import validTraceJson from './fixtures/valid-trace.json';
 import cloneDeep from 'lodash.clonedeep';
 import orderBy from 'lodash.orderby';
 import traces from '../app/models/traces';
 
 const paginationLimit = config.get('pagination.limit');
+
 /* global apiUrl */
 
 describe('Traces endpoints', async function () {
@@ -177,6 +179,26 @@ describe('Traces endpoints', async function () {
       }
     });
 
+    it('return 404 for non-existing trace', async function () {
+      try {
+        // Create client
+        const regularUser = await createMockUser();
+        const client = new Client(apiUrl);
+        await client.login(regularUser.osmId);
+
+        // Fetch resource
+        await client.patch('/traces/abcdefghij', {
+          description: 'a new description'
+        });
+
+        // The test should never reach here, force execute catch block.
+        throw Error('An error was expected.');
+      } catch (error) {
+        // Check for the appropriate status response
+        expect(error.response.status).to.equal(404);
+      }
+    });
+
     it('return 200 for owner', async function () {
       // Data to be patched
       const newDescription = 'a new description';
@@ -280,6 +302,24 @@ describe('Traces endpoints', async function () {
       } catch (error) {
         // Check for the appropriate status response
         expect(error.response.status).to.equal(403);
+      }
+    });
+
+    it('return 404 for non-existing trace', async function () {
+      try {
+        // Create client
+        const regularUser = await createMockUser();
+        const client = new Client(apiUrl);
+        await client.login(regularUser.osmId);
+
+        // Fetch resource
+        await client.del('/traces/abcdefghij');
+
+        // The test should never reach here, force execute catch block.
+        throw Error('An error was expected.');
+      } catch (error) {
+        // Check for the appropriate status response
+        expect(error.response.status).to.equal(404);
       }
     });
 

@@ -2,17 +2,17 @@ import Boom from '@hapi/boom';
 import config from 'config';
 import Joi from '@hapi/joi';
 import logger from '../../services/logger';
-import traces from '../../models/traces';
+import { deletePhoto, getPhoto } from '../../models/photos';
 
 const idLength = config.get('idLength');
 
 /**
- * @apiGroup Traces
+ * @apiGroup Photos
  *
- * @api {del} /traces/:id 3. DEL /traces/:id
- * @apiDescription Delete trace, must be owner or admin.
+ * @api {del} /photos/:id 3. DEL /photos/:id
+ * @apiDescription Delete photo, must be owner or admin.
  *
- * @apiParam {string} id Trace id.
+ * @apiParam {string} id Photo id.
  *
  * @apiUse AuthorizationHeader
  * @apiUse Success200
@@ -20,7 +20,7 @@ const idLength = config.get('idLength');
  */
 export default [
   {
-    path: '/traces/{id}',
+    path: '/photos/{id}',
     method: ['DELETE'],
     options: {
       auth: 'jwt',
@@ -31,24 +31,25 @@ export default [
       },
       handler: async function (request) {
         try {
-          // Get trace
+          // Get photo
           const { id } = request.params;
-          const [trace] = await traces.get(id);
+          const [photo] = await getPhoto(id);
 
-          if (!trace) return Boom.notFound('Trace not found.');
+          // Return 404 if not found
+          if (!photo) return Boom.notFound('Photo not found.');
 
           // Verify ownership
           const { osmId, isAdmin } = request.auth.credentials;
-          if (trace.ownerId !== osmId && !isAdmin) {
-            return Boom.forbidden('Must be owner or admin to edit a trace.');
+          if (photo.ownerId !== osmId && !isAdmin) {
+            return Boom.forbidden('Must be owner or admin to delete a photo.');
           }
 
           // Perform delete
-          await traces.del(id);
+          await deletePhoto(id);
 
           return {
             statusCode: 200,
-            message: 'Trace deleted successfully.'
+            message: 'Photo deleted successfully.'
           };
         } catch (error) {
           logger.error(error);

@@ -1,4 +1,5 @@
 {
+  "host": "0.0.0.0",
   "port": 3000,
   "pagination": {
     "limit": 15
@@ -10,5 +11,23 @@
     "authorizeUrl": "https://master.apis.dev.openstreetmap.org/oauth/authorize",
     "profileUrl": "https://master.apis.dev.openstreetmap.org/api/0.6/user/details",
     "allowedRedirectURLs": ["http://localhost:3030"]
+  },
+  "media": {
+    "store": {
+      "type": "local",
+      "path": "./data/media"
+    },
+    "sizes": [
+      {
+        "id": "thumb",
+        "width": 100,
+        "height": 100
+      },
+      {
+        "id": "default",
+        "width": 800,
+        "height": 600
+      }
+    ]
   }
 }
