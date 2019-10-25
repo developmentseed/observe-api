@@ -158,4 +158,29 @@ describe('Users endpoints', function () {
       }
     });
   });
+
+  describe('GET /profile', async function () {
+    it('returns 401 for non-authenticated user', async function () {
+      try {
+        const client = new Client(apiUrl);
+        await client.get('/profile');
+
+        // The test should never reach here, force execute catch block.
+        throw Error('An error was expected.');
+      } catch (error) {
+        // Check for the appropriate status response
+        expect(error.response.status).to.equal(401);
+      }
+    });
+
+    it('returns 200 and profile for authenticated user', async function () {
+      const user = await createMockUser();
+      const client = new Client(apiUrl);
+      await client.login(user.osmId);
+
+      // Default query, should be order by display name and match limit
+      const { data } = await client.get('/profile');
+      expect(data).to.deep.eq(user);
+    });
+  });
 });
