@@ -32,12 +32,6 @@ describe('Users endpoints', function () {
 
     // Get regular user for testing
     regularUser = users[users.length - 1];
-
-    // Parse date to string for easy comparison
-    users.map(r => {
-      r.osmCreatedAt = r.osmCreatedAt.toISOString();
-      return r;
-    });
   });
 
   describe('GET /users', function () {
