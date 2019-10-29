@@ -3,8 +3,10 @@ import Joi from '@hapi/joi';
 import users from '../models/users';
 
 /**
- * @api {get} /users GET
  * @apiGroup Users
+ *
+ * @api {get} /users  1. GET /users
+ *
  * @apiDescription Provides a simple listing of users.
  *
  * @apiParam {number} [page=1] Paginate through results.
