@@ -1,9 +1,8 @@
 import config from 'config';
 import { expect } from 'chai';
 import startServer from '../app';
-import db from '../app/services/db';
 import logger from '../app/services/logger';
-import { clearMediaStore } from '../app/services/media-store';
+import resetDb from '../test/utils/reset-db';
 import Client from './utils/http-client';
 
 const port = config.get('port');
@@ -12,13 +11,7 @@ global.apiUrl = apiUrl;
 
 describe('Observe API', function () {
   before(async function () {
-    logger.info('Clearing database...');
-    await db.schema.dropTableIfExists('knex_migrations');
-    await db.schema.dropTableIfExists('users');
-    await db.schema.dropTableIfExists('traces');
-    await db.schema.dropTableIfExists('photos');
-    await db.migrate.latest();
-    await clearMediaStore();
+    await resetDb();
 
     logger.info('Starting server...');
     global.server = await startServer();
