@@ -2,14 +2,7 @@ import users from '../../app/models/users';
 import traces from '../../app/models/traces';
 import validTraceJson from '../fixtures/valid-trace.json';
 import { createPhoto } from '../../app/models/photos';
-
-/**
- * Generate random integer number up to "max" value.
- * @param {integer} max
- */
-function getRandomInt (max) {
-  return Math.floor(Math.random() * Math.floor(max));
-}
+import { getRandomInt } from '../../app/utils';
 
 /**
  * Factory to create mock users at the database.

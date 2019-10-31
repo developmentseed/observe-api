@@ -40,11 +40,18 @@ Open a new terminal and migrate the database:
 
     npm run migrate-dev-db
 
+If your with to populate it with mock data, run:
+
+    npm run populate-dev-db
+
+Please consider that the last step will **wipe any previous data** from the development database.
+
 Start development server with changes monitoring:
 
     npm run dev
 
 Access the service at [localhost:3000](http://localhost:3000)
+
 
 When finished, go back to the first terminal session and kill the database container with Ctrl+C.
 

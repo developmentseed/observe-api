@@ -10,3 +10,11 @@ export function appUrl () {
 export function mediaUrl () {
   return `${appUrl()}/media`;
 }
+
+/**
+ * Generate random integer number up to "max" value.
+ * @param {integer} max
+ */
+export function getRandomInt (max) {
+  return Math.floor(Math.random() * Math.floor(max));
+}
