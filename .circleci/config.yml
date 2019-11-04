@@ -1,6 +1,6 @@
-version: 2
+version: 2.1
 jobs:
-  build:
+  test:
     docker:
       - image: circleci/node:10
         environment:
@@ -14,8 +14,6 @@ jobs:
 
     steps:
       - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
 
       # Download and cache dependencies
       - restore_cache:
@@ -38,3 +36,30 @@ jobs:
       - run:
           name: Run tests
           command: npm run test
+  deploy-staging:
+    docker:
+      - image: circleci/python:3
+    steps:
+      - checkout
+      - run:
+          name: Install EB CLI (Elastic Beanstalk)
+          command: pip install awsebcli --upgrade --user
+      - run:
+          name: Configure  EB CLI
+          command: eb init --region us-east-1 observe-staging          
+      - run:
+          name: Deploy
+          command: eb deploy observe-api-staging-env
+
+workflows:
+  version: 2
+  test-and-deploy:
+    jobs:
+      # - test
+      - deploy-staging
+      # - deploy-staging:
+          # requires:
+          #   - lint
+          # filters:
+          #   branches:
+          #     only: develop
