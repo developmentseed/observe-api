@@ -1,0 +1,8 @@
+{
+  "media": {
+    "store": {
+      "type": "local",
+      "path": "/efs/media"
+    }
+  }
+}
