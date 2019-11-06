@@ -89,6 +89,9 @@ async function setupOAuth (server) {
             osmCreatedAt: profile.account_created
           })
           .returning('*');
+
+        // Insert query returns an array, get the first result
+        user = user[0];
       } else {
         // Update display name of existing user, if it has changed in OSM.
         if (user.osmDisplayName !== profile.display_name) {
