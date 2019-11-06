@@ -3,6 +3,7 @@ import db from '../app/services/db';
 import { expect } from 'chai';
 import { createMockUser, createMockTrace } from './utils/mock-factory';
 import Client from './utils/http-client';
+import { delay } from '../app/utils';
 import validTraceJson from './fixtures/valid-trace.json';
 import cloneDeep from 'lodash.clonedeep';
 import orderBy from 'lodash.orderby';
@@ -395,11 +396,15 @@ describe('Traces endpoints', async function () {
       // Create 20 traces for regular user
       for (let i = 0; i < 20; i++) {
         traces.push(await createMockTrace(regularUser.osmId));
+        // Add a small delay to avoid equal timestamps
+        await delay(1);
       }
 
       // Create 30 traces for admin user
       for (let i = 0; i < 30; i++) {
         traces.push(await createMockTrace(adminUser.osmId));
+        // Add a small delay to avoid equal timestamps
+        await delay(1);
       }
     });
 
