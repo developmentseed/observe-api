@@ -115,3 +115,8 @@ data/**/*
 !data/.gitkeep
 data-prep
 docs
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
