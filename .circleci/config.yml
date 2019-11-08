@@ -46,7 +46,7 @@ jobs:
           command: pip install awsebcli --upgrade --user
       - run:
           name: Configure  EB CLI
-          command: eb init --region us-east-1 observe-staging          
+          command: eb init --verbose --region us-east-1 observe-staging          
       - run:
           name: Deploy
           command: eb deploy observe-api-staging-env
