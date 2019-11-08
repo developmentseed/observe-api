@@ -37,7 +37,7 @@ export default [
           bearing: Joi.number()
             .max(360)
             .message('Invalid bearing.'),
-          description: Joi.string(),
+          description: Joi.string().empty(''),
           lon: Joi.number()
             .min(-180)
             .max(180),

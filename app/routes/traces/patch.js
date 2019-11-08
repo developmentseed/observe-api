@@ -32,7 +32,7 @@ export default [
           id: Joi.string().length(idLength)
         }),
         payload: Joi.object({
-          description: Joi.string()
+          description: Joi.string().empty('')
         })
       },
       handler: async function (request) {

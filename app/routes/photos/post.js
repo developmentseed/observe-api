@@ -43,6 +43,7 @@ export default [
           bearing: Joi.number()
             .max(360)
             .required(),
+          description: Joi.string().empty(''),
           lon: Joi.number()
             .min(-180)
             .max(180)
