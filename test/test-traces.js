@@ -1,19 +1,19 @@
 import config from 'config';
 import db from '../app/services/db';
-import { expect } from 'chai';
+import { expect, should } from 'chai';
 import { createMockUser, createMockTrace } from './utils/mock-factory';
 import Client from './utils/http-client';
 import { delay } from '../app/utils';
 import validTraceJson from './fixtures/valid-trace.json';
 import cloneDeep from 'lodash.clonedeep';
 import orderBy from 'lodash.orderby';
-import traces from '../app/models/traces';
+import { getTrace, getTracesCount } from '../app/models/traces';
 
 const paginationLimit = config.get('pagination.limit');
 
 /* global apiUrl */
 
-describe('Traces endpoints', async function () {
+describe.only('Traces endpoints', async function () {
   before(async function () {
     await db('users').delete();
     await db('traces').delete();
@@ -54,7 +54,7 @@ describe('Traces endpoints', async function () {
     it('return 200 for existing trace, formated as tracejson', async function () {
       // Create mock data
       const regularUser = await createMockUser();
-      const trace = await createMockTrace(regularUser.osmId);
+      const trace = await createMockTrace(regularUser);
 
       // Create a client
       const client = new Client(apiUrl);
@@ -70,6 +70,11 @@ describe('Traces endpoints', async function () {
       expect(data.properties).to.have.property('id');
       expect(data.properties).to.have.property('uploadedAt');
       expect(data.properties).to.have.property('updatedAt');
+      expect(data.properties).to.have.property('ownerId', regularUser.osmId);
+      expect(data.properties).to.have.property(
+        'ownerDisplayName',
+        regularUser.osmDisplayName
+      );
       expect(data.properties.length).greaterThan(0);
       expect(data.properties.description).to.deep.equal(description);
       expect(data.properties.timestamps).to.deep.equal(timestamps);
@@ -163,7 +168,7 @@ describe('Traces endpoints', async function () {
       try {
         const regularUser1 = await createMockUser();
         const regularUser2 = await createMockUser();
-        const trace = await createMockTrace(regularUser1.osmId);
+        const trace = await createMockTrace(regularUser1);
 
         const client = new Client(apiUrl);
         await client.login(regularUser2.osmId);
@@ -210,7 +215,7 @@ describe('Traces endpoints', async function () {
       await client.login(regularUser.osmId);
 
       // Create mock trace
-      const trace = await createMockTrace(regularUser.osmId);
+      const trace = await createMockTrace(regularUser);
 
       // Do the request
       const { status, data } = await client.patch(`/traces/${trace.id}`, {
@@ -220,19 +225,12 @@ describe('Traces endpoints', async function () {
       // Check status
       expect(status).to.equal(200);
 
-      // Check response
-      const { timestamps } = validTraceJson.properties;
-      const recordedAt = new Date(timestamps[0]).toISOString();
-      expect(data.properties).to.have.property('id');
-      expect(data.properties).to.have.property('uploadedAt');
-      expect(data.properties).to.have.property('updatedAt');
-      expect(data.properties.length).greaterThan(0);
-      expect(data.properties.description).to.deep.equal(newDescription);
-      expect(data.properties.timestamps).to.deep.equal(timestamps);
-      expect(data.properties.recordedAt).to.deep.equal(recordedAt);
+      // Patch method returns empty responses
+      expect(data).to.deep.equal({});
 
-      expect(data.geometry).to.deep.equal(validTraceJson.geometry);
-      expect(data.geometry).to.deep.equal(validTraceJson.geometry);
+      // Load trace
+      const updatedTrace = await getTrace(trace.id);
+      expect(updatedTrace.description).to.deep.equal(newDescription);
     });
 
     it('return 200 for non-owner admin', async function () {
@@ -246,7 +244,7 @@ describe('Traces endpoints', async function () {
       await client.login(adminUser.osmId);
 
       // Create mock trace
-      const trace = await createMockTrace(regularUser.osmId);
+      const trace = await createMockTrace(regularUser);
 
       // Do the request
       const { status, data } = await client.patch(`/traces/${trace.id}`, {
@@ -256,19 +254,12 @@ describe('Traces endpoints', async function () {
       // Check status
       expect(status).to.equal(200);
 
-      // Check response
-      const { timestamps } = validTraceJson.properties;
-      const recordedAt = new Date(timestamps[0]).toISOString();
-      expect(data.properties).to.have.property('id');
-      expect(data.properties).to.have.property('uploadedAt');
-      expect(data.properties).to.have.property('updatedAt');
-      expect(data.properties.length).greaterThan(0);
-      expect(data.properties.description).to.deep.equal(newDescription);
-      expect(data.properties.timestamps).to.deep.equal(timestamps);
-      expect(data.properties.recordedAt).to.deep.equal(recordedAt);
+      // Patch method returns empty responses
+      expect(data).to.deep.equal({});
 
-      expect(data.geometry).to.deep.equal(validTraceJson.geometry);
-      expect(data.geometry).to.deep.equal(validTraceJson.geometry);
+      // Load trace
+      const updatedTrace = await getTrace(trace.id);
+      expect(updatedTrace.description).to.deep.equal(newDescription);
     });
   });
 
@@ -291,7 +282,7 @@ describe('Traces endpoints', async function () {
       try {
         const regularUser1 = await createMockUser();
         const regularUser2 = await createMockUser();
-        const trace = await createMockTrace(regularUser1.osmId);
+        const trace = await createMockTrace(regularUser1);
 
         const client = new Client(apiUrl);
         await client.login(regularUser2.osmId);
@@ -331,11 +322,11 @@ describe('Traces endpoints', async function () {
       await client.login(regularUser.osmId);
 
       // Create mock trace
-      const trace = await createMockTrace(regularUser.osmId);
-      await createMockTrace(regularUser.osmId);
+      const trace = await createMockTrace(regularUser);
+      await createMockTrace(regularUser);
 
       // Get trace count
-      const beforeCount = await traces.count();
+      const beforeCount = await getTracesCount();
 
       // Do the request
       const { status } = await client.del(`/traces/${trace.id}`);
@@ -344,11 +335,11 @@ describe('Traces endpoints', async function () {
       expect(status).to.equal(200);
 
       // Check if trace was deleted
-      const deletedTrace = await traces.get(trace.id);
-      expect(deletedTrace).to.have.length(0);
+      const deletedTrace = await getTrace(trace.id);
+      should().not.exist(deletedTrace);
 
       // Check if traces count was reduced by one
-      const afterCount = await traces.count();
+      const afterCount = await getTracesCount();
       expect(afterCount).to.eq(beforeCount - 1);
     });
 
@@ -360,11 +351,11 @@ describe('Traces endpoints', async function () {
       await client.login(adminUser.osmId);
 
       // Create mock trace
-      const trace = await createMockTrace(regularUser.osmId);
-      await createMockTrace(regularUser.osmId);
+      const trace = await createMockTrace(regularUser);
+      await createMockTrace(regularUser);
 
       // Get trace count
-      const beforeCount = await traces.count();
+      const beforeCount = await getTracesCount();
 
       // Do the request
       const { status } = await client.del(`/traces/${trace.id}`);
@@ -373,11 +364,11 @@ describe('Traces endpoints', async function () {
       expect(status).to.equal(200);
 
       // Check if trace was deleted
-      const deletedTrace = await traces.get(trace.id);
-      expect(deletedTrace).to.have.length(0);
+      const deletedTrace = await getTrace(trace.id);
+      should().not.exist(deletedTrace);
 
       // Check if traces count was reduced by one
-      const afterCount = await traces.count();
+      const afterCount = await getTracesCount();
       expect(afterCount).to.eq(beforeCount - 1);
     });
   });
@@ -395,14 +386,14 @@ describe('Traces endpoints', async function () {
 
       // Create 20 traces for regular user
       for (let i = 0; i < 20; i++) {
-        traces.push(await createMockTrace(regularUser.osmId));
+        traces.push(await createMockTrace(regularUser));
         // Add a small delay to avoid equal timestamps
         await delay(1);
       }
 
       // Create 30 traces for admin user
       for (let i = 0; i < 30; i++) {
-        traces.push(await createMockTrace(adminUser.osmId));
+        traces.push(await createMockTrace(adminUser));
         // Add a small delay to avoid equal timestamps
         await delay(1);
       }

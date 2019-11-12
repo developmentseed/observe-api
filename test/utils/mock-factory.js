@@ -1,5 +1,5 @@
 import users from '../../app/models/users';
-import traces from '../../app/models/traces';
+import { createTrace, getTrace } from '../../app/models/traces';
 import validTraceJson from '../fixtures/valid-trace.json';
 import { createPhoto } from '../../app/models/photos';
 
@@ -32,30 +32,16 @@ export async function createMockUser (data) {
 /**
  * Factory to create mock traces at the database.
  */
-export async function createMockTrace (ownerId) {
-  const [trace] = await traces
-    .create(
-      {
-        ...validTraceJson
-      },
-      ownerId
-    )
-    .returning([
-      'id',
-      'ownerId',
-      'description',
-      'length',
-      'recordedAt',
-      'uploadedAt',
-      'updatedAt'
-    ])
-    .map(r => {
-      r.recordedAt = r.recordedAt.toISOString();
-      r.uploadedAt = r.uploadedAt.toISOString();
-      r.updatedAt = r.updatedAt.toISOString();
-      return r;
-    });
-  return trace;
+export async function createMockTrace (owner) {
+  const tracejson = await createTrace(
+    {
+      ...validTraceJson
+    },
+    owner.osmId
+  );
+
+  // Return trace without geometry
+  return getTrace(tracejson.properties.id);
 }
 
 export async function createMockPhoto (owner) {

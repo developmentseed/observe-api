@@ -1,6 +1,6 @@
 import Boom from '@hapi/boom';
 import Joi from '@hapi/joi';
-import traces from '../../models/traces';
+import { listTraces, getTracesCount } from '../../models/traces';
 import logger from '../../services/logger';
 
 /**
@@ -117,12 +117,12 @@ export default [
           });
         }
 
-        const results = await traces.list({
+        const results = await listTraces({
           offset,
           limit,
           orderBy
         });
-        const count = await traces.count();
+        const count = await getTracesCount();
 
         return h.paginate(results, count);
       } catch (error) {

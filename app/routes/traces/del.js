@@ -2,7 +2,7 @@ import Boom from '@hapi/boom';
 import config from 'config';
 import Joi from '@hapi/joi';
 import logger from '../../services/logger';
-import traces from '../../models/traces';
+import { getTrace, deleteTrace } from '../../models/traces';
 
 const idLength = config.get('idLength');
 
@@ -33,7 +33,7 @@ export default [
         try {
           // Get trace
           const { id } = request.params;
-          const [trace] = await traces.get(id);
+          const trace = await getTrace(id);
 
           if (!trace) return Boom.notFound('Trace not found.');
 
@@ -44,12 +44,10 @@ export default [
           }
 
           // Perform delete
-          await traces.del(id);
+          await deleteTrace(id);
 
-          return {
-            statusCode: 200,
-            message: 'Trace deleted successfully.'
-          };
+          // Return empty response
+          return {};
         } catch (error) {
           logger.error(error);
           return Boom.badImplementation('Unexpected error.');

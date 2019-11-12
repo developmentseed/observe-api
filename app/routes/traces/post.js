@@ -1,8 +1,7 @@
 import Boom from '@hapi/boom';
 import Joi from '@hapi/joi';
-import db from '../../services/db';
 import logger from '../../services/logger';
-import traces from '../../models/traces';
+import { createTrace } from '../../models/traces';
 
 /**
  * @apiGroup Traces
@@ -78,23 +77,8 @@ export default [
           // Get properties from TraceJson
           const { tracejson } = request.payload;
 
-          // Insert trace
-          const [trace] = await traces
-            .create(tracejson, osmId)
-            .returning([
-              'id',
-              'ownerId',
-              'description',
-              'length',
-              'recordedAt',
-              'uploadedAt',
-              'updatedAt',
-              'timestamps',
-              db.raw('ST_AsGeoJSON(geometry) as geometry')
-            ]);
-
-          // Return as TraceJSON
-          return traces.asTraceJson(trace);
+          // Insert trace as return
+          return await createTrace(tracejson, osmId);
         } catch (error) {
           logger.error(error);
           return Boom.badImplementation('Unexpected error.');
