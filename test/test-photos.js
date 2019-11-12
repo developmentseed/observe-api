@@ -68,6 +68,10 @@ describe('Photos endpoints', async function () {
       expect(data).to.have.property('id');
       expect(data).to.have.property('uploadedAt');
       expect(data).to.have.property('ownerId', regularUser.osmId);
+      expect(data).to.have.property(
+        'ownerDisplayName',
+        regularUser.osmDisplayName
+      );
       expect(data).to.have.property('createdAt', metadata.createdAt);
       expect(data).to.have.property('bearing', metadata.bearing);
       expect(data.urls).to.deep.equal(getAllMediaUrls(data.id));
@@ -152,6 +156,10 @@ describe('Photos endpoints', async function () {
       expect(data).to.have.property('id');
       expect(data).to.have.property('uploadedAt');
       expect(data).to.have.property('ownerId', regularUser.osmId);
+      expect(data).to.have.property(
+        'ownerDisplayName',
+        regularUser.osmDisplayName
+      );
       expect(data).to.have.property('createdAt', metadata.createdAt);
       expect(data).to.have.property('bearing', metadata.bearing);
       expect(data.urls).to.deep.equal(getAllMediaUrls(id));
@@ -299,6 +307,11 @@ describe('Photos endpoints', async function () {
       expect(data).to.have.property('id');
       expect(data).to.have.property('createdAt');
       expect(data).to.have.property('uploadedAt');
+      expect(data).to.have.property('ownerId', regularUser.osmId);
+      expect(data).to.have.property(
+        'ownerDisplayName',
+        regularUser.osmDisplayName
+      );
       expect(data.description).to.equal(patchData.description);
       expect(data.bearing).to.equal(patchData.bearing);
       expect(data.location).to.deep.equal({
@@ -383,7 +396,7 @@ describe('Photos endpoints', async function () {
       try {
         const regularUser1 = await createMockUser();
         const regularUser2 = await createMockUser();
-        const photo = await createMockPhoto(regularUser1.osmId);
+        const photo = await createMockPhoto(regularUser1);
 
         const client = new Client(apiUrl);
         await client.login(regularUser2.osmId);
@@ -423,7 +436,7 @@ describe('Photos endpoints', async function () {
       await client.login(regularUser.osmId);
 
       // Create mock photo
-      const photo = await createMockPhoto(regularUser.osmId);
+      const photo = await createMockPhoto(regularUser);
 
       // Get photo count
       const beforeCount = await countPhotos();
@@ -451,7 +464,7 @@ describe('Photos endpoints', async function () {
       await adminClient.login(adminUser.osmId);
 
       // Create mock photo
-      const photo = await createMockPhoto(regularUser.osmId);
+      const photo = await createMockPhoto(regularUser);
 
       // Get photo count
       const beforeCount = await countPhotos();
@@ -485,12 +498,12 @@ describe('Photos endpoints', async function () {
 
       // Create 20 photos for regular user
       for (let i = 0; i < 20; i++) {
-        photos.push(await createMockPhoto(regularUser.osmId));
+        photos.push(await createMockPhoto(regularUser));
       }
 
       // Create 30 photos for admin user
       for (let i = 0; i < 30; i++) {
-        photos.push(await createMockPhoto(adminUser.osmId));
+        photos.push(await createMockPhoto(adminUser));
       }
     });
 

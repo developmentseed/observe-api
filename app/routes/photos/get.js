@@ -1,7 +1,7 @@
 import config from 'config';
 import Boom from '@hapi/boom';
 import Joi from '@hapi/joi';
-import { getPhoto, photoToJson } from '../../models/photos';
+import { getPhoto } from '../../models/photos';
 import logger from '../../services/logger';
 
 const idLength = config.get('idLength');
@@ -36,7 +36,7 @@ export default [
 
         if (!photo) return Boom.notFound(`photo ${id} not found`);
 
-        return photoToJson(photo);
+        return photo;
       } catch (error) {
         logger.error(error);
         return Boom.badImplementation('Unexpected error.');

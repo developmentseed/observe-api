@@ -1,7 +1,7 @@
 import Boom from '@hapi/boom';
 import Joi from '@hapi/joi';
 import logger from '../../services/logger';
-import { getPhoto, updatePhoto, photoToJson } from '../../models/photos';
+import { getPhoto, updatePhoto } from '../../models/photos';
 
 /**
  * @apiGroup Photos
@@ -74,7 +74,7 @@ export default [
 
           const [patchedPhoto] = await updatePhoto(id, data);
 
-          return photoToJson(patchedPhoto);
+          return patchedPhoto;
         } catch (error) {
           logger.error(error);
           return Boom.badImplementation('Unexpected error.');
