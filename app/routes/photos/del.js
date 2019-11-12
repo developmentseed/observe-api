@@ -47,10 +47,7 @@ export default [
           // Perform delete
           await deletePhoto(id);
 
-          return {
-            statusCode: 200,
-            message: 'Photo deleted successfully.'
-          };
+          return {};
         } catch (error) {
           logger.error(error);
           return Boom.badImplementation('Unexpected error.');

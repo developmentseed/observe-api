@@ -72,9 +72,9 @@ export default [
             delete data.lat;
           }
 
-          const [patchedPhoto] = await updatePhoto(id, data);
+          await updatePhoto(id, data);
 
-          return patchedPhoto;
+          return {};
         } catch (error) {
           logger.error(error);
           return Boom.badImplementation('Unexpected error.');

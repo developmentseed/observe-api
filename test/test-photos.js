@@ -293,32 +293,19 @@ describe('Photos endpoints', async function () {
       };
 
       // Perform patch
-      await client.patch(`/photos/${id}`, {
+      const { status, data } = await client.patch(`/photos/${id}`, {
         ...patchData
       });
-
-      // Get photo
-      const { status, data } = await client.get(`/photos/${id}`);
 
       // Check status
       expect(status).to.equal(200);
 
-      // Check response
-      expect(data).to.have.property('id');
-      expect(data).to.have.property('createdAt');
-      expect(data).to.have.property('uploadedAt');
-      expect(data).to.have.property('ownerId', regularUser.osmId);
-      expect(data).to.have.property(
-        'ownerDisplayName',
-        regularUser.osmDisplayName
-      );
-      expect(data.description).to.equal(patchData.description);
-      expect(data.bearing).to.equal(patchData.bearing);
-      expect(data.location).to.deep.equal({
-        type: 'Point',
-        coordinates: [30, 22]
-      });
-      expect(data.osmObjects).to.deep.equal(patchData.osmObjects);
+      // Patch method returns empty responses
+      expect(data).to.deep.equal({});
+
+      // Load photo and compare
+      const [updatedPhoto] = await getPhoto(id);
+      expect(updatedPhoto.bearing).to.deep.equal(patchData.bearing);
     });
 
     it('return 200 for admin', async function () {
@@ -364,16 +351,12 @@ describe('Photos endpoints', async function () {
       // Check status
       expect(status).to.equal(200);
 
-      // Check response
-      expect(data).to.have.property('id');
-      expect(data).to.have.property('createdAt');
-      expect(data).to.have.property('uploadedAt');
-      expect(data.bearing).to.equal(patchData.bearing);
-      expect(data.location).to.deep.equal({
-        type: 'Point',
-        coordinates: [40, -13]
-      });
-      expect(data.osmObjects).to.deep.equal(patchData.osmObjects);
+      // Patch method returns empty responses
+      expect(data).to.deep.equal({});
+
+      // Load photo and compare
+      const [updatedPhoto] = await getPhoto(id);
+      expect(updatedPhoto.bearing).to.deep.equal(patchData.bearing);
     });
   });
 
@@ -442,10 +425,13 @@ describe('Photos endpoints', async function () {
       const beforeCount = await countPhotos();
 
       // Do the request
-      const { status } = await client.del(`/photos/${photo.id}`);
+      const { status, data } = await client.del(`/photos/${photo.id}`);
 
       // Check status
       expect(status).to.equal(200);
+
+      // DEL method returns empty responses
+      expect(data).to.deep.equal({});
 
       // Check if photo was deleted
       const deletedPhoto = await getPhoto(photo.id);
@@ -470,10 +456,13 @@ describe('Photos endpoints', async function () {
       const beforeCount = await countPhotos();
 
       // Do the request
-      const { status } = await adminClient.del(`/photos/${photo.id}`);
+      const { status, data } = await adminClient.del(`/photos/${photo.id}`);
 
       // Check status
       expect(status).to.equal(200);
+
+      // DEL method returns empty responses
+      expect(data).to.deep.equal({});
 
       // Check if photo was deleted
       const deletedPhoto = await getPhoto(photo.id);

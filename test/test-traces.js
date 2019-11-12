@@ -13,7 +13,7 @@ const paginationLimit = config.get('pagination.limit');
 
 /* global apiUrl */
 
-describe.only('Traces endpoints', async function () {
+describe('Traces endpoints', async function () {
   before(async function () {
     await db('users').delete();
     await db('traces').delete();
