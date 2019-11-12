@@ -53,6 +53,9 @@ export default async function () {
           default: config.get('pagination.limit')
         }
       },
+      meta: {
+        page: { active: true }
+      },
       routes: {
         include: ['/users', '/traces', '/photos']
       }
