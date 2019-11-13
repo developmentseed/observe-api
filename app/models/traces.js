@@ -49,7 +49,7 @@ export async function getTrace (id) {
  *
  */
 export async function getTraceJson (id) {
-  const [trace] = await db('traces')
+  const trace = await db('traces')
     .select(
       defaultSelect.concat([
         db.raw('ST_AsGeoJSON(geometry) as geometry'),
@@ -58,8 +58,10 @@ export async function getTraceJson (id) {
     )
     .join('users', 'users.osmId', '=', 'traces.ownerId')
     .where('id', '=', id)
-    .map(asTraceJson);
-  return trace;
+    .first();
+
+  // Return formatted trace or null if not found
+  return trace && asTraceJson(trace);
 }
 
 /**
