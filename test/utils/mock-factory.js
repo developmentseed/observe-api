@@ -56,7 +56,7 @@ export async function createMockPhoto (owner) {
     osmObjects: ['way/62239489', 'node/55555', 'relation/9999999']
   };
 
-  const [photo] = await createPhoto({ ...data, ownerId: owner.osmId });
+  const photo = await createPhoto({ ...data, ownerId: owner.osmId });
 
   // Add owner display name, as they should be included on responses
   photo.ownerDisplayName = owner.osmDisplayName;

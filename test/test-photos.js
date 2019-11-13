@@ -6,7 +6,7 @@ import orderBy from 'lodash.orderby';
 import path from 'path';
 import { countPhotos, getPhoto } from '../app/models/photos';
 import { createMockUser, createMockPhoto } from './utils/mock-factory';
-import { expect } from 'chai';
+import { expect, should } from 'chai';
 import { getAllMediaUrls } from '../app/services/media-store';
 import { readFile } from 'fs-extra';
 
@@ -230,7 +230,6 @@ describe('Photos endpoints', async function () {
         // This line should not be reached in tests, throw error.
         throw Error('An error was expected.');
       } catch (error) {
-        // console.log(error);
         // Check for the appropriate status response
         expect(error.response.status).to.equal(403);
       }
@@ -304,7 +303,7 @@ describe('Photos endpoints', async function () {
       expect(data).to.deep.equal({});
 
       // Load photo and compare
-      const [updatedPhoto] = await getPhoto(id);
+      const updatedPhoto = await getPhoto(id);
       expect(updatedPhoto.bearing).to.deep.equal(patchData.bearing);
     });
 
@@ -355,7 +354,7 @@ describe('Photos endpoints', async function () {
       expect(data).to.deep.equal({});
 
       // Load photo and compare
-      const [updatedPhoto] = await getPhoto(id);
+      const updatedPhoto = await getPhoto(id);
       expect(updatedPhoto.bearing).to.deep.equal(patchData.bearing);
     });
   });
@@ -435,7 +434,7 @@ describe('Photos endpoints', async function () {
 
       // Check if photo was deleted
       const deletedPhoto = await getPhoto(photo.id);
-      expect(deletedPhoto).to.have.length(0);
+      should().not.exist(deletedPhoto);
 
       // Check if photos count was reduced by one
       const afterCount = await countPhotos();
@@ -466,7 +465,7 @@ describe('Photos endpoints', async function () {
 
       // Check if photo was deleted
       const deletedPhoto = await getPhoto(photo.id);
-      expect(deletedPhoto).to.have.length(0);
+      should().not.exist(deletedPhoto);
 
       // Check if photos count was reduced by one
       const afterCount = await countPhotos();

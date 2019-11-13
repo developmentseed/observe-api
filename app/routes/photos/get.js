@@ -28,11 +28,11 @@ export default [
         })
       }
     },
-    handler: async function (request, h) {
+    handler: async function (request) {
       try {
         const { id } = request.params;
 
-        const [photo] = await getPhoto(id);
+        const photo = await getPhoto(id);
 
         if (!photo) return Boom.notFound(`photo ${id} not found`);
 

@@ -47,10 +47,13 @@ export function select () {
  * @param {integer} photo id
  *
  */
-export function getPhoto (id) {
-  return select()
-    .where('id', id)
-    .map(photoToJson);
+export async function getPhoto (id) {
+  const photo = await select()
+    .where('id', '=', id)
+    .first();
+
+  // Return formatted photo or null if not found
+  return photo && photoToJson(photo);
 }
 
 /**

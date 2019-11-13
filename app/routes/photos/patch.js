@@ -53,7 +53,7 @@ export default [
         try {
           // Get photo
           const { id } = request.params;
-          const [photo] = await getPhoto(id);
+          const photo = await getPhoto(id);
 
           if (!photo) return Boom.notFound('Photo not found.');
 
