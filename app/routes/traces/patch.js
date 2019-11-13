@@ -1,8 +1,7 @@
 import Boom from '@hapi/boom';
 import Joi from '@hapi/joi';
-import db from '../../services/db';
 import logger from '../../services/logger';
-import traces from '../../models/traces';
+import { getTrace, updateTrace } from '../../models/traces';
 import config from 'config';
 
 const idLength = config.get('idLength');
@@ -39,7 +38,7 @@ export default [
         try {
           // Get trace
           const { id } = request.params;
-          const [trace] = await traces.get(id);
+          const trace = await getTrace(id);
 
           if (!trace) return Boom.notFound('Trace not found.');
 
@@ -51,22 +50,9 @@ export default [
 
           // Patch
           const { description } = request.payload;
-          const [patchedTrace] = await traces
-            .update(id, { description })
-            .returning([
-              'id',
-              'ownerId',
-              'description',
-              'length',
-              'recordedAt',
-              'uploadedAt',
-              'updatedAt',
-              'timestamps',
-              db.raw('ST_AsGeoJSON(geometry) as geometry')
-            ]);
+          await updateTrace(id, { description });
 
-          // Return as TraceJSON
-          return traces.asTraceJson(patchedTrace);
+          return {};
         } catch (error) {
           logger.error(error);
           return Boom.badImplementation('Unexpected error.');

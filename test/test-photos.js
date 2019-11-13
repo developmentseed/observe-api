@@ -6,7 +6,7 @@ import orderBy from 'lodash.orderby';
 import path from 'path';
 import { countPhotos, getPhoto } from '../app/models/photos';
 import { createMockUser, createMockPhoto } from './utils/mock-factory';
-import { expect } from 'chai';
+import { expect, should } from 'chai';
 import { getAllMediaUrls } from '../app/services/media-store';
 import { readFile } from 'fs-extra';
 
@@ -68,6 +68,10 @@ describe('Photos endpoints', async function () {
       expect(data).to.have.property('id');
       expect(data).to.have.property('uploadedAt');
       expect(data).to.have.property('ownerId', regularUser.osmId);
+      expect(data).to.have.property(
+        'ownerDisplayName',
+        regularUser.osmDisplayName
+      );
       expect(data).to.have.property('createdAt', metadata.createdAt);
       expect(data).to.have.property('bearing', metadata.bearing);
       expect(data.urls).to.deep.equal(getAllMediaUrls(data.id));
@@ -152,6 +156,10 @@ describe('Photos endpoints', async function () {
       expect(data).to.have.property('id');
       expect(data).to.have.property('uploadedAt');
       expect(data).to.have.property('ownerId', regularUser.osmId);
+      expect(data).to.have.property(
+        'ownerDisplayName',
+        regularUser.osmDisplayName
+      );
       expect(data).to.have.property('createdAt', metadata.createdAt);
       expect(data).to.have.property('bearing', metadata.bearing);
       expect(data.urls).to.deep.equal(getAllMediaUrls(id));
@@ -222,7 +230,6 @@ describe('Photos endpoints', async function () {
         // This line should not be reached in tests, throw error.
         throw Error('An error was expected.');
       } catch (error) {
-        // console.log(error);
         // Check for the appropriate status response
         expect(error.response.status).to.equal(403);
       }
@@ -285,27 +292,19 @@ describe('Photos endpoints', async function () {
       };
 
       // Perform patch
-      await client.patch(`/photos/${id}`, {
+      const { status, data } = await client.patch(`/photos/${id}`, {
         ...patchData
       });
-
-      // Get photo
-      const { status, data } = await client.get(`/photos/${id}`);
 
       // Check status
       expect(status).to.equal(200);
 
-      // Check response
-      expect(data).to.have.property('id');
-      expect(data).to.have.property('createdAt');
-      expect(data).to.have.property('uploadedAt');
-      expect(data.description).to.equal(patchData.description);
-      expect(data.bearing).to.equal(patchData.bearing);
-      expect(data.location).to.deep.equal({
-        type: 'Point',
-        coordinates: [30, 22]
-      });
-      expect(data.osmObjects).to.deep.equal(patchData.osmObjects);
+      // Patch method returns empty responses
+      expect(data).to.deep.equal({});
+
+      // Load photo and compare
+      const updatedPhoto = await getPhoto(id);
+      expect(updatedPhoto.bearing).to.deep.equal(patchData.bearing);
     });
 
     it('return 200 for admin', async function () {
@@ -351,16 +350,12 @@ describe('Photos endpoints', async function () {
       // Check status
       expect(status).to.equal(200);
 
-      // Check response
-      expect(data).to.have.property('id');
-      expect(data).to.have.property('createdAt');
-      expect(data).to.have.property('uploadedAt');
-      expect(data.bearing).to.equal(patchData.bearing);
-      expect(data.location).to.deep.equal({
-        type: 'Point',
-        coordinates: [40, -13]
-      });
-      expect(data.osmObjects).to.deep.equal(patchData.osmObjects);
+      // Patch method returns empty responses
+      expect(data).to.deep.equal({});
+
+      // Load photo and compare
+      const updatedPhoto = await getPhoto(id);
+      expect(updatedPhoto.bearing).to.deep.equal(patchData.bearing);
     });
   });
 
@@ -383,7 +378,7 @@ describe('Photos endpoints', async function () {
       try {
         const regularUser1 = await createMockUser();
         const regularUser2 = await createMockUser();
-        const photo = await createMockPhoto(regularUser1.osmId);
+        const photo = await createMockPhoto(regularUser1);
 
         const client = new Client(apiUrl);
         await client.login(regularUser2.osmId);
@@ -423,20 +418,23 @@ describe('Photos endpoints', async function () {
       await client.login(regularUser.osmId);
 
       // Create mock photo
-      const photo = await createMockPhoto(regularUser.osmId);
+      const photo = await createMockPhoto(regularUser);
 
       // Get photo count
       const beforeCount = await countPhotos();
 
       // Do the request
-      const { status } = await client.del(`/photos/${photo.id}`);
+      const { status, data } = await client.del(`/photos/${photo.id}`);
 
       // Check status
       expect(status).to.equal(200);
 
+      // DEL method returns empty responses
+      expect(data).to.deep.equal({});
+
       // Check if photo was deleted
       const deletedPhoto = await getPhoto(photo.id);
-      expect(deletedPhoto).to.have.length(0);
+      should().not.exist(deletedPhoto);
 
       // Check if photos count was reduced by one
       const afterCount = await countPhotos();
@@ -451,20 +449,23 @@ describe('Photos endpoints', async function () {
       await adminClient.login(adminUser.osmId);
 
       // Create mock photo
-      const photo = await createMockPhoto(regularUser.osmId);
+      const photo = await createMockPhoto(regularUser);
 
       // Get photo count
       const beforeCount = await countPhotos();
 
       // Do the request
-      const { status } = await adminClient.del(`/photos/${photo.id}`);
+      const { status, data } = await adminClient.del(`/photos/${photo.id}`);
 
       // Check status
       expect(status).to.equal(200);
 
+      // DEL method returns empty responses
+      expect(data).to.deep.equal({});
+
       // Check if photo was deleted
       const deletedPhoto = await getPhoto(photo.id);
-      expect(deletedPhoto).to.have.length(0);
+      should().not.exist(deletedPhoto);
 
       // Check if photos count was reduced by one
       const afterCount = await countPhotos();
@@ -485,12 +486,12 @@ describe('Photos endpoints', async function () {
 
       // Create 20 photos for regular user
       for (let i = 0; i < 20; i++) {
-        photos.push(await createMockPhoto(regularUser.osmId));
+        photos.push(await createMockPhoto(regularUser));
       }
 
       // Create 30 photos for admin user
       for (let i = 0; i < 30; i++) {
-        photos.push(await createMockPhoto(adminUser.osmId));
+        photos.push(await createMockPhoto(adminUser));
       }
     });
 

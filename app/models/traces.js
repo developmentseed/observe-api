@@ -1,11 +1,79 @@
 import db from '../services/db';
 import { generateId } from './utils';
 
-function get (id, select) {
-  return db('traces').select(select).where('id', id);
+/**
+ * Default select fields for traces
+ */
+const defaultSelect = [
+  'id',
+  'ownerId',
+  'description',
+  'length',
+  'recordedAt',
+  'uploadedAt',
+  'updatedAt',
+  'users.osmDisplayName as ownerDisplayName'
+];
+
+/**
+ * Parse trace timestamps into strings
+ */
+const formatTimestamps = trace => {
+  trace.recordedAt = trace.recordedAt.toISOString();
+  trace.uploadedAt = trace.uploadedAt.toISOString();
+  trace.updatedAt = trace.updatedAt.toISOString();
+  return trace;
+};
+
+/**
+ * Get trace
+ *
+ * @param {integer} trace id
+ *
+ */
+export async function getTrace (id) {
+  const trace = await db('traces')
+    .select(defaultSelect)
+    .join('users', 'users.osmId', '=', 'traces.ownerId')
+    .where('id', id)
+    .first();
+
+  // Return formatted trace or null if not found
+  return trace && formatTimestamps(trace);
 }
 
-function create (tracejson, ownerId) {
+/**
+ * Get TraceJSON
+ *
+ * @param {integer} trace id
+ *
+ */
+export async function getTraceJson (id) {
+  const trace = await db('traces')
+    .select(
+      defaultSelect.concat([
+        db.raw('ST_AsGeoJSON(geometry) as geometry'),
+        'timestamps'
+      ])
+    )
+    .join('users', 'users.osmId', '=', 'traces.ownerId')
+    .where('id', '=', id)
+    .first();
+
+  // Return formatted trace or null if not found
+  return trace && asTraceJson(trace);
+}
+
+/**
+ * Create a trace, return populated with owner display name.
+ *
+ * @param {object} tracejson TraceJSON object
+ * @param {integer} ownerId Owner id
+ *
+ */
+export async function createTrace (tracejson, ownerId) {
+  const id = generateId();
+
   const {
     geometry: { coordinates },
     properties: { timestamps, description }
@@ -14,25 +82,84 @@ function create (tracejson, ownerId) {
   // Transform GeoJSON feature to WKT
   const wkt = `LINESTRING (${coordinates.map(p => p.join(' ')).join(',')})`;
 
-  return db('traces').insert({
-    id: generateId(),
-    ownerId,
-    description,
-    geometry: wkt,
-    length: db.raw(`ST_Length(
+  await db('traces')
+    .insert({
+      id,
+      ownerId,
+      description,
+      geometry: wkt,
+      length: db.raw(`ST_Length(
       ST_GeogFromText('SRID=4326;${wkt}'),true)
     `),
-    timestamps,
-    recordedAt: new Date(timestamps[0])
-  });
+      timestamps,
+      recordedAt: new Date(timestamps[0])
+    })
+    .returning('id');
+
+  return getTraceJson(id);
 }
 
-function asTraceJson (trace) {
+/**
+ * Update a trace, return populated with owner display name.
+ *
+ * @param {integer} id trace id
+ * @param {object} data properties to updated
+ *
+ */
+export async function updateTrace (id, data) {
+  // Update record
+  await db('traces')
+    .where('id', '=', id)
+    .update(data);
+
+  return getTrace(id);
+}
+
+/**
+ * Delete a trace.
+ *
+ * @param {integer} id trace id
+ */
+export function deleteTrace (id) {
+  return db('traces')
+    .delete()
+    .where('id', id);
+}
+
+/**
+ * Get list of traces.
+ *
+ * @param {object} params pagination params
+ */
+export function listTraces ({ offset, limit, orderBy }) {
+  return db('traces')
+    .select(defaultSelect)
+    .join('users', 'users.osmId', '=', 'traces.ownerId')
+    .offset(offset)
+    .orderBy(orderBy)
+    .limit(limit)
+    .map(formatTimestamps);
+}
+
+/**
+ * Get total trace count.
+ */
+export async function getTracesCount () {
+  return parseInt((await db('traces').count())[0].count);
+}
+
+/**
+ * Format trace as TraceJSON
+ *
+ * @param {trace} object trace properties
+ */
+export function asTraceJson (trace) {
   return {
     type: 'Feature',
     properties: {
       id: trace.id,
       ownerId: trace.ownerId,
+      ownerDisplayName: trace.ownerDisplayName,
       description: trace.description,
       length: trace.length,
       recordedAt: trace.recordedAt,
@@ -43,47 +170,3 @@ function asTraceJson (trace) {
     geometry: JSON.parse(trace.geometry)
   };
 }
-
-function update (id, data) {
-  return get(id).update(data);
-}
-
-function del (id) {
-  return get(id).del();
-}
-
-function list ({ offset, limit, orderBy }) {
-  return db('traces')
-    .select([
-      'id',
-      'ownerId',
-      'description',
-      'length',
-      'recordedAt',
-      'uploadedAt',
-      'updatedAt'
-    ])
-    .offset(offset)
-    .orderBy(orderBy)
-    .limit(limit)
-    .map(r => {
-      r.recordedAt = r.recordedAt.toISOString();
-      r.uploadedAt = r.uploadedAt.toISOString();
-      r.updatedAt = r.updatedAt.toISOString();
-      return r;
-    });
-}
-
-async function count () {
-  return parseInt((await db('traces').count())[0].count);
-}
-
-export default {
-  get,
-  create,
-  update,
-  del,
-  list,
-  count,
-  asTraceJson
-};

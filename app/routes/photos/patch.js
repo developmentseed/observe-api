@@ -1,7 +1,7 @@
 import Boom from '@hapi/boom';
 import Joi from '@hapi/joi';
 import logger from '../../services/logger';
-import { getPhoto, updatePhoto, photoToJson } from '../../models/photos';
+import { getPhoto, updatePhoto } from '../../models/photos';
 
 /**
  * @apiGroup Photos
@@ -53,7 +53,7 @@ export default [
         try {
           // Get photo
           const { id } = request.params;
-          const [photo] = await getPhoto(id);
+          const photo = await getPhoto(id);
 
           if (!photo) return Boom.notFound('Photo not found.');
 
@@ -72,9 +72,9 @@ export default [
             delete data.lat;
           }
 
-          const [patchedPhoto] = await updatePhoto(id, data);
+          await updatePhoto(id, data);
 
-          return photoToJson(patchedPhoto);
+          return {};
         } catch (error) {
           logger.error(error);
           return Boom.badImplementation('Unexpected error.');

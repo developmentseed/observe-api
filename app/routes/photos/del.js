@@ -33,7 +33,7 @@ export default [
         try {
           // Get photo
           const { id } = request.params;
-          const [photo] = await getPhoto(id);
+          const photo = await getPhoto(id);
 
           // Return 404 if not found
           if (!photo) return Boom.notFound('Photo not found.');
@@ -47,10 +47,7 @@ export default [
           // Perform delete
           await deletePhoto(id);
 
-          return {
-            statusCode: 200,
-            message: 'Photo deleted successfully.'
-          };
+          return {};
         } catch (error) {
           logger.error(error);
           return Boom.badImplementation('Unexpected error.');

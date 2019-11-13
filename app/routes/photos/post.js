@@ -67,7 +67,7 @@ export default [
             credentials: { osmId }
           } = request.auth;
 
-          const [photo] = await createPhoto({
+          const photo = await createPhoto({
             ...request.payload,
             ownerId: osmId
           });
