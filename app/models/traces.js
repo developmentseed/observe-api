@@ -61,7 +61,7 @@ export async function getTraceJson (id) {
 }
 
 /**
- * Create a photo, return populated with owner display name.
+ * Create a trace, return populated with owner display name.
  *
  * @param {object} tracejson TraceJSON object
  * @param {integer} ownerId Owner id
@@ -112,9 +112,9 @@ export async function updateTrace (id, data) {
 }
 
 /**
- * Delete a photo.
+ * Delete a trace.
  *
- * @param {integer} id photo id
+ * @param {integer} id trace id
  */
 export function deleteTrace (id) {
   return db('traces')
