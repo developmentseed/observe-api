@@ -32,12 +32,14 @@ const formatTimestamps = trace => {
  *
  */
 export async function getTrace (id) {
-  const [trace] = await db('traces')
+  const trace = await db('traces')
     .select(defaultSelect)
     .join('users', 'users.osmId', '=', 'traces.ownerId')
     .where('id', id)
-    .map(formatTimestamps);
-  return trace;
+    .first();
+
+  // Return formatted trace or null if not found
+  return trace && formatTimestamps(trace);
 }
 
 /**
