@@ -3,8 +3,15 @@ import Joi from '@hapi/joi';
 import { getTraceJson } from '../../models/traces';
 import logger from '../../services/logger';
 import config from 'config';
+import togpx from 'togpx';
 
 const idLength = config.get('idLength');
+
+const validate = {
+  params: Joi.object({
+    id: Joi.string().length(idLength)
+  })
+};
 
 /**
  * @apiGroup Traces
@@ -23,27 +30,43 @@ export default [
     method: ['GET'],
     options: {
       auth: 'jwt',
-      validate: {
-        params: Joi.object({
-          id: Joi.string().length(idLength)
-        })
-      }
+      validate
     },
-    handler: async function (request, h) {
-      try {
-        const { id } = request.params;
-
-        const trace = await getTraceJson(id);
-
-        if (!trace) {
-          return Boom.notFound(`Trace ${id} not found`);
-        }
-
-        return trace;
-      } catch (error) {
-        logger.error(error);
-        return Boom.badImplementation('Unexpected error.');
-      }
-    }
+    handler: handler('json')
+  },
+  {
+    path: '/traces/{id}.gpx',
+    method: ['GET'],
+    options: {
+      auth: 'jwt',
+      validate
+    },
+    handler: handler('gpx')
   }
 ];
+
+function handler (type) {
+  return async (request, h) => {
+    try {
+      const { id } = request.params;
+
+      const trace = await getTraceJson(id);
+
+      if (!trace) {
+        return Boom.notFound(`Trace ${id} not found`);
+      }
+
+      if (type === 'gpx') {
+        return togpx(trace, {
+          featureCoordTimes: f =>
+            f.properties.timestamps.map(t => new Date(t).toISOString())
+        });
+      }
+
+      return trace;
+    } catch (error) {
+      logger.error(error);
+      return Boom.badImplementation('Unexpected error.');
+    }
+  };
+}
