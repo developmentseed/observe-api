@@ -38,7 +38,7 @@ export default [
     path: '/traces/{id}.gpx',
     method: ['GET'],
     options: {
-      auth: 'jwt',
+      // auth: 'jwt',
       validate
     },
     handler: handler('gpx')
@@ -57,12 +57,19 @@ function handler (type) {
       }
 
       if (type === 'gpx') {
-        return togpx(trace, {
+        // Generate GPX file
+        const gpx = togpx(trace, {
           featureCoordTimes: f =>
             f.properties.timestamps.map(t => new Date(t).toISOString())
         });
+
+        // Return as text/plain
+        const response = h.response(gpx);
+        response.type('text/plain');
+        return response;
       }
 
+      // Return as TraceJSON
       return trace;
     } catch (error) {
       logger.error(error);
