@@ -6,7 +6,7 @@ import logger from '../../services/logger';
 /**
  * @apiGroup Traces
  *
- * @api {get} /traces 5. GET /traces
+ * @api {get} /traces 6. GET /traces
  * @apiDescription Get a list of photos.
  *
  * @apiUse AuthorizationHeader

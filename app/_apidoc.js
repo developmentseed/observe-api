@@ -87,3 +87,39 @@
  *       }
  *     }
  */
+
+/**
+ * @apiDefine Success200GPX
+ *
+ * @apiSuccess {String} file Trace in GPX format.
+ * @apiSuccessExample {String} Success response:
+ *     HTTP/1.1 200 Success
+ *     <gpx xmlns="http://www.topografix.com/GPX/1/1"
+ *     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="togpx">
+ *     <metadata/>
+ *     <trk>
+ *       <name>_EQOlQXjjY</name>
+ *       <desc>id=_EQOlQXjjY ownerId=709 ownerDisplayName=vitor description=This is a TraceJSON file. length=534.717</desc>
+ *       <trkseg>
+ *         <trkpt lat="-23.5927391909129" lon="-46.6599869728088">
+ *           <time>2019-07-24T23:34:20.021Z</time>
+ *         </trkpt>
+ *         <trkpt lat="-23.5919329603572" lon="-46.6597080230712">
+ *           <time>2019-07-24T23:34:21.801Z</time>
+ *         </trkpt>
+ *         <trkpt lat="-23.590930081288" lon="-46.6589999198913">
+ *           <time>2019-07-24T23:34:22.345Z</time>
+ *         </trkpt>
+ *         <trkpt lat="-23.590320484382" lon="-46.6580557823181">
+ *           <time>2019-07-24T23:34:23.968Z</time>
+ *         </trkpt>
+ *         <trkpt lat="-23.5900648461272" lon="-46.6571545600891">
+ *           <time>2019-07-24T23:34:24.112Z</time>
+ *         </trkpt>
+ *         <trkpt lat="-23.58951423896" lon="-46.6564464569091">
+ *           <time>2019-07-24T23:34:25.883Z</time>
+ *         </trkpt>
+ *       </trkseg>
+ *     </trk>
+ *     </gpx>
+ */

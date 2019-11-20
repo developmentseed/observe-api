@@ -13,18 +13,19 @@ const validate = {
   })
 };
 
-/**
- * @apiGroup Traces
- *
- * @api {get} /traces/:id 4. GET /traces/:id
- * @apiDescription Get trace, must be owner or admin.
- *
- * @apiParam {string} id Trace id.
- *
- * @apiUse Success200TraceJSON
- * @apiUse Error4xx
- */
 export default [
+  /**
+   * @apiGroup Traces
+   *
+   * @api {get} /traces/:id 4. GET /traces/:id
+   * @apiDescription Get trace as GeoJSON. Must be trace's owner or admin.
+   *
+   * @apiParam {string} id Trace id.
+   *
+   * @apiUse AuthorizationHeader
+   * @apiUse Success200TraceJSON
+   * @apiUse Error4xx
+   */
   {
     path: '/traces/{id}',
     method: ['GET'],
@@ -34,11 +35,21 @@ export default [
     },
     handler: handler('json')
   },
+  /**
+   * @apiGroup Traces
+   *
+   * @api {get} /traces/:id.gpx 5. GET /traces/:id.gpx
+   * @apiDescription Get trace in GPX format. No authorization is required.
+   *
+   * @apiParam {string} id Trace id.
+   *
+   * @apiUse Success200GPX
+   * @apiUse Error4xx
+   */
   {
     path: '/traces/{id}.gpx',
     method: ['GET'],
     options: {
-      // auth: 'jwt',
       validate
     },
     handler: handler('gpx')
