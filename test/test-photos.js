@@ -54,7 +54,7 @@ describe('Photos endpoints', async function () {
         lat: -30,
         bearing: 8,
         createdAt: new Date().toISOString(),
-        osmObjects: ['way/677949489', 'node/677949489', 'relation/10203930293']
+        osmElement: 'way/677949489'
       };
 
       // Post request
@@ -74,8 +74,8 @@ describe('Photos endpoints', async function () {
       );
       expect(data).to.have.property('createdAt', metadata.createdAt);
       expect(data).to.have.property('bearing', metadata.bearing);
+      expect(data).to.have.property('osmElement', metadata.osmElement);
       expect(data.urls).to.deep.equal(getAllMediaUrls(data.id));
-      expect(data.osmObjects).to.deep.equal(metadata.osmObjects);
       expect(data.location).to.deep.equal({
         type: 'Point',
         coordinates: [metadata.lon, metadata.lat]
@@ -140,7 +140,7 @@ describe('Photos endpoints', async function () {
         lat: -13,
         bearing: 272,
         createdAt: new Date().toISOString(),
-        osmObjects: ['way/62239489', 'node/55555', 'relation/9999999']
+        osmElement: 'node/55555'
       };
 
       // Post request
@@ -163,7 +163,7 @@ describe('Photos endpoints', async function () {
       expect(data).to.have.property('createdAt', metadata.createdAt);
       expect(data).to.have.property('bearing', metadata.bearing);
       expect(data.urls).to.deep.equal(getAllMediaUrls(id));
-      expect(data.osmObjects).to.deep.equal(metadata.osmObjects);
+      expect(data.osmElement).to.deep.equal(metadata.osmElement);
       expect(data.location).to.deep.equal({
         type: 'Point',
         coordinates: [metadata.lon, metadata.lat]
@@ -176,11 +176,7 @@ describe('Photos endpoints', async function () {
       try {
         const client = new Client(apiUrl);
         await client.patch(`/photos/abcdefghi`, {
-          osmObjects: [
-            'way/677949489',
-            'node/677949489',
-            'relation/10203930293'
-          ]
+          osmElement: 'way/677949489'
         });
 
         // This line should be reached, force executing the catch block with
@@ -212,11 +208,7 @@ describe('Photos endpoints', async function () {
           lat: -30,
           bearing: 8,
           createdAt: new Date().toISOString(),
-          osmObjects: [
-            'way/677949489',
-            'node/677949489',
-            'relation/10203930293'
-          ]
+          osmElement: 'node/677949489'
         });
 
         // Create user 2 to try patch photo from user 1
@@ -273,7 +265,7 @@ describe('Photos endpoints', async function () {
         lat: -13,
         bearing: 272,
         createdAt: new Date().toISOString(),
-        osmObjects: ['way/62239489', 'node/55555', 'relation/9999999']
+        osmElement: 'relation/9999999'
       });
 
       const patchData = {
@@ -281,14 +273,7 @@ describe('Photos endpoints', async function () {
         bearing: 50,
         lon: 30,
         lat: 22,
-        osmObjects: [
-          'node/222222',
-          'way/33333',
-          'relation/523423423',
-          'relation/12312312',
-          'node/123123',
-          'node/123123123'
-        ]
+        osmElement: 'node/222222'
       };
 
       // Perform patch
@@ -327,7 +312,7 @@ describe('Photos endpoints', async function () {
         lat: -13,
         bearing: 272,
         createdAt: new Date().toISOString(),
-        osmObjects: ['way/62239489', 'node/55555', 'relation/9999999']
+        osmElement: 'node/55555'
       });
 
       // Create client for admin user
@@ -338,7 +323,7 @@ describe('Photos endpoints', async function () {
       // Set patch data
       const patchData = {
         bearing: 134,
-        osmObjects: ['node/222222', 'node/123123', 'node/123123123']
+        osmElement: 'node/123123123'
       };
 
       // Perform patch with admin

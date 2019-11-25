@@ -33,7 +33,7 @@ export function select () {
       'bearing',
       'createdAt',
       'description',
-      'osmObjects',
+      'osmElement',
       'ownerId',
       'uploadedAt',
       'users.osmDisplayName as ownerDisplayName'
@@ -64,7 +64,7 @@ export async function getPhoto (id) {
  */
 export async function createPhoto (data) {
   const id = generateId();
-  const { file, ownerId, lon, lat, bearing, createdAt, osmObjects } = data;
+  const { file, ownerId, lon, lat, bearing, createdAt, osmElement } = data;
 
   // Save media to file store
   await persistImageBase64(id, file, {
@@ -81,7 +81,7 @@ export async function createPhoto (data) {
     location: `POINT(${lon} ${lat})`,
     bearing,
     createdAt,
-    osmObjects
+    osmElement
   });
 
   // Load inserted photo

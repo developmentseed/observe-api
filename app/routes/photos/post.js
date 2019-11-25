@@ -15,10 +15,10 @@ import { createPhoto } from '../../models/photos';
  * @apiParam {string} description Description.
  * @apiParam {float} lon Longitude.
  * @apiParam {float} lat Latitude.
- * @apiParam {object} osmObjects Array of OpenStreetMap ids.
+ * @apiParam {string} osmElement OpenStreetMap id of photographed element..
  * @apiParamExample {json} Example:
  * {
- *  osmObjects: ['way/677949489', 'node/677949489', 'relation/10230293']
+ *  osmElement: 'way/677949489'
  * }
  *
  * @apiUse AuthorizationHeader
@@ -55,8 +55,8 @@ export default [
           file: Joi.string()
             .base64()
             .required(),
-          osmObjects: Joi.array()
-            .items(Joi.string().pattern(/^(node|way|relation)\/[0-9]+$/))
+          osmElement: Joi.string()
+            .pattern(/^(node|way|relation)\/[0-9]+$/)
             .optional()
         }).required()
       },
