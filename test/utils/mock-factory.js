@@ -7,7 +7,7 @@ import { createPhoto } from '../../app/models/photos';
  * Generate random integer number up to "max" value.
  * @param {integer} max
  */
-function getRandomInt (max) {
+export function getRandomInt (max) {
   return Math.floor(Math.random() * Math.floor(max));
 }
 
@@ -53,7 +53,7 @@ export async function createMockPhoto (owner) {
     bearing: Math.random() * 360,
     createdAt: new Date(),
     description: 'A randomized description with number ' + getRandomInt(100000),
-    osmObjects: ['way/62239489', 'node/55555', 'relation/9999999']
+    osmElement: `node/${getRandomInt(100000)}`
   };
 
   const photo = await createPhoto({ ...data, ownerId: owner.osmId });

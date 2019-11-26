@@ -21,6 +21,7 @@
     "lint": "node_modules/.bin/eslint app/ test/ --ext .js",
     "test": "NODE_ENV=test mocha -r esm test/test--index.js",
     "start-dev-db": "docker-compose -f docker-compose-dev.yml up",
+    "seed-dev": "NODE_ENV=development node_modules/.bin/knex seed:run",
     "start-test-db": "docker-compose -f docker-compose-test.yml up",
     "migrate-dev-db": "NODE_ENV=development node_modules/.bin/knex migrate:latest",
     "test-lint": "npm run lint && npm run test",
