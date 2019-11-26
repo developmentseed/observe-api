@@ -95,7 +95,7 @@ describe('Photos endpoints', async function () {
     it('return 401 for non-authenticated user', async function () {
       try {
         const client = new Client(apiUrl);
-        await client.get('/photos/abcdefghij');
+        await client.get('/photos/ABCDEFGHIJKLMNO');
 
         // The test should never reach here, force execute catch block.
         throw Error('An error was expected.');
@@ -113,7 +113,7 @@ describe('Photos endpoints', async function () {
         await client.login(regularUser.osmId);
 
         // Fetch resource
-        await client.get('/photos/abcdefghij');
+        await client.get('/photos/ABCDEFGHIJKLMNO');
 
         // The test should never reach here, force execute catch block.
         throw Error('An error was expected.');
@@ -235,7 +235,7 @@ describe('Photos endpoints', async function () {
         await client.login(regularUser.osmId);
 
         // Fetch resource
-        await client.patch('/photos/abcdefghij');
+        await client.patch('/photos/ABCDEFGHIJKLMNO');
 
         // The test should never reach here, force execute catch block.
         throw Error('An error was expected.');
@@ -386,7 +386,7 @@ describe('Photos endpoints', async function () {
         await client.login(regularUser.osmId);
 
         // Fetch resource
-        await client.del('/photos/abcdefghij');
+        await client.del('/photos/ABCDEFGHIJKLMNO');
 
         // The test should never reach here, force execute catch block.
         throw Error('An error was expected.');
