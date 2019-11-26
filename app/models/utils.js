@@ -1,8 +1,8 @@
-import nanoid from 'nanoid';
 import config from 'config';
+import generate from 'nanoid/generate';
 
-const idLength = config.get('idLength');
+const { length, alphabet } = config.get('elementIds');
 
 export function generateId () {
-  return nanoid(idLength);
+  return generate(alphabet, length);
 }

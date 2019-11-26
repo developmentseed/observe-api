@@ -5,11 +5,11 @@ import logger from '../../services/logger';
 import config from 'config';
 import togpx from 'togpx';
 
-const idLength = config.get('idLength');
+const elementIds = config.get('elementIds');
 
 const validate = {
   params: Joi.object({
-    id: Joi.string().length(idLength)
+    id: Joi.string().length(elementIds.length)
   })
 };
 

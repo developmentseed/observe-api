@@ -4,7 +4,10 @@
   "pagination": {
     "limit": 15
   },
-  "idLength": 10,
+  "elementIds": {
+    "length": 15,
+    "alphabet": "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  },
   "osmOAuth": {
     "requestTokenUrl": "https://master.apis.dev.openstreetmap.org/oauth/request_token",
     "accessTokenUrl": "https://master.apis.dev.openstreetmap.org/oauth/access_token",
