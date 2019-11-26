@@ -4,7 +4,7 @@ import Joi from '@hapi/joi';
 import { getPhoto } from '../../models/photos';
 import logger from '../../services/logger';
 
-const idLength = config.get('idLength');
+const elementIds = config.get('elementIds');
 
 /**
  * @apiGroup Photos
@@ -24,7 +24,7 @@ export default [
       auth: 'jwt',
       validate: {
         params: Joi.object({
-          id: Joi.string().length(idLength)
+          id: Joi.string().length(elementIds.length)
         })
       }
     },

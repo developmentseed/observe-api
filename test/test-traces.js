@@ -23,7 +23,7 @@ describe('Traces endpoints', async function () {
     it('return 401 for non-authenticated user', async function () {
       try {
         const client = new Client(apiUrl);
-        await client.get('/traces/abcdefghij');
+        await client.get('/traces/ABCDEFGHIJKLMNO');
 
         // The test should never reach here, force execute catch block.
         throw Error('An error was expected.');
@@ -41,7 +41,7 @@ describe('Traces endpoints', async function () {
         await client.login(regularUser.osmId);
 
         // Fetch resource
-        await client.get('/traces/abcdefghij');
+        await client.get('/traces/ABCDEFGHIJKLMNO');
 
         // The test should never reach here, force execute catch block.
         throw Error('An error was expected.');
@@ -193,7 +193,7 @@ describe('Traces endpoints', async function () {
         await client.login(regularUser.osmId);
 
         // Fetch resource
-        await client.patch('/traces/abcdefghij', {
+        await client.patch('/traces/ABCDEFGHIJKLMNO', {
           description: 'a new description'
         });
 
@@ -305,7 +305,7 @@ describe('Traces endpoints', async function () {
         await client.login(regularUser.osmId);
 
         // Fetch resource
-        await client.del('/traces/abcdefghij');
+        await client.del('/traces/ABCDEFGHIJKLMNO');
 
         // The test should never reach here, force execute catch block.
         throw Error('An error was expected.');

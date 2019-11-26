@@ -4,7 +4,10 @@
   "pagination": {
     "limit": 15
   },
-  "idLength": 10,
+  "elementIds": {
+    "length": 15,
+    "alphabet": "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  },
   "osmOAuth": {
     "requestTokenUrl": "https://master.apis.dev.openstreetmap.org/oauth/request_token",
     "accessTokenUrl": "https://master.apis.dev.openstreetmap.org/oauth/access_token",
@@ -26,7 +29,14 @@
       {
         "id": "default",
         "width": 800,
-        "height": 600
+        "height": 600,
+        "fit": "inside"
+      },
+      {
+        "id": "full",
+        "width": 1200,
+        "height": 1200,
+        "fit": "inside"
       }
     ]
   }

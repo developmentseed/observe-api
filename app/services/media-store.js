@@ -51,11 +51,11 @@ export async function persistImageBase64 (name, data, meta) {
 
     // Write resized files
     for (let i = 0; i < sizes.length; i++) {
-      const { width, height, id } = sizes[i];
+      const { id, width, height, fit } = sizes[i];
       const resizedFilePath = `${baseFilePath}-${id}.jpg`;
       await sharp(originalFilePath)
         .withMetadata()
-        .resize(width, height, { fit: 'inside' })
+        .resize(width, height, { fit })
         .toFile(resizedFilePath);
     }
   } finally {

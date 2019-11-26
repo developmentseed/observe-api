@@ -4,7 +4,7 @@ import Joi from '@hapi/joi';
 import logger from '../../services/logger';
 import { getTrace, deleteTrace } from '../../models/traces';
 
-const idLength = config.get('idLength');
+const elementIds = config.get('elementIds');
 
 /**
  * @apiGroup Traces
@@ -26,7 +26,7 @@ export default [
       auth: 'jwt',
       validate: {
         params: Joi.object({
-          id: Joi.string().length(idLength)
+          id: Joi.string().length(elementIds.length)
         })
       },
       handler: async function (request) {

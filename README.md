@@ -40,6 +40,10 @@ Open a new terminal and migrate the database:
 
     npm run migrate-dev-db
 
+Add mock users, traces and photos for testing:
+
+    npm run seed-dev
+
 Start development server with changes monitoring:
 
     npm run dev

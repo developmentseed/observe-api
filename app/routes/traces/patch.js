@@ -4,7 +4,7 @@ import logger from '../../services/logger';
 import { getTrace, updateTrace } from '../../models/traces';
 import config from 'config';
 
-const idLength = config.get('idLength');
+const elementIds = config.get('elementIds');
 
 /**
  * @apiGroup Traces
@@ -28,7 +28,7 @@ export default [
       auth: 'jwt',
       validate: {
         params: Joi.object({
-          id: Joi.string().length(idLength)
+          id: Joi.string().length(elementIds.length)
         }),
         payload: Joi.object({
           description: Joi.string().empty('')
