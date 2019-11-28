@@ -52,7 +52,7 @@ describe('Photos endpoints', async function () {
       const metadata = {
         lon: 30,
         lat: -30,
-        bearing: 8,
+        heading: 8,
         createdAt: new Date().toISOString(),
         osmElement: 'way/677949489'
       };
@@ -73,7 +73,7 @@ describe('Photos endpoints', async function () {
         regularUser.osmDisplayName
       );
       expect(data).to.have.property('createdAt', metadata.createdAt);
-      expect(data).to.have.property('bearing', metadata.bearing);
+      expect(data).to.have.property('heading', metadata.heading);
       expect(data).to.have.property('osmElement', metadata.osmElement);
       expect(data.urls).to.deep.equal(getAllMediaUrls(data.id));
       expect(data.location).to.deep.equal({
@@ -138,7 +138,7 @@ describe('Photos endpoints', async function () {
       const metadata = {
         lon: 40,
         lat: -13,
-        bearing: 272,
+        heading: 272,
         createdAt: new Date().toISOString(),
         osmElement: 'node/55555'
       };
@@ -161,7 +161,7 @@ describe('Photos endpoints', async function () {
         regularUser.osmDisplayName
       );
       expect(data).to.have.property('createdAt', metadata.createdAt);
-      expect(data).to.have.property('bearing', metadata.bearing);
+      expect(data).to.have.property('heading', metadata.heading);
       expect(data.urls).to.deep.equal(getAllMediaUrls(id));
       expect(data.osmElement).to.deep.equal(metadata.osmElement);
       expect(data.location).to.deep.equal({
@@ -206,7 +206,7 @@ describe('Photos endpoints', async function () {
           file,
           lon: 30,
           lat: -30,
-          bearing: 8,
+          heading: 8,
           createdAt: new Date().toISOString(),
           osmElement: 'node/677949489'
         });
@@ -216,7 +216,7 @@ describe('Photos endpoints', async function () {
         const client2 = new Client(apiUrl);
         await client2.login(regularUser2.osmId);
         await client2.patch(`/photos/${id}`, {
-          bearing: 12
+          heading: 12
         });
 
         // This line should not be reached in tests, throw error.
@@ -263,14 +263,14 @@ describe('Photos endpoints', async function () {
         file,
         lon: 40,
         lat: -13,
-        bearing: 272,
+        heading: 272,
         createdAt: new Date().toISOString(),
         osmElement: 'relation/9999999'
       });
 
       const patchData = {
         description: 'A new description',
-        bearing: 50,
+        heading: 50,
         lon: 30,
         lat: 22,
         osmElement: 'node/222222'
@@ -289,7 +289,7 @@ describe('Photos endpoints', async function () {
 
       // Load photo and compare
       const updatedPhoto = await getPhoto(id);
-      expect(updatedPhoto.bearing).to.deep.equal(patchData.bearing);
+      expect(updatedPhoto.heading).to.deep.equal(patchData.heading);
     });
 
     it('return 200 for admin', async function () {
@@ -310,7 +310,7 @@ describe('Photos endpoints', async function () {
         file,
         lon: 40,
         lat: -13,
-        bearing: 272,
+        heading: 272,
         createdAt: new Date().toISOString(),
         osmElement: 'node/55555'
       });
@@ -322,7 +322,7 @@ describe('Photos endpoints', async function () {
 
       // Set patch data
       const patchData = {
-        bearing: 134,
+        heading: 134,
         osmElement: 'node/123123123'
       };
 
@@ -340,7 +340,7 @@ describe('Photos endpoints', async function () {
 
       // Load photo and compare
       const updatedPhoto = await getPhoto(id);
-      expect(updatedPhoto.bearing).to.deep.equal(patchData.bearing);
+      expect(updatedPhoto.heading).to.deep.equal(patchData.heading);
     });
   });
 
