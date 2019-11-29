@@ -131,10 +131,11 @@ export function deleteTrace (id) {
  *
  * @param {object} params pagination params
  */
-export function listTraces ({ offset, limit, orderBy }) {
+export function listTraces ({ offset, limit, orderBy, filterBy = {} }) {
   return db('traces')
     .select(defaultSelect)
     .join('users', 'users.osmId', '=', 'traces.ownerId')
+    .where(builder => whereBuilder(builder, filterBy))
     .offset(offset)
     .orderBy(orderBy)
     .limit(limit)
@@ -144,8 +145,36 @@ export function listTraces ({ offset, limit, orderBy }) {
 /**
  * Get total trace count.
  */
-export async function getTracesCount () {
-  return parseInt((await db('traces').count())[0].count);
+export async function getTracesCount (filterBy = {}) {
+  const countQuery = db('traces')
+    .join('users', 'users.osmId', '=', 'traces.ownerId')
+    .where(builder => whereBuilder(builder, filterBy))
+    .count();
+  return parseInt((await countQuery)[0].count);
+}
+
+function whereBuilder (builder, filterBy) {
+  const { username, startDate, endDate, lengthMin, lengthMax } = filterBy;
+
+  if (username) {
+    builder.where('users.osmDisplayName', 'ilike', `%${username}%`);
+  }
+
+  if (startDate) {
+    builder.where('recordedAt', '>=', startDate);
+  }
+
+  if (endDate) {
+    builder.where('recordedAt', '<=', endDate);
+  }
+
+  if (lengthMin) {
+    builder.where('length', '>=', lengthMin);
+  }
+
+  if (lengthMax) {
+    builder.where('length', '<=', lengthMax);
+  }
 }
 
 /**

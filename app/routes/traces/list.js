@@ -12,6 +12,11 @@ import logger from '../../services/logger';
  * @apiUse AuthorizationHeader
  *
  * @apiUse PaginationParams
+ * @apiParam {string} username Username to filter by (case insensitive).
+ * @apiParam {string} startDate Minimum `recordedAt` value, must be an ISO date.
+ * @apiParam {string} endDate Maximum `recordedAt` value, must be an ISO date.
+ * @apiParam {number} lengthMin Minimum length value to filter by.
+ * @apiParam {number} lengthMax Maximum length value to filter by.
  *
  * @apiSuccess {object} meta Pagination metadata.
  * @apiSuccess {object} results List of traces.
@@ -88,14 +93,38 @@ export default [
             uploadedAt: Joi.string().valid('asc', 'desc'),
             updatedAt: Joi.string().valid('asc', 'desc'),
             ownerId: Joi.string().valid('asc', 'desc')
-          })
+          }),
+          username: Joi.string()
+            .empty('')
+            .optional(),
+          startDate: Joi.string()
+            .empty('')
+            .optional(),
+          endDate: Joi.string()
+            .empty('')
+            .optional(),
+          lengthMin: Joi.string()
+            .empty('')
+            .optional(),
+          lengthMax: Joi.string()
+            .empty('')
+            .optional()
         })
       }
     },
     handler: async function (request, h) {
       try {
         // Get query params
-        const { limit, page, sort } = request.query;
+        const {
+          limit,
+          page,
+          sort,
+          username,
+          startDate,
+          endDate,
+          lengthMin,
+          lengthMax
+        } = request.query;
         const offset = limit * (page - 1);
         let orderBy = [{ column: 'uploadedAt', order: 'desc' }];
 
@@ -117,12 +146,23 @@ export default [
           });
         }
 
+        // Get filter properties
+        const filterBy = {
+          username,
+          startDate,
+          endDate,
+          lengthMin,
+          lengthMax
+        };
+
         const results = await listTraces({
           offset,
           limit,
-          orderBy
+          orderBy,
+          filterBy
         });
-        const count = await getTracesCount();
+
+        const count = await getTracesCount(filterBy);
 
         return h.paginate(results, count);
       } catch (error) {
