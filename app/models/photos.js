@@ -3,6 +3,21 @@ import { persistImageBase64, getAllMediaUrls } from '../services/media-store';
 import { generateId } from './utils';
 import cloneDeep from 'lodash.clonedeep';
 
+/**
+ * Default select fields for traces
+ */
+const defaultSelect = [
+  'id',
+  db.raw('ST_AsGeoJSON(location) as location'),
+  'heading',
+  'createdAt',
+  'description',
+  'osmElement',
+  'ownerId',
+  'uploadedAt',
+  'users.osmDisplayName as ownerDisplayName'
+];
+
 // Utility function for JSON responses
 export function photoToJson (originalPhoto) {
   const photo = cloneDeep(originalPhoto);
@@ -27,17 +42,7 @@ export function photoToJson (originalPhoto) {
  */
 export function select () {
   return db('photos')
-    .select([
-      'id',
-      db.raw('ST_AsGeoJSON(location) as location'),
-      'heading',
-      'createdAt',
-      'description',
-      'osmElement',
-      'ownerId',
-      'uploadedAt',
-      'users.osmDisplayName as ownerDisplayName'
-    ])
+    .select(defaultSelect)
     .join('users', 'users.osmId', '=', 'photos.ownerId');
 }
 
@@ -117,10 +122,41 @@ export async function deletePhoto (id) {
 }
 
 /**
+ * Helper function to build a where clause.
+ */
+function whereBuilder (builder, filterBy) {
+  const { username, startDate, endDate, osmElementType, osmElementId } = filterBy;
+
+  if (username) {
+    builder.where('users.osmDisplayName', 'ilike', `%${username}%`);
+  }
+
+  if (startDate) {
+    builder.where('createdAt', '>=', startDate);
+  }
+
+  if (endDate) {
+    builder.where('createdAt', '<=', endDate);
+  }
+
+  if (osmElementType) {
+    builder.where('osmElement', 'ilike', `%${osmElementType}%`);
+  }
+
+  if (osmElementId) {
+    builder.where('osmElement', 'like', `%${osmElementId}%`);
+  }
+}
+
+/**
  * Get total photo count.
  */
-export async function countPhotos () {
-  return parseInt((await db('photos').count())[0].count);
+export async function countPhotos (filterBy = {}) {
+  const countQuery = db('photos')
+    .join('users', 'users.osmId', '=', 'photos.ownerId')
+    .where(builder => whereBuilder(builder, filterBy))
+    .count();
+  return parseInt((await countQuery)[0].count);
 }
 
 /**
@@ -128,8 +164,11 @@ export async function countPhotos () {
  *
  * @param {object} params pagination params
  */
-export async function listPhotos ({ offset, limit, orderBy }) {
-  return select()
+export async function listPhotos ({ offset, limit, orderBy, filterBy }) {
+  return db('photos')
+    .select(defaultSelect)
+    .join('users', 'users.osmId', '=', 'photos.ownerId')
+    .where(builder => whereBuilder(builder, filterBy))
     .offset(offset)
     .orderBy(orderBy)
     .limit(limit)

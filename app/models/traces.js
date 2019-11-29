@@ -153,6 +153,9 @@ export async function getTracesCount (filterBy = {}) {
   return parseInt((await countQuery)[0].count);
 }
 
+/**
+ * Helper function to build a where clause.
+ */
 function whereBuilder (builder, filterBy) {
   const { username, startDate, endDate, lengthMin, lengthMax } = filterBy;
 
