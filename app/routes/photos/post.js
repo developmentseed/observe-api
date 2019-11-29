@@ -11,7 +11,7 @@ import { createPhoto } from '../../models/photos';
  * @apiDescription Upload a new photo.
  *
  * @apiParam {string} file Image in base64 format.
- * @apiParam {float} bearing Bearing.
+ * @apiParam {float} heading Heading.
  * @apiParam {string} description Description.
  * @apiParam {float} lon Longitude.
  * @apiParam {float} lat Latitude.
@@ -40,7 +40,7 @@ export default [
           createdAt: Joi.date()
             .iso()
             .required(),
-          bearing: Joi.number()
+          heading: Joi.number()
             .max(360)
             .required(),
           description: Joi.string().empty(''),

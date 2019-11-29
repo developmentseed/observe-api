@@ -11,7 +11,7 @@ import { getPhoto, updatePhoto } from '../../models/photos';
  * @apiDescription Update a photo, must be owner or admin.
  *
  * @apiParam {string} id Photo id.
- * @apiParam {float} bearing Bearing.
+ * @apiParam {float} heading Heading.
  * @apiParam {string} description Description.
  * @apiParam {float} lon Longitude.
  * @apiParam {float} lat Latitude.
@@ -34,9 +34,9 @@ export default [
       auth: 'jwt',
       validate: {
         payload: Joi.object({
-          bearing: Joi.number()
+          heading: Joi.number()
             .max(360)
-            .message('Invalid bearing.'),
+            .message('Invalid heading.'),
           description: Joi.string().empty(''),
           lon: Joi.number()
             .min(-180)

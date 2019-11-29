@@ -27,7 +27,7 @@ export function getAllMediaUrls (id) {
 export async function persistImageBase64 (name, data, meta) {
   const baseFilePath = path.join(mediaPath, name);
   const originalFilePath = `${baseFilePath}.jpg`;
-  const { lon, lat, bearing, createdAt } = meta;
+  const { lon, lat, heading, createdAt } = meta;
 
   try {
     // Get buffer from input data
@@ -46,7 +46,7 @@ export async function persistImageBase64 (name, data, meta) {
       GPSLongitudeRef: lon >= 0 ? 'E' : 'W',
       GPSLongitude: Math.abs(lon),
       GPSDestBearingRef: 'T',
-      GPSDestBearing: bearing
+      GPSDestBearing: heading
     });
 
     // Write resized files

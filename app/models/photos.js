@@ -30,7 +30,7 @@ export function select () {
     .select([
       'id',
       db.raw('ST_AsGeoJSON(location) as location'),
-      'bearing',
+      'heading',
       'createdAt',
       'description',
       'osmElement',
@@ -64,13 +64,13 @@ export async function getPhoto (id) {
  */
 export async function createPhoto (data) {
   const id = generateId();
-  const { file, ownerId, lon, lat, bearing, createdAt, osmElement } = data;
+  const { file, ownerId, lon, lat, heading, createdAt, osmElement } = data;
 
   // Save media to file store
   await persistImageBase64(id, file, {
     lon,
     lat,
-    bearing,
+    heading,
     createdAt
   });
 
@@ -79,7 +79,7 @@ export async function createPhoto (data) {
     id,
     ownerId,
     location: `POINT(${lon} ${lat})`,
-    bearing,
+    heading,
     createdAt,
     osmElement
   });
