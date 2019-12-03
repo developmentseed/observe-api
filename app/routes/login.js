@@ -1,6 +1,6 @@
 import Boom from '@hapi/boom';
 import config from 'config';
-const allowedRedirectURLs = config.get('osmOAuth.allowedRedirectURLs');
+const allowedRedirectURLs = config.get('osmOAuth.allowedRedirectURLs').split(',');
 
 const handler = function (request, h) {
   const { isAuthenticated, credentials } = request.auth;
