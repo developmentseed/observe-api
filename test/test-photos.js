@@ -591,7 +591,7 @@ describe('Photos endpoints', async function () {
       } catch (error) {
         // Check for the appropriate status response
         expect(error.response.data.message).to.equal(
-          'Invalid request query input'
+          '"sort.invalidColumn" is not allowed'
         );
         expect(error.response.status).to.equal(400);
       }

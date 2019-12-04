@@ -82,7 +82,18 @@ describe('Users endpoints', function () {
       // Default query, should be order by display name and match limit
       const res = await client.get('/users');
       expect(res.data.meta.totalCount).to.eq(50);
-      expect(res.data.results).to.deep.equal(expectedResponse);
+
+      // Check if results follow the same order
+      for (let i = 0; i < expectedResponse.length; i++) {
+        const expected = expectedResponse[i];
+        const found = res.data.results[i];
+
+        // Remove properties not covered by this test
+        delete found.photos;
+        delete found.traces;
+
+        expect(expected).to.deep.equal(found);
+      }
     });
 
     it('check paginated query and sorting by one column', async function () {
@@ -104,7 +115,18 @@ describe('Users endpoints', function () {
         }
       });
       expect(res.data.meta.totalCount).to.eq(50);
-      expect(res.data.results).to.deep.equal(expectedResponse);
+
+      // Check if results follow the same order
+      for (let i = 0; i < expectedResponse.length; i++) {
+        const expected = expectedResponse[i];
+        const found = res.data.results[i];
+
+        // Remove properties not covered by this test
+        delete found.photos;
+        delete found.traces;
+
+        expect(expected).to.deep.equal(found);
+      }
     });
 
     it('check another page and sorting by two columns', async function () {
@@ -127,7 +149,18 @@ describe('Users endpoints', function () {
         }
       });
       expect(res.data.meta.totalCount).to.eq(50);
-      expect(res.data.results).to.deep.equal(expectedResponse);
+
+      // Check if results follow the same order
+      for (let i = 0; i < expectedResponse.length; i++) {
+        const expected = expectedResponse[i];
+        const found = res.data.results[i];
+
+        // Remove properties not covered by this test
+        delete found.photos;
+        delete found.traces;
+
+        expect(expected).to.deep.equal(found);
+      }
     });
 
     it('invalid query params should 400 and return proper error', async function () {
@@ -152,7 +185,7 @@ describe('Users endpoints', function () {
       } catch (error) {
         // Check for the appropriate status response
         expect(error.response.data.message).to.equal(
-          'Invalid request query input'
+          '"sort.invalidColumn" is not allowed'
         );
         expect(error.response.status).to.equal(400);
       }

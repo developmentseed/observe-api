@@ -41,11 +41,11 @@ export default [
             .iso()
             .required(),
           heading: Joi.number()
-            .positive()
+            .min(0)
             .max(360)
-            .empty(null)
+            .allow(null)
             .error(new Error('Heading should be a number between 0 and 360, or null.')),
-          description: Joi.string().empty(''),
+          description: Joi.string().allow('', null),
           lon: Joi.number()
             .min(-180)
             .max(180)
@@ -59,7 +59,7 @@ export default [
             .required(),
           osmElement: Joi.string()
             .pattern(/^(node|way|relation)\/[0-9]+$/)
-            .empty('')
+            .allow('', null)
         }).required()
       },
       handler: async function (request) {
