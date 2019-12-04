@@ -4,6 +4,7 @@ import db from '../app/services/db';
 import { expect } from 'chai';
 import { createMockUser } from './utils/mock-factory';
 import Client from './utils/http-client';
+import { delay } from '../app/utils';
 const paginationLimit = config.get('pagination.limit');
 
 /* global apiUrl */
@@ -20,6 +21,7 @@ describe('Users endpoints', function () {
     // Create 5 admins
     for (let i = 0; i < 5; i++) {
       users.push(await createMockUser({ isAdmin: true }));
+      await delay(1);
     }
 
     // Get one admin for testing
@@ -28,6 +30,7 @@ describe('Users endpoints', function () {
     // Create more 45 users
     for (let i = 0; i < 45; i++) {
       users.push(await createMockUser());
+      await delay(1);
     }
 
     // Get regular user for testing
