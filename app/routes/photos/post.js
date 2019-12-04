@@ -36,9 +36,6 @@ export default [
         maxBytes: 10485760 // 10 MB
       },
       validate: {
-        failAction: (request, h, err) =>{
-          return Boom.badRequest(err);
-        },
         payload: Joi.object({
           createdAt: Joi.date()
             .iso()
