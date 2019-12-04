@@ -36,13 +36,18 @@ export default [
         maxBytes: 10485760 // 10 MB
       },
       validate: {
+        failAction: (request, h, err) =>{
+          return Boom.badRequest(err);
+        },
         payload: Joi.object({
           createdAt: Joi.date()
             .iso()
             .required(),
           heading: Joi.number()
+            .positive()
             .max(360)
-            .required(),
+            .empty(null)
+            .error(new Error('Heading should be a number between 0 and 360, or null.')),
           description: Joi.string().empty(''),
           lon: Joi.number()
             .min(-180)
@@ -57,7 +62,7 @@ export default [
             .required(),
           osmElement: Joi.string()
             .pattern(/^(node|way|relation)\/[0-9]+$/)
-            .optional()
+            .empty('')
         }).required()
       },
       handler: async function (request) {
