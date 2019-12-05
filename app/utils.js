@@ -1,14 +1,9 @@
 import config from 'config';
 
-const host = config.get('host');
-const port = config.get('port');
-
-export function appUrl () {
-  return `http://${host}:${port}`;
-}
+const appUrl = config.get('appUrl');
 
 export function mediaUrl () {
-  return `${appUrl()}/media`;
+  return `${appUrl}/media`;
 }
 
 /**
