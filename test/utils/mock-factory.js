@@ -1,4 +1,4 @@
-import users from '../../app/models/users';
+import * as users from '../../models/users';
 import { createTrace, getTrace } from '../../app/models/traces';
 import validTraceJson from '../fixtures/valid-trace.json';
 import { createPhoto } from '../../app/models/photos';

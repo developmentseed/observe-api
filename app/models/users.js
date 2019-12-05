@@ -1,29 +1,37 @@
 const db = require('../services/db');
 
-function findByOsmId (osmId) {
+export function get (osmId) {
   return db('users').where('osmId', osmId);
 }
 
-async function count () {
-  return parseInt((await db('users').count())[0].count);
+/**
+ * Get total users count.
+ */
+export async function count (filterBy = {}) {
+  const countQuery = db('users')
+    .where(builder => whereBuilder(builder, filterBy))
+    .count();
+  return parseInt((await countQuery)[0].count);
 }
 
-function create (data) {
+export function create (data) {
   return db('users').insert({ ...data });
 }
 
-function updateFromOsmId (osmId, data) {
-  return findByOsmId(osmId)
+export function update (osmId, data) {
+  return db('users')
     .update(data)
+    .where('osmId', osmId)
     .returning('*');
 }
 
-function list ({ offset, limit, orderBy }) {
+export function list ({ offset, limit, orderBy, filterBy }) {
   return db('users')
     .select('osmId', 'osmDisplayName', 'osmCreatedAt', 'isAdmin')
     .count({ traces: 'traces.ownerId', photos: 'photos.ownerId' })
     .leftJoin('traces', 'users.osmId', '=', 'traces.ownerId')
     .leftJoin('photos', 'users.osmId', '=', 'photos.ownerId')
+    .where(builder => whereBuilder(builder, filterBy))
     .groupBy('users.osmId')
     .offset(offset)
     .orderBy(orderBy)
@@ -34,10 +42,15 @@ function list ({ offset, limit, orderBy }) {
     });
 }
 
-module.exports = {
-  create,
-  count,
-  findByOsmId,
-  list,
-  updateFromOsmId
-};
+/**
+ * Helper function to build a where clause.
+ */
+function whereBuilder (builder, filterBy) {
+  const {
+    username
+  } = filterBy;
+
+  if (username) {
+    builder.where('users.osmDisplayName', 'ilike', `%${username}%`);
+  }
+}

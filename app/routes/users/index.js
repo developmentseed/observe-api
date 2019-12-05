@@ -1,6 +1,6 @@
 import Boom from '@hapi/boom';
 import Joi from '@hapi/joi';
-import users from '../models/users';
+import * as users from '../../models/users';
 
 /**
  * @apiGroup Users
@@ -67,19 +67,16 @@ module.exports = [
           sort: Joi.object({
             osmDisplayName: Joi.string().valid('asc', 'desc'),
             osmCreatedAt: Joi.string().valid('asc', 'desc')
-          })
+          }),
+          username: Joi.string()
+            .empty('')
+            .optional()
         })
       }
     },
     handler: async function (request, h) {
-      // Check if user has proper credentials
-      const { credentials } = request.auth;
-      if (!credentials.isAdmin) {
-        return Boom.unauthorized('Restricted to admin users.');
-      }
-
       // Get query params
-      const { limit, page, sort } = request.query;
+      const { limit, page, sort, username } = request.query;
       const offset = limit * (page - 1);
       let orderBy = ['osmDisplayName'];
 
@@ -101,12 +98,17 @@ module.exports = [
         });
       }
 
+      const filterBy = {
+        username
+      };
+
       const results = await users.list({
         offset,
         limit,
-        orderBy
+        orderBy,
+        filterBy
       });
-      const count = await users.count();
+      const count = await users.count(filterBy);
 
       return h.paginate(results, count);
     }
