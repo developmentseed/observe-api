@@ -28,7 +28,7 @@ export default [
           tracejson: Joi.object({
             type: Joi.valid('Feature'),
             properties: Joi.object({
-              description: Joi.string().empty(''),
+              description: Joi.string().allow('', null),
               timestamps: Joi.array()
                 .min(2)
                 .items(Joi.number())

@@ -20,7 +20,11 @@ function updateFromOsmId (osmId, data) {
 
 function list ({ offset, limit, orderBy }) {
   return db('users')
-    .select()
+    .select('osmId', 'osmDisplayName', 'osmCreatedAt', 'isAdmin')
+    .count({ traces: 'traces.ownerId', photos: 'photos.ownerId' })
+    .leftJoin('traces', 'users.osmId', '=', 'traces.ownerId')
+    .leftJoin('photos', 'users.osmId', '=', 'photos.ownerId')
+    .groupBy('users.osmId')
     .offset(offset)
     .orderBy(orderBy)
     .limit(limit)

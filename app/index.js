@@ -2,6 +2,7 @@ import { ensureDir } from 'fs-extra';
 import config from 'config';
 import Hapi from '@hapi/hapi';
 import hapiRouter from 'hapi-router';
+import Boom from '@hapi/boom';
 import Inert from '@hapi/inert';
 import logger from './services/logger';
 import path from 'path';
@@ -17,7 +18,12 @@ export default async function () {
       parser: q => qs.parse(q)
     },
     routes: {
-      cors: true
+      cors: true,
+      validate: {
+        failAction: async (request, h, err) => {
+          throw Boom.badRequest(err);
+        }
+      }
     },
     debug:
       process.env.NODE_ENV !== 'test'

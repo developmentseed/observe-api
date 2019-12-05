@@ -141,7 +141,7 @@ describe('Traces endpoints', async function () {
         // Check for the appropriate status response
         expect(error.response.status).to.equal(400);
         expect(error.response.data.message).to.equal(
-          'Invalid request payload input'
+          '"tracejson" failed custom validation because number of timestamps and points does not match.'
         );
       }
     });
@@ -509,7 +509,7 @@ describe('Traces endpoints', async function () {
       } catch (error) {
         // Check for the appropriate status response
         expect(error.response.data.message).to.equal(
-          'Invalid request query input'
+          '"sort.invalidColumn" is not allowed'
         );
         expect(error.response.status).to.equal(400);
       }

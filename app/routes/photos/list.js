@@ -12,6 +12,11 @@ import logger from '../../services/logger';
  * @apiUse AuthorizationHeader
  *
  * @apiUse PaginationParams
+ * @apiParam {string} username Username to filter by (case insensitive).
+ * @apiParam {string} startDate Minimum `recordedAt` value, must be an ISO date.
+ * @apiParam {string} endDate Maximum `recordedAt` value, must be an ISO date.
+ * @apiParam {string} osmElementType Element type to filter by.
+ * @apiParam {number} osmElementId Element id to filter by.
  *
  * @apiSuccess {object} meta Pagination metadata.
  * @apiSuccess {object} results List of photos.
@@ -80,14 +85,39 @@ export default [
             description: Joi.string().valid('asc', 'desc'),
             uploadedAt: Joi.string().valid('asc', 'desc'),
             createdAt: Joi.string().valid('asc', 'desc')
-          })
+          }).unknown(false),
+          username: Joi.string()
+            .empty('')
+            .optional(),
+          startDate: Joi.string()
+            .empty('')
+            .optional(),
+          endDate: Joi.string()
+            .empty('')
+            .optional(),
+          osmElementType: Joi.string()
+            .pattern(/(node|way|relation)/)
+            .empty('')
+            .optional(),
+          osmElementId: Joi.number()
+            .empty('')
+            .optional()
         })
       }
     },
     handler: async function (request, h) {
       try {
         // Get query params
-        const { limit, page, sort } = request.query;
+        const {
+          limit,
+          page,
+          sort,
+          username,
+          startDate,
+          endDate,
+          osmElementType,
+          osmElementId
+        } = request.query;
         const offset = limit * (page - 1);
         let orderBy = [{ column: 'uploadedAt', order: 'desc' }];
 
@@ -109,13 +139,22 @@ export default [
           });
         }
 
+        const filterBy = {
+          username,
+          startDate,
+          endDate,
+          osmElementType,
+          osmElementId
+        };
+
         const results = await listPhotos({
           offset,
           limit,
-          orderBy
+          orderBy,
+          filterBy
         });
 
-        const count = await countPhotos();
+        const count = await countPhotos(filterBy);
 
         return h.paginate(results, count);
       } catch (error) {
