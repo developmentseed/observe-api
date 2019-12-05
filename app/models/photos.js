@@ -69,7 +69,16 @@ export async function getPhoto (id) {
  */
 export async function createPhoto (data) {
   const id = generateId();
-  const { file, ownerId, lon, lat, heading, createdAt, osmElement } = data;
+  const {
+    createdAt,
+    description,
+    file,
+    heading,
+    lat,
+    lon,
+    osmElement,
+    ownerId
+  } = data;
 
   // Save media to file store
   await persistImageBase64(id, file, {
@@ -82,11 +91,12 @@ export async function createPhoto (data) {
   // Insert photo
   await db('photos').insert({
     id,
-    ownerId,
-    location: `POINT(${lon} ${lat})`,
-    heading,
     createdAt,
-    osmElement
+    description,
+    heading,
+    location: `POINT(${lon} ${lat})`,
+    osmElement,
+    ownerId
   });
 
   // Load inserted photo
@@ -125,7 +135,13 @@ export async function deletePhoto (id) {
  * Helper function to build a where clause.
  */
 function whereBuilder (builder, filterBy) {
-  const { username, startDate, endDate, osmElementType, osmElementId } = filterBy;
+  const {
+    username,
+    startDate,
+    endDate,
+    osmElementType,
+    osmElementId
+  } = filterBy;
 
   if (username) {
     builder.where('users.osmDisplayName', 'ilike', `%${username}%`);

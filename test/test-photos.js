@@ -53,6 +53,7 @@ describe('Photos endpoints', async function () {
         lon: 30,
         lat: -30,
         heading: 8,
+        description: 'a description',
         createdAt: new Date().toISOString(),
         osmElement: 'way/677949489'
       };
@@ -73,6 +74,7 @@ describe('Photos endpoints', async function () {
         regularUser.osmDisplayName
       );
       expect(data).to.have.property('createdAt', metadata.createdAt);
+      expect(data).to.have.property('description', metadata.description);
       expect(data).to.have.property('heading', metadata.heading);
       expect(data).to.have.property('osmElement', metadata.osmElement);
       expect(data.urls).to.deep.equal(getAllMediaUrls(data.id));
