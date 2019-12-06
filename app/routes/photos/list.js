@@ -82,8 +82,10 @@ export default [
             .integer()
             .min(1),
           sort: Joi.object({
+            id: Joi.string().valid('asc', 'desc'),
+            username: Joi.string().empty(''),
             description: Joi.string().valid('asc', 'desc'),
-            uploadedAt: Joi.string().valid('asc', 'desc'),
+            osmElement: Joi.string().valid('asc', 'desc'),
             createdAt: Joi.string().valid('asc', 'desc')
           }).unknown(false),
           username: Joi.string()
@@ -119,21 +121,21 @@ export default [
           osmElementId
         } = request.query;
         const offset = limit * (page - 1);
-        let orderBy = [{ column: 'uploadedAt', order: 'desc' }];
+        let orderBy = [{ column: 'createdAt', order: 'desc' }];
 
         /**
          * Parses the sort parameter to format used by Knex:
          *   - https://knexjs.org/#Builder-orderBy
          *
          * Example:
-         *   - input: sort[uploadedAt]=asc
-         *   - output: { column: 'uploadedAt', order: 'asc' }
+         *   - input: sort[createdAt]=asc
+         *   - output: { column: 'createdAt', order: 'asc' }
          *
          */
         if (sort) {
           orderBy = Object.keys(sort).map(key => {
             return {
-              column: key,
+              column: key === 'username' ? 'users.osmDisplayName' : key,
               order: sort[key]
             };
           });
