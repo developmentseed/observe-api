@@ -1,6 +1,7 @@
 import Boom from '@hapi/boom';
 import Joi from '@hapi/joi';
 import * as users from '../../models/users';
+import logger from '../../services/logger';
 
 /**
  * @apiGroup Users
@@ -65,8 +66,11 @@ module.exports = [
             .integer()
             .min(1),
           sort: Joi.object({
-            osmDisplayName: Joi.string().valid('asc', 'desc'),
-            osmCreatedAt: Joi.string().valid('asc', 'desc')
+            username: Joi.string().valid('asc', 'desc'),
+            traces: Joi.string().valid('asc', 'desc'),
+            photos: Joi.string().valid('asc', 'desc'),
+            isAdmin: Joi.string().valid('asc', 'desc'),
+            createdAt: Joi.string().valid('asc', 'desc')
           }),
           username: Joi.string()
             .empty('')
@@ -75,42 +79,69 @@ module.exports = [
       }
     },
     handler: async function (request, h) {
-      // Get query params
-      const { limit, page, sort, username } = request.query;
-      const offset = limit * (page - 1);
-      let orderBy = ['osmDisplayName'];
+      try {
+        // Get query params
+        const { limit, page, sort, username } = request.query;
+        const offset = limit * (page - 1);
+        let orderBy = [
+          { column: 'isAdmin', order: 'desc' },
+          { column: 'osmCreatedAt', order: 'asc' }
+        ];
 
-      /**
-       * Parses the sort parameter to format used by Knex:
-       *   - https://knexjs.org/#Builder-orderBy
-       *
-       * Example:
-       *   - input: sort[osmDisplayName]=asc
-       *   - output: { column: 'osmDisplayName', order: 'asc' }
-       *
-       */
-      if (sort) {
-        orderBy = Object.keys(sort).map(key => {
-          return {
-            column: key,
-            order: sort[key]
-          };
+        /**
+         * Parses the sort parameter to format used by Knex:
+         *   - https://knexjs.org/#Builder-orderBy
+         *
+         * Example:
+         *   - input: sort[osmDisplayName]=asc
+         *   - output: { column: 'osmDisplayName', order: 'asc' }
+         *
+         */
+        if (sort) {
+          orderBy = Object.keys(sort).map(sortKey => {
+            let column;
+
+            switch (sortKey) {
+              case 'username':
+                column = 'users.osmDisplayName';
+                break;
+              case 'traces':
+                column = 'traces';
+                break;
+              case 'photos':
+                column = 'photos';
+                break;
+              case 'createdAt':
+                column = 'users.osmCreatedAt';
+                break;
+              default:
+                column = sortKey;
+            }
+
+            return {
+              column,
+              order: sort[sortKey]
+            };
+          });
+        }
+
+        const filterBy = {
+          username
+        };
+
+        const results = await users.list({
+          offset,
+          limit,
+          orderBy,
+          filterBy
         });
+        const count = await users.count(filterBy);
+
+        return h.paginate(results, count);
+      } catch (error) {
+        logger.error(error);
+        return Boom.badImplementation('Unexpected error.');
       }
-
-      const filterBy = {
-        username
-      };
-
-      const results = await users.list({
-        offset,
-        limit,
-        orderBy,
-        filterBy
-      });
-      const count = await users.count(filterBy);
-
-      return h.paginate(results, count);
     }
   }
 ];
