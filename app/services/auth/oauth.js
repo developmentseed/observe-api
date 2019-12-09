@@ -35,8 +35,36 @@ async function setupOAuth (server) {
   // Register Bell
   await server.register(Bell);
 
-  // Client to get profile as raw XML
-  const oauthClient = new Bell.oauth.Client({
+  /*
+   * Create a custom Bell client that will follow redirects
+   */
+  function CustomOauthClient (...args) {
+    Bell.oauth.Client.call(this, ...args);
+  }
+  CustomOauthClient.prototype = Object.create(Bell.oauth.Client.prototype);
+  CustomOauthClient.prototype._request = async function (
+    method,
+    uri,
+    params,
+    oauth,
+    options
+  ) {
+    return Bell.oauth.Client.prototype._request.call(
+      this,
+      method,
+      uri,
+      params,
+      oauth,
+      {
+        ...options,
+        redirects: 3
+      }
+    );
+  };
+  CustomOauthClient.prototype.constructor = CustomOauthClient;
+
+  // Get custom client instance
+  const oauthClient = new CustomOauthClient({
     name: 'osm',
     provider: {
       protocol: 'oauth',
@@ -49,6 +77,7 @@ async function setupOAuth (server) {
     clientSecret
   });
 
+  // Define a strategy that can get and parse OSM profile XML
   const osmStrategy = {
     protocol: 'oauth',
     temporary: requestTokenUrl,
