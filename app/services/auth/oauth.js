@@ -4,6 +4,7 @@ import { xml2js } from 'xml-js';
 import logger from '../logger';
 import users from '../../models/users';
 import { getAccessToken } from './jwt';
+import { Client as CustomOauthClient } from './custom-client';
 
 // Get OAuth settings
 const {
@@ -34,34 +35,6 @@ async function setupOAuth (server) {
 
   // Register Bell
   await server.register(Bell);
-
-  /*
-   * Create a custom Bell client that will follow redirects
-   */
-  function CustomOauthClient (...args) {
-    Bell.oauth.Client.call(this, ...args);
-  }
-  CustomOauthClient.prototype = Object.create(Bell.oauth.Client.prototype);
-  CustomOauthClient.prototype._request = async function (
-    method,
-    uri,
-    params,
-    oauth,
-    options
-  ) {
-    return Bell.oauth.Client.prototype._request.call(
-      this,
-      method,
-      uri,
-      params,
-      oauth,
-      {
-        ...options,
-        redirects: 3
-      }
-    );
-  };
-  CustomOauthClient.prototype.constructor = CustomOauthClient;
 
   // Get custom client instance
   const oauthClient = new CustomOauthClient({
