@@ -555,7 +555,8 @@ internals.Client.prototype._request = async function (
   const requestOptions = {
     headers: {
       Authorization: internals.Client.header(oauth)
-    }
+    },
+    redirects: 3
   };
 
   if (params) {
