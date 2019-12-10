@@ -2,9 +2,6 @@ import Boom from '@hapi/boom';
 import Joi from '@hapi/joi';
 import logger from '../../services/logger';
 import * as users from '../../models/users';
-import config from 'config';
-
-const elementIds = config.get('elementIds');
 
 /**
  * @apiGroup Users

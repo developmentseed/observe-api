@@ -2,6 +2,7 @@ import * as users from '../../app/models/users';
 import { createTrace, getTrace } from '../../app/models/traces';
 import validTraceJson from '../fixtures/valid-trace.json';
 import { createPhoto } from '../../app/models/photos';
+import cloneDeep from 'lodash.clonedeep';
 
 /**
  * Generate random integer number up to "max" value.
@@ -33,9 +34,16 @@ export async function createMockUser (data) {
  * Factory to create mock traces at the database.
  */
 export async function createMockTrace (owner) {
+  const traceJson = cloneDeep(validTraceJson);
+
+  // Randomize first timestamp because it define "recordedAt" property,
+  // which is used for sorting.
+  traceJson.properties.timestamps[0] =
+    traceJson.properties.timestamps[0] - getRandomInt(10000);
+
   const tracejson = await createTrace(
     {
-      ...validTraceJson
+      ...traceJson
     },
     owner.osmId
   );
