@@ -5,6 +5,9 @@ import logger from '../logger';
 import users from '../../models/users';
 import { getAccessToken } from './jwt';
 import { Client as CustomOauthClient } from './custom-client';
+import config from 'config';
+
+const appUrl = config.get('appUrl')
 
 // Get OAuth settings
 const {
@@ -123,7 +126,8 @@ async function setupOAuth (server) {
     password: 'cookie_encryption_password_secure',
     isSecure: false,
     clientSecret,
-    clientId
+    clientId,
+    location: appUrl
   });
 }
 
