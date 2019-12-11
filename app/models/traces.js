@@ -110,7 +110,10 @@ export async function updateTrace (id, data) {
   // Update record
   await db('traces')
     .where('id', '=', id)
-    .update(data);
+    .update({
+      ...data,
+      updatedAt: new Date()
+    });
 
   return getTrace(id);
 }

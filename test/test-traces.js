@@ -233,6 +233,7 @@ describe('Traces endpoints', async function () {
       // Load trace
       const updatedTrace = await getTrace(trace.id);
       expect(updatedTrace.description).to.deep.equal(newDescription);
+      expect(updatedTrace.updatedAt).not.equal(trace.updatedAt);
     });
 
     it('return 200 for non-owner admin', async function () {
