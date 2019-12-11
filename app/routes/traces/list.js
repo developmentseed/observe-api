@@ -87,12 +87,13 @@ export default [
             .integer()
             .min(1),
           sort: Joi.object({
+            id: Joi.string().valid('asc', 'desc'),
             recordedAt: Joi.string().valid('asc', 'desc'),
             description: Joi.string().valid('asc', 'desc'),
             length: Joi.string().valid('asc', 'desc'),
             uploadedAt: Joi.string().valid('asc', 'desc'),
             updatedAt: Joi.string().valid('asc', 'desc'),
-            ownerId: Joi.string().valid('asc', 'desc')
+            username: Joi.string().valid('asc', 'desc')
           }),
           username: Joi.string()
             .empty('')
@@ -126,7 +127,7 @@ export default [
           lengthMax
         } = request.query;
         const offset = limit * (page - 1);
-        let orderBy = [{ column: 'uploadedAt', order: 'desc' }];
+        let orderBy = [{ column: 'recordedAt', order: 'desc' }];
 
         /**
          * Parses the sort parameter to format used by Knex:
@@ -140,7 +141,7 @@ export default [
         if (sort) {
           orderBy = Object.keys(sort).map(key => {
             return {
-              column: key,
+              column: key === 'username' ? 'users.osmDisplayName' : key,
               order: sort[key]
             };
           });

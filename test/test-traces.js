@@ -7,7 +7,7 @@ import { delay } from '../app/utils';
 import validTraceJson from './fixtures/valid-trace.json';
 import cloneDeep from 'lodash.clonedeep';
 import orderBy from 'lodash.orderby';
-import { getTrace, getTracesCount } from '../app/models/traces';
+import { getTrace, getTracesCount, getTraceJson } from '../app/models/traces';
 
 const paginationLimit = config.get('pagination.limit');
 
@@ -54,18 +54,20 @@ describe('Traces endpoints', async function () {
     it('return 200 for existing trace, formated as tracejson', async function () {
       // Create mock data
       const regularUser = await createMockUser();
-      const trace = await createMockTrace(regularUser);
+      const { id } = await createMockTrace(regularUser);
+      const trace = await getTraceJson(id);
 
       // Create a client
       const client = new Client(apiUrl);
       await client.login(regularUser.osmId);
 
       // Fetch resource
-      const { status, data } = await client.get(`/traces/${trace.id}`);
+      const { status, data } = await client.get(`/traces/${id}`);
 
       expect(status).to.equal(200);
 
-      const { timestamps, description } = validTraceJson.properties;
+      // Verify properties
+      const { timestamps, description } = trace.properties;
       const recordedAt = new Date(timestamps[0]).toISOString();
       expect(data.properties).to.have.property('id');
       expect(data.properties).to.have.property('uploadedAt');
@@ -426,12 +428,12 @@ describe('Traces endpoints', async function () {
       expect(status).to.equal(200);
     });
 
-    it('default query order by "uploadedAt", follow limit default', async function () {
+    it('default query order by "recordedAt", follow limit default', async function () {
       const client = new Client(apiUrl);
       await client.login(adminUser.osmId);
 
       // Prepare expected response for default query
-      let expectedResponse = orderBy(traces, 'uploadedAt', 'desc').slice(
+      let expectedResponse = orderBy(traces, 'recordedAt', 'desc').slice(
         0,
         paginationLimit
       );

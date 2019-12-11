@@ -51,18 +51,11 @@ describe('Users endpoints', function () {
       }
     });
 
-    it('should return 401 for regular user', async function () {
-      try {
-        const client = new Client(apiUrl);
-        await client.login(regularUser.osmId);
-        await client.get('/users');
-
-        // The test should never reach here, force execute catch block.
-        throw Error('An error was expected.');
-      } catch (error) {
-        // Check for the appropriate status response
-        expect(error.response.status).to.equal(401);
-      }
+    it('should return 200 for regular user', async function () {
+      const client = new Client(apiUrl);
+      await client.login(regularUser.osmId);
+      const { status } = await client.get('/users');
+      expect(status).to.equal(200);
     });
 
     it('should return 200 for admin user', async function () {
@@ -72,15 +65,16 @@ describe('Users endpoints', function () {
       expect(status).to.equal(200);
     });
 
-    it('default query should order by osmDisplayName and follow default limit', async function () {
+    it('follow default query order and default limit', async function () {
       const client = new Client(apiUrl);
       await client.login(adminUser.osmId);
 
       // Prepare expected response for default query
-      let expectedResponse = orderBy(users, 'osmDisplayName').slice(
-        0,
-        paginationLimit
-      );
+      let expectedResponse = orderBy(
+        users,
+        ['isAdmin', 'osmCreatedAt'],
+        ['desc', 'asc']
+      ).slice(0, paginationLimit);
 
       // Default query, should be order by display name and match limit
       const res = await client.get('/users');
@@ -114,7 +108,7 @@ describe('Users endpoints', function () {
       const res = await client.get('/users', {
         params: {
           page,
-          sort: { osmCreatedAt: 'asc' }
+          sort: { createdAt: 'asc' }
         }
       });
       expect(res.data.meta.totalCount).to.eq(50);
@@ -148,7 +142,7 @@ describe('Users endpoints', function () {
       const res = await client.get('/users', {
         params: {
           page,
-          sort: { osmDisplayName: 'desc', osmCreatedAt: 'asc' }
+          sort: { username: 'desc', createdAt: 'asc' }
         }
       });
       expect(res.data.meta.totalCount).to.eq(50);

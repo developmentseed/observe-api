@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import hapiAuthJwt2 from 'hapi-auth-jwt2';
-import users from '../../models/users';
+import * as users from '../../models/users';
 import config from 'config';
 
 const jwtSecret = config.get('jwtSecret');
@@ -11,7 +11,7 @@ const jwtSecret = config.get('jwtSecret');
  * @param {integer} osmId
  */
 export async function getAccessToken (osmId) {
-  const [user] = await users.findByOsmId(osmId);
+  const [user] = await users.get(osmId);
   if (user) {
     return jwt.sign(
       { osmId: user.osmId, osmCreatedAt: user.osmCreatedAt },
@@ -33,7 +33,7 @@ const validate = async function (decoded) {
   // Token should include osmId and osmCreatedAt
   if (!osmId || !osmCreatedAt) return { isValid: false };
 
-  const [user] = await users.findByOsmId(osmId);
+  const [user] = await users.get(osmId);
 
   // User is found and metadata match, return valid
   if (

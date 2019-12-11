@@ -2,7 +2,7 @@ import config from 'config';
 import Bell from '@hapi/bell';
 import { xml2js } from 'xml-js';
 import logger from '../logger';
-import users from '../../models/users';
+import * as users from '../../models/users';
 import { getAccessToken } from './jwt';
 
 // Get OAuth settings
@@ -77,7 +77,7 @@ async function setupOAuth (server) {
       }
 
       // Retrieve user from database
-      let [user] = await users.findByOsmId(profile.id);
+      let [user] = await users.get(profile.id);
 
       // Upsert user
       if (!user) {

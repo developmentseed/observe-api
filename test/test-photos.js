@@ -509,12 +509,12 @@ describe('Photos endpoints', async function () {
       expect(status).to.equal(200);
     });
 
-    it('default query order by "uploadedAt", follow limit default', async function () {
+    it('default query order by "createdAt", follow limit default', async function () {
       const client = new Client(apiUrl);
       await client.login(adminUser.osmId);
 
       // Prepare expected response for default query
-      let expectedResponse = orderBy(photos, 'uploadedAt', 'desc').slice(
+      let expectedResponse = orderBy(photos, 'createdAt', 'desc').slice(
         0,
         paginationLimit
       );
@@ -533,7 +533,7 @@ describe('Photos endpoints', async function () {
       // Prepare expected response for page 3, ordering by creation date
       const page = 3;
       const offset = paginationLimit * (page - 1);
-      const expectedResponse = orderBy(photos, 'uploadedAt').slice(
+      const expectedResponse = orderBy(photos, 'createdAt').slice(
         offset,
         offset + paginationLimit
       );
@@ -541,7 +541,7 @@ describe('Photos endpoints', async function () {
       const res = await client.get('/photos', {
         params: {
           page,
-          sort: { uploadedAt: 'asc' }
+          sort: { createdAt: 'asc' }
         }
       });
       expect(res.data.meta.totalCount).to.eq(50);
@@ -557,14 +557,14 @@ describe('Photos endpoints', async function () {
       const offset = paginationLimit * (page - 1);
       const expectedResponse = orderBy(
         photos,
-        ['description', 'uploadedAt'],
+        ['description', 'createdAt'],
         ['desc', 'asc']
       ).slice(offset, offset + paginationLimit);
 
       const res = await client.get('/photos', {
         params: {
           page,
-          sort: { description: 'desc', uploadedAt: 'asc' }
+          sort: { description: 'desc', createdAt: 'asc' }
         }
       });
       expect(res.data.meta.totalCount).to.eq(50);
