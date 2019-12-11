@@ -168,7 +168,7 @@ function whereBuilder (builder, filterBy) {
   }
 
   if (endDate) {
-    builder.where('recordedAt', '<=', endDate);
+    builder.where('recordedAt', '<=', `${endDate}T23:59:59.999Z`);
   }
 
   if (lengthMin) {
