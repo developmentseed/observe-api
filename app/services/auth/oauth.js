@@ -5,9 +5,8 @@ import logger from '../logger';
 import users from '../../models/users';
 import { getAccessToken } from './jwt';
 import { Client as CustomOauthClient } from './custom-client';
-import config from 'config';
 
-const appUrl = config.get('appUrl')
+const appUrl = config.get('appUrl');
 
 // Get OAuth settings
 const {
