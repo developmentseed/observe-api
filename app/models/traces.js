@@ -110,7 +110,10 @@ export async function updateTrace (id, data) {
   // Update record
   await db('traces')
     .where('id', '=', id)
-    .update(data);
+    .update({
+      ...data,
+      updatedAt: new Date()
+    });
 
   return getTrace(id);
 }
@@ -168,7 +171,7 @@ function whereBuilder (builder, filterBy) {
   }
 
   if (endDate) {
-    builder.where('recordedAt', '<=', endDate);
+    builder.where('recordedAt', '<=', `${endDate}T23:59:59.999Z`);
   }
 
   if (lengthMin) {

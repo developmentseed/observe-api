@@ -152,7 +152,7 @@ function whereBuilder (builder, filterBy) {
   }
 
   if (endDate) {
-    builder.where('createdAt', '<=', endDate);
+    builder.where('createdAt', '<=', `${endDate}T23:59:59.999Z`);
   }
 
   if (osmElementType) {
