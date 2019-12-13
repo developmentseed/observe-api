@@ -114,7 +114,6 @@ tmp
 data/**/*
 !data/.gitkeep
 data-prep
-docs
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
