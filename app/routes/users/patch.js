@@ -6,7 +6,7 @@ import * as users from '../../models/users';
 /**
  * @apiGroup Users
  *
- * @api {patch} /users/:id 2. PATCH /users/:id
+ * @api {patch} /users/:id 3. PATCH /users/:id
  * @apiDescription Update user, must be owner or admin.
  *
  * @apiParam {string} :id User id.

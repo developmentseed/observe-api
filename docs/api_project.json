@@ -1,0 +1,1 @@
+{  "name": "observe-api",  "version": "0.1.0",  "description": "Observe API",  "title": "API server for Observe platform",  "sampleUrl": false,  "defaultVersion": "0.0.0",  "apidoc": "0.3.0",  "generator": {    "name": "apidoc",    "time": "2019-12-13T13:07:20.480Z",    "url": "http://apidocjs.com",    "version": "0.17.7"  }}
