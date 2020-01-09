@@ -55,13 +55,13 @@ exports.v1 = function (settings) {
 
       // Obtain temporary OAuth credentials
 
-      const oauth_callback = internals.location(
+      const oauthCallback = internals.location(
         request,
         protocol,
         settings.location
       );
       try {
-        var { payload: temp } = await client.temporary(oauth_callback);
+        var { payload: temp } = await client.temporary(oauthCallback);
       } catch (err) {
         return h.unauthenticated(err, { credentials });
       }
@@ -406,9 +406,7 @@ exports.v2 = function (settings) {
         ? '?' + internals.queryString(params)
         : '';
       try {
-        var { res, payload: response } = await Wreck[
-          settings.provider.profileMethod
-        ](uri + getQuery, getOptions);
+        var { res, payload: response } = await Wreck[settings.provider.profileMethod](uri + getQuery, getOptions);
       } catch (err) {
         throw Boom.internal('Failed obtaining ' + name + ' user profile', err);
       }
@@ -487,11 +485,11 @@ exports.Client = internals.Client = function (options) {
   };
 };
 
-internals.Client.prototype.temporary = function (oauth_callback) {
+internals.Client.prototype.temporary = function (oauthCallback) {
   // Temporary Credentials (2.1)
 
   const oauth = {
-    oauth_callback
+    oauth_callback: oauthCallback
   };
 
   return this._request('post', this.settings.temporary, null, oauth, {
