@@ -49,7 +49,8 @@ async function setupOAuth (server) {
       auth: authorizeUrl
     },
     clientId,
-    clientSecret
+    clientSecret,
+    location: appUrl
   });
 
   // Define a strategy that can get and parse OSM profile XML
