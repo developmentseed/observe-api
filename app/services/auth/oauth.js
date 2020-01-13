@@ -4,6 +4,9 @@ import { xml2js } from 'xml-js';
 import logger from '../logger';
 import * as users from '../../models/users';
 import { getAccessToken } from './jwt';
+import { Client as CustomOauthClient } from './custom-client';
+
+const appUrl = config.get('appUrl');
 
 // Get OAuth settings
 const {
@@ -35,8 +38,8 @@ async function setupOAuth (server) {
   // Register Bell
   await server.register(Bell);
 
-  // Client to get profile as raw XML
-  const oauthClient = new Bell.oauth.Client({
+  // Get custom client instance
+  const oauthClient = new CustomOauthClient({
     name: 'osm',
     provider: {
       protocol: 'oauth',
@@ -46,9 +49,11 @@ async function setupOAuth (server) {
       auth: authorizeUrl
     },
     clientId,
-    clientSecret
+    clientSecret,
+    location: appUrl
   });
 
+  // Define a strategy that can get and parse OSM profile XML
   const osmStrategy = {
     protocol: 'oauth',
     temporary: requestTokenUrl,
@@ -121,7 +126,8 @@ async function setupOAuth (server) {
     password: 'cookie_encryption_password_secure',
     isSecure: false,
     clientSecret,
-    clientId
+    clientId,
+    location: appUrl
   });
 }
 
