@@ -12,5 +12,11 @@
     "profileUrl": "OSM_OAUTH_PROFILE_URL",
     "allowedRedirectURLs": "OSM_ALLOWED_REDIRECT_URLS"
   },
-  "jwtSecret": "JWT_SECRET"
+  "jwtSecret": "JWT_SECRET",
+  "media": {
+    "store": {
+      "type": "local",
+      "path": "MEDIA_STORE_PATH"
+    }
+  }
 }

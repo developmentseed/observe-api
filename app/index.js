@@ -5,7 +5,6 @@ import hapiRouter from 'hapi-router';
 import Boom from '@hapi/boom';
 import Inert from '@hapi/inert';
 import logger from './services/logger';
-import path from 'path';
 import qs from 'qs';
 import setupAuth from './services/auth';
 
@@ -73,7 +72,7 @@ export default async function () {
   const mediaStore = config.get('media.store');
   if (mediaStore.type === 'local') {
     // Get media path from config
-    const mediaPath = path.join(__dirname, '..', mediaStore.path);
+    const mediaPath = mediaStore.path;
 
     logger.info(`Uploaded media will be stored locally at ${mediaPath}`);
 
