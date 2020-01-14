@@ -5,7 +5,6 @@ import hapiRouter from 'hapi-router';
 import Boom from '@hapi/boom';
 import Inert from '@hapi/inert';
 import logger from './services/logger';
-import path from 'path';
 import qs from 'qs';
 import setupAuth from './services/auth';
 
