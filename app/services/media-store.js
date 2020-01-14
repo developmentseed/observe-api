@@ -6,7 +6,7 @@ import { exiftool } from 'exiftool-vendored';
 import { mediaUrl } from '../utils';
 
 const { store, sizes } = config.get('media');
-const mediaPath = path.join(__dirname, '..', '..', store.path);
+const mediaPath = store.path;
 
 export async function clearMediaStore () {
   await emptyDir(mediaPath);

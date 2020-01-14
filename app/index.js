@@ -73,7 +73,7 @@ export default async function () {
   const mediaStore = config.get('media.store');
   if (mediaStore.type === 'local') {
     // Get media path from config
-    const mediaPath = path.join(__dirname, '..', mediaStore.path);
+    const mediaPath = mediaStore.path;
 
     logger.info(`Uploaded media will be stored locally at ${mediaPath}`);
 
