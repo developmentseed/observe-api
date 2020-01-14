@@ -1,1 +1,13 @@
-{}
+{
+  "knex": {
+    "client": "pg",
+    "connection": {
+      "host": "localhost",
+      "database": "observe-api-dev",
+      "user": "observe-api-dev",
+      "password": "observe-api-dev",
+      "port": 15432
+    }
+  },
+  "jwtSecret": "secret-dev"
+}

@@ -1,31 +1,45 @@
+import config from 'config';
 import { expect } from 'chai';
-import request from 'request-promise-native';
-import initServer from '../app';
+import startServer from '../app';
+import db from '../app/services/db';
+import logger from '../app/services/logger';
+import { clearMediaStore } from '../app/services/media-store';
+import Client from './utils/http-client';
 
-let server;
-const apiUrl = `http://localhost:${process.env.PORT || 3000}`;
+const port = config.get('port');
+const apiUrl = `http://localhost:${port}`;
+global.apiUrl = apiUrl;
 
 describe('Observe API', function () {
   before(async function () {
-    server = await initServer();
-    global.server = server;
-    global.apiUrl = apiUrl;
+    logger.info('Clearing database...');
+    await db.schema.dropTableIfExists('knex_migrations');
+    await db.schema.dropTableIfExists('users');
+    await db.schema.dropTableIfExists('traces');
+    await db.schema.dropTableIfExists('photos');
+    await db.migrate.latest();
+    await clearMediaStore();
+
+    logger.info('Starting server...');
+    global.server = await startServer();
+
+    logger.info('Running tests...');
   });
 
   describe('GET /', function () {
     it('should have status code 200', async function () {
-      const { body, statusCode } = await request({
-        uri: apiUrl + '/',
-        resolveWithFullResponse: true
-      });
-
-      expect(statusCode).to.equal(200);
-
-      expect(body).to.equal('Observe API');
+      const client = new Client(apiUrl);
+      const { status, data } = await client.get('/');
+      expect(status).to.equal(200);
+      expect(data).to.equal('Observe API');
     });
   });
 
+  require('./test-users');
+  require('./test-traces');
+  require('./test-photos');
+
   after(async function () {
-    await server.stop();
+    await global.server.stop();
   });
 });

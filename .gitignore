@@ -37,7 +37,7 @@
 #
 ################################################
 
-config/local.json
+config/local*.json
 
 
 ################################################
@@ -114,3 +114,8 @@ tmp
 data/**/*
 !data/.gitkeep
 data-prep
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

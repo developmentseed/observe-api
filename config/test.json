@@ -1,1 +1,25 @@
-{}
+{
+  "appUrl": "http://0.0.0.0:3002",
+  "port": 3002,
+  "knex": {
+    "client": "pg",
+    "connection": {
+      "host": "localhost",
+      "database": "observe-api-test",
+      "user": "observe-api-test",
+      "password": "observe-api-test",
+      "port": 15433
+    }
+  },
+  "osmOAuth": {
+    "clientSecret": "mockClientSecret",
+    "clientId": "mockClientId"
+  },
+  "jwtSecret": "secret-test",
+  "media": {
+    "store": {
+      "type": "local",
+      "path": "./data/media-test"
+    }
+  }
+}
