@@ -21,7 +21,6 @@ export default class HttpClient {
     if (!osmId) {
       throw Error('Client needs a osmId to login.');
     }
-
     const {
       data: { accessToken }
     } = await this.axios.get(`/login?osmId=${osmId}`);

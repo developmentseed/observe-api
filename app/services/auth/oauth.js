@@ -3,7 +3,7 @@ import Bell from '@hapi/bell';
 import { xml2js } from 'xml-js';
 import logger from '../logger';
 import * as users from '../../models/users';
-import { getAccessToken } from './jwt';
+import { getAccessTokenFromOsmId } from './jwt';
 import { Client as CustomOauthClient } from './custom-client';
 
 import { appUrl } from '../../utils';
@@ -29,7 +29,7 @@ async function setupOAuth (server) {
     Bell.simulate(async req => {
       const { osmId } = req.query;
 
-      const accessToken = await getAccessToken(parseInt(osmId));
+      const accessToken = await getAccessTokenFromOsmId(parseInt(osmId));
 
       return { accessToken };
     });
@@ -82,7 +82,7 @@ async function setupOAuth (server) {
       }
 
       // Retrieve user from database
-      let [user] = await users.get(profile.id);
+      let user = await users.get(profile.id);
 
       // Upsert user
       if (!user) {
@@ -114,7 +114,7 @@ async function setupOAuth (server) {
         osmCreatedAt: user.osmCreatedAt.toISOString(),
         isAdmin: user.isAdmin
       };
-      credentials.accessToken = await getAccessToken(profile.id);
+      credentials.accessToken = await getAccessTokenFromOsmId(profile.id);
 
       return credentials;
     }

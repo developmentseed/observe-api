@@ -10,8 +10,8 @@ const expiresIn = config.get('jwt.expiresIn');
  *
  * @param {integer} osmId
  */
-export async function getAccessToken (osmId) {
-  const [user] = await users.get(osmId);
+export async function getAccessTokenFromOsmId (osmId) {
+  const user = await users.get(osmId);
   if (user) {
     return jwt.sign(
       { osmId: user.osmId, osmCreatedAt: user.osmCreatedAt },
@@ -34,7 +34,7 @@ const validate = async function (decoded) {
   // Token should include osmId and osmCreatedAt
   if (!osmId || !osmCreatedAt) return { isValid: false };
 
-  const [user] = await users.get(osmId);
+  const user = await users.get(osmId);
 
   // User is found and metadata match, return valid
   if (

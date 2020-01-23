@@ -1,7 +1,7 @@
 const db = require('../services/db');
 
 export function get (osmId) {
-  return db('users').where('osmId', osmId);
+  return db('users').where('osmId', osmId).first();
 }
 
 /**
