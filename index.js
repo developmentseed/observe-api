@@ -5,7 +5,7 @@ require = require('esm')(module); // eslint-disable-line
 //   https://github.com/dwyl/hapi-auth-jwt2#generating-your-secret-key
 try {
   const config = require('config');
-  config.get('jwtSecret');
+  config.get('jwt.secret');
 } catch (error) {
   throw Error('Config property "jwtSecret" must be set.');
 }

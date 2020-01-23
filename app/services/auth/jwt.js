@@ -3,8 +3,8 @@ import hapiAuthJwt2 from 'hapi-auth-jwt2';
 import * as users from '../../models/users';
 import config from 'config';
 
-const jwtSecret = config.get('jwtSecret');
-
+const jwtSecret = config.get('jwt.secret');
+const expiresIn = config.get('jwt.expiresIn');
 /**
  * Returns an access token for an existing user.
  *
@@ -15,7 +15,8 @@ export async function getAccessToken (osmId) {
   if (user) {
     return jwt.sign(
       { osmId: user.osmId, osmCreatedAt: user.osmCreatedAt },
-      jwtSecret
+      jwtSecret,
+      { expiresIn }
     );
   }
   throw Error(`Could not generate access token, user not found.`);

@@ -5,6 +5,9 @@
   "pagination": {
     "limit": 15
   },
+  "jwt": {
+    "expiresIn": "7d"
+  },
   "elementIds": {
     "length": 15,
     "alphabet": "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"

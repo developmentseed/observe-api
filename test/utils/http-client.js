@@ -26,8 +26,11 @@ export default class HttpClient {
       data: { accessToken }
     } = await this.axios.get(`/login?osmId=${osmId}`);
 
-    // Update JWT
-    this.axios.defaults.headers.common['Authorization'] = accessToken;
+    this.setAuthorizationHeader(accessToken);
+  }
+
+  setAuthorizationHeader (token) {
+    this.axios.defaults.headers.common['Authorization'] = token;
   }
 
   get (route, params) {

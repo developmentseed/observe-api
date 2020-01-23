@@ -9,5 +9,7 @@
       "port": 15432
     }
   },
-  "jwtSecret": "secret-dev"
+  "jwt": {
+    "secret": "secret-dev"
+  }
 }
