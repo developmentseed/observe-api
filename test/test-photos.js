@@ -11,9 +11,6 @@ import { getAllMediaUrls, getAllMediaPaths } from '../app/services/media-store';
 import { readFile, exists } from 'fs-extra';
 
 const paginationLimit = config.get('pagination.limit');
-
-/* global apiUrl */
-
 const mediaSizes = config.get('media.sizes');
 
 describe('Photos endpoints', async function () {
@@ -25,7 +22,7 @@ describe('Photos endpoints', async function () {
   describe('POST /photos', function () {
     it('return 401 for non-authenticated user', async function () {
       try {
-        const client = new Client(apiUrl);
+        const client = new Client();
         await client.post('/photos', {});
 
         // This line should be reached, force executing the catch block with
@@ -40,7 +37,7 @@ describe('Photos endpoints', async function () {
     it('return 200 for authenticated user and store photo', async function () {
       // Create authenticated client
       const regularUser = await createMockUser();
-      const client = new Client(apiUrl);
+      const client = new Client();
       await client.login(regularUser.osmId);
 
       // Get .jpg file as base64
@@ -96,7 +93,7 @@ describe('Photos endpoints', async function () {
   describe('GET /photos/{id}', function () {
     it('return 401 for non-authenticated user', async function () {
       try {
-        const client = new Client(apiUrl);
+        const client = new Client();
         await client.get('/photos/ABCDEFGHIJKLMNO');
 
         // The test should never reach here, force execute catch block.
@@ -111,7 +108,7 @@ describe('Photos endpoints', async function () {
       try {
         // Create client
         const regularUser = await createMockUser();
-        const client = new Client(apiUrl);
+        const client = new Client();
         await client.login(regularUser.osmId);
 
         // Fetch resource
@@ -128,7 +125,7 @@ describe('Photos endpoints', async function () {
     it('return 200 for existing photo', async function () {
       // Create authenticated client
       const regularUser = await createMockUser();
-      const client = new Client(apiUrl);
+      const client = new Client();
       await client.login(regularUser.osmId);
 
       // Get .jpg file as base64
@@ -176,7 +173,7 @@ describe('Photos endpoints', async function () {
   describe('PATCH /photos/{id}', async function () {
     it('return 401 for non-authenticated user', async function () {
       try {
-        const client = new Client(apiUrl);
+        const client = new Client();
         await client.patch(`/photos/abcdefghi`, {
           osmElement: 'way/677949489'
         });
@@ -199,7 +196,7 @@ describe('Photos endpoints', async function () {
 
         // Create user 1 and photo
         const regularUser1 = await createMockUser();
-        const client1 = new Client(apiUrl);
+        const client1 = new Client();
         await client1.login(regularUser1.osmId);
 
         const {
@@ -215,7 +212,7 @@ describe('Photos endpoints', async function () {
 
         // Create user 2 to try patch photo from user 1
         const regularUser2 = await createMockUser();
-        const client2 = new Client(apiUrl);
+        const client2 = new Client();
         await client2.login(regularUser2.osmId);
         await client2.patch(`/photos/${id}`, {
           heading: 12
@@ -233,7 +230,7 @@ describe('Photos endpoints', async function () {
       try {
         // Create client
         const regularUser = await createMockUser();
-        const client = new Client(apiUrl);
+        const client = new Client();
         await client.login(regularUser.osmId);
 
         // Fetch resource
@@ -250,7 +247,7 @@ describe('Photos endpoints', async function () {
     it('return 200 for owner', async function () {
       // Create client
       const regularUser = await createMockUser();
-      const client = new Client(apiUrl);
+      const client = new Client();
       await client.login(regularUser.osmId);
 
       // Get .jpg file as base64
@@ -297,7 +294,7 @@ describe('Photos endpoints', async function () {
     it('return 200 for admin', async function () {
       // Create client for regular user
       const regularUser = await createMockUser();
-      const client = new Client(apiUrl);
+      const client = new Client();
       await client.login(regularUser.osmId);
 
       // Get .jpg file as base64
@@ -319,7 +316,7 @@ describe('Photos endpoints', async function () {
 
       // Create client for admin user
       const adminUser = await createMockUser({ isAdmin: true });
-      const adminClient = new Client(apiUrl);
+      const adminClient = new Client();
       await adminClient.login(adminUser.osmId);
 
       // Set patch data
@@ -349,7 +346,7 @@ describe('Photos endpoints', async function () {
   describe('DEL /photos/{id}', async function () {
     it('return 401 for non-authenticated user', async function () {
       try {
-        const client = new Client(apiUrl);
+        const client = new Client();
         await client.del(`/photos/abcdefghi`);
 
         // This line should be reached, force executing the catch block with
@@ -367,7 +364,7 @@ describe('Photos endpoints', async function () {
         const regularUser2 = await createMockUser();
         const photo = await createMockPhoto(regularUser1);
 
-        const client = new Client(apiUrl);
+        const client = new Client();
         await client.login(regularUser2.osmId);
         await client.del(`/photos/${photo.id}`);
 
@@ -384,7 +381,7 @@ describe('Photos endpoints', async function () {
       try {
         // Create client
         const regularUser = await createMockUser();
-        const client = new Client(apiUrl);
+        const client = new Client();
         await client.login(regularUser.osmId);
 
         // Fetch resource
@@ -401,7 +398,7 @@ describe('Photos endpoints', async function () {
     it('return 200 for owner', async function () {
       // Create client
       const regularUser = await createMockUser();
-      const client = new Client(apiUrl);
+      const client = new Client();
       await client.login(regularUser.osmId);
 
       // Create mock photo
@@ -451,7 +448,7 @@ describe('Photos endpoints', async function () {
       // Create client
       const regularUser = await createMockUser();
       const adminUser = await createMockUser({ isAdmin: true });
-      const adminClient = new Client(apiUrl);
+      const adminClient = new Client();
       await adminClient.login(adminUser.osmId);
 
       // Create mock photo
@@ -503,7 +500,7 @@ describe('Photos endpoints', async function () {
 
     it('return 401 for non-authenticated user', async function () {
       try {
-        const client = new Client(apiUrl);
+        const client = new Client();
         await client.get('/photos');
 
         // The test should never reach here, force execute catch block.
@@ -515,21 +512,21 @@ describe('Photos endpoints', async function () {
     });
 
     it('return 200 for regular user', async function () {
-      const client = new Client(apiUrl);
+      const client = new Client();
       await client.login(regularUser.osmId);
       const { status } = await client.get('/photos');
       expect(status).to.equal(200);
     });
 
     it('return 200 for admin user', async function () {
-      const client = new Client(apiUrl);
+      const client = new Client();
       await client.login(adminUser.osmId);
       const { status } = await client.get('/photos');
       expect(status).to.equal(200);
     });
 
     it('default query order by "createdAt", follow limit default', async function () {
-      const client = new Client(apiUrl);
+      const client = new Client();
       await client.login(adminUser.osmId);
 
       // Prepare expected response for default query
@@ -546,7 +543,7 @@ describe('Photos endpoints', async function () {
     });
 
     it('check paginated query and sorting by one column', async function () {
-      const client = new Client(apiUrl);
+      const client = new Client();
       await client.login(adminUser.osmId);
 
       // Prepare expected response for page 3, ordering by creation date
@@ -568,7 +565,7 @@ describe('Photos endpoints', async function () {
     });
 
     it('check another page and sorting by two columns', async function () {
-      const client = new Client(apiUrl);
+      const client = new Client();
       await client.login(adminUser.osmId);
 
       // Prepare expected response for page 3, ordering by creation date
@@ -592,7 +589,7 @@ describe('Photos endpoints', async function () {
 
     it('invalid query params return 400 status and proper error', async function () {
       try {
-        const client = new Client(apiUrl);
+        const client = new Client();
         await client.login(adminUser.osmId);
 
         const page = 2;

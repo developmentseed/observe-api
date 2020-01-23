@@ -1,5 +1,6 @@
 import axios from 'axios';
 import Qs from 'qs';
+import { appUrl } from '../../app/utils';
 
 // Set default serializer for axios
 axios.defaults.paramsSerializer = function (params) {
@@ -10,10 +11,9 @@ axios.defaults.paramsSerializer = function (params) {
  * HTTP Client class.
  */
 export default class HttpClient {
-  constructor (apiUrl) {
-    this.apiUrl = apiUrl;
+  constructor () {
     this.axios = axios.create({
-      baseURL: apiUrl
+      baseURL: appUrl
     });
   }
 
@@ -26,11 +26,8 @@ export default class HttpClient {
       data: { accessToken }
     } = await this.axios.get(`/login?osmId=${osmId}`);
 
-    // Replace axios instance with an authenticated one
-    this.axios = axios.create({
-      baseURL: this.apiUrl,
-      headers: { Authorization: accessToken }
-    });
+    // Update JWT
+    this.axios.defaults.headers.common['Authorization'] = accessToken;
   }
 
   get (route, params) {

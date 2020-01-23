@@ -11,8 +11,6 @@ import { getTrace, getTracesCount, getTraceJson } from '../app/models/traces';
 
 const paginationLimit = config.get('pagination.limit');
 
-/* global apiUrl */
-
 describe('Traces endpoints', async function () {
   before(async function () {
     await db('users').delete();
@@ -22,7 +20,7 @@ describe('Traces endpoints', async function () {
   describe('GET /traces/{id}', function () {
     it('return 401 for non-authenticated user', async function () {
       try {
-        const client = new Client(apiUrl);
+        const client = new Client();
         await client.get('/traces/ABCDEFGHIJKLMNO');
 
         // The test should never reach here, force execute catch block.
@@ -37,7 +35,7 @@ describe('Traces endpoints', async function () {
       try {
         // Create client
         const regularUser = await createMockUser();
-        const client = new Client(apiUrl);
+        const client = new Client();
         await client.login(regularUser.osmId);
 
         // Fetch resource
@@ -58,7 +56,7 @@ describe('Traces endpoints', async function () {
       const trace = await getTraceJson(id);
 
       // Create a client
-      const client = new Client(apiUrl);
+      const client = new Client();
       await client.login(regularUser.osmId);
 
       // Fetch resource
@@ -90,7 +88,7 @@ describe('Traces endpoints', async function () {
   describe('POST /traces', function () {
     it('return 401 for non-authenticated user', async function () {
       try {
-        const client = new Client(apiUrl);
+        const client = new Client();
         await client.post('/traces', {});
 
         // This line should be reached, force executing the catch block with
@@ -104,7 +102,7 @@ describe('Traces endpoints', async function () {
 
     it('return 200 for authenticated user and store trace', async function () {
       const regularUser = await createMockUser();
-      const client = new Client(apiUrl);
+      const client = new Client();
       await client.login(regularUser.osmId);
       const { status, data } = await client.post('/traces', {
         tracejson: validTraceJson
@@ -132,7 +130,7 @@ describe('Traces endpoints', async function () {
         invalidTraceJson.properties.timestamps.pop();
 
         const regularUser = await createMockUser();
-        const client = new Client(apiUrl);
+        const client = new Client();
         await client.login(regularUser.osmId);
         await client.post('/traces', { tracejson: invalidTraceJson });
 
@@ -152,7 +150,7 @@ describe('Traces endpoints', async function () {
   describe('PATCH /traces/{id}', async function () {
     it('return 401 for non-authenticated user', async function () {
       try {
-        const client = new Client(apiUrl);
+        const client = new Client();
         await client.patch(`/traces/abcdefghi`, {
           description: 'a new description'
         });
@@ -172,7 +170,7 @@ describe('Traces endpoints', async function () {
         const regularUser2 = await createMockUser();
         const trace = await createMockTrace(regularUser1);
 
-        const client = new Client(apiUrl);
+        const client = new Client();
         await client.login(regularUser2.osmId);
         await client.patch(`/traces/${trace.id}`, {
           description: 'a new description'
@@ -191,7 +189,7 @@ describe('Traces endpoints', async function () {
       try {
         // Create client
         const regularUser = await createMockUser();
-        const client = new Client(apiUrl);
+        const client = new Client();
         await client.login(regularUser.osmId);
 
         // Fetch resource
@@ -213,7 +211,7 @@ describe('Traces endpoints', async function () {
 
       // Create client
       const regularUser = await createMockUser();
-      const client = new Client(apiUrl);
+      const client = new Client();
       await client.login(regularUser.osmId);
 
       // Create mock trace
@@ -243,7 +241,7 @@ describe('Traces endpoints', async function () {
       // Create client
       const regularUser = await createMockUser();
       const adminUser = await createMockUser({ isAdmin: true });
-      const client = new Client(apiUrl);
+      const client = new Client();
       await client.login(adminUser.osmId);
 
       // Create mock trace
@@ -269,7 +267,7 @@ describe('Traces endpoints', async function () {
   describe('DEL /traces/{id}', async function () {
     it('return 401 for non-authenticated user', async function () {
       try {
-        const client = new Client(apiUrl);
+        const client = new Client();
         await client.del(`/traces/abcdefghi`);
 
         // This line should be reached, force executing the catch block with
@@ -287,7 +285,7 @@ describe('Traces endpoints', async function () {
         const regularUser2 = await createMockUser();
         const trace = await createMockTrace(regularUser1);
 
-        const client = new Client(apiUrl);
+        const client = new Client();
         await client.login(regularUser2.osmId);
         await client.del(`/traces/${trace.id}`);
 
@@ -304,7 +302,7 @@ describe('Traces endpoints', async function () {
       try {
         // Create client
         const regularUser = await createMockUser();
-        const client = new Client(apiUrl);
+        const client = new Client();
         await client.login(regularUser.osmId);
 
         // Fetch resource
@@ -321,7 +319,7 @@ describe('Traces endpoints', async function () {
     it('return 200 for owner', async function () {
       // Create client
       const regularUser = await createMockUser();
-      const client = new Client(apiUrl);
+      const client = new Client();
       await client.login(regularUser.osmId);
 
       // Create mock trace
@@ -350,7 +348,7 @@ describe('Traces endpoints', async function () {
       // Create client
       const regularUser = await createMockUser();
       const adminUser = await createMockUser({ isAdmin: true });
-      const client = new Client(apiUrl);
+      const client = new Client();
       await client.login(adminUser.osmId);
 
       // Create mock trace
@@ -404,7 +402,7 @@ describe('Traces endpoints', async function () {
 
     it('return 401 for non-authenticated user', async function () {
       try {
-        const client = new Client(apiUrl);
+        const client = new Client();
         await client.get('/traces');
 
         // The test should never reach here, force execute catch block.
@@ -416,21 +414,21 @@ describe('Traces endpoints', async function () {
     });
 
     it('return 200 for regular user', async function () {
-      const client = new Client(apiUrl);
+      const client = new Client();
       await client.login(regularUser.osmId);
       const { status } = await client.get('/traces');
       expect(status).to.equal(200);
     });
 
     it('return 200 for admin user', async function () {
-      const client = new Client(apiUrl);
+      const client = new Client();
       await client.login(adminUser.osmId);
       const { status } = await client.get('/traces');
       expect(status).to.equal(200);
     });
 
     it('default query order by "recordedAt", follow limit default', async function () {
-      const client = new Client(apiUrl);
+      const client = new Client();
       await client.login(adminUser.osmId);
 
       // Prepare expected response for default query
@@ -446,7 +444,7 @@ describe('Traces endpoints', async function () {
     });
 
     it('check paginated query and sorting by one column', async function () {
-      const client = new Client(apiUrl);
+      const client = new Client();
       await client.login(adminUser.osmId);
 
       // Prepare expected response for page 3, ordering by creation date
@@ -468,7 +466,7 @@ describe('Traces endpoints', async function () {
     });
 
     it('check another page and sorting by two columns', async function () {
-      const client = new Client(apiUrl);
+      const client = new Client();
       await client.login(adminUser.osmId);
 
       // Prepare expected response for page 3, ordering by creation date
@@ -492,7 +490,7 @@ describe('Traces endpoints', async function () {
 
     it('invalid query params return 400 status and proper error', async function () {
       try {
-        const client = new Client(apiUrl);
+        const client = new Client();
         await client.login(adminUser.osmId);
 
         const page = 2;
