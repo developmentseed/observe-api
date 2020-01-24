@@ -1,5 +1,14 @@
 # Observe API
 
+Data service for [Observe](https://github.com/developmentseed/observe) platform. This is a web server built in Node.js that provides an application programming interface for the [dashboard](https://github.com/developmentseed/observe-dashboard) and [mobile app](https://github.com/developmentseed/observe) of Observe.
+
+Documentation is available at:
+
+- [API](http://developmentseed.github.io/observe-api)
+- [Platform](https://github.com/developmentseed/observe#documentation) 
+
+This software is in early stages of development. Please visit the [issues page](https://github.com/developmentseed/observe-api/issues) to learn about known bugs and features development.
+
 ## Getting started
 
 To set up a development environment, install the following on your system:
@@ -80,7 +89,7 @@ Start documentation server:
 
     npm run view-docs
 
-Visit http://localhost:8080.    
+Visit http://localhost:8080.
 
 ## License
 
