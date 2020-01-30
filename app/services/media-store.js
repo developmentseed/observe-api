@@ -13,8 +13,7 @@ export async function clearMediaStore () {
 }
 
 export function getMediaSizeUrl (id, size) {
-  // Include suffix, if passed.
-  return `${mediaUrl()}/${id}-${size}.jpg`;
+  return `${mediaUrl}/${id}-${size}.jpg`;
 }
 
 export function getAllMediaUrls (id) {
