@@ -66,6 +66,14 @@ Open a new terminal and run tests:
 
 When finished, go back to the first terminal session and kill the database container with Ctrl+C.
 
+### Cleaning media folder
+
+A script is available to list files in the media folder that do not correspond to a existing photo at the database. The example command below will connect to the test database and generate a list of "orphaned" media files to `orphaned.txt`, which can be used to remove files via shell script:
+
+    NODE_ENV=test node -r esm scripts/list-orphaned-files > orphaned.txt
+
+Change or remove `NODE_ENV` value to apply to a different environment.
+
 ## API Documentation
 
 Start documentation server:
