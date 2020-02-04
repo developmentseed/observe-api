@@ -7,8 +7,8 @@ import path from 'path';
 import { countPhotos, getPhoto } from '../app/models/photos';
 import { createMockUser, createMockPhoto } from './utils/mock-factory';
 import { expect, should } from 'chai';
-import { getAllMediaUrls } from '../app/services/media-store';
-import { readFile } from 'fs-extra';
+import { getAllMediaUrls, getAllMediaPaths } from '../app/services/media-store';
+import { readFile, exists } from 'fs-extra';
 
 const paginationLimit = config.get('pagination.limit');
 
@@ -407,6 +407,17 @@ describe('Photos endpoints', async function () {
       // Create mock photo
       const photo = await createMockPhoto(regularUser);
 
+      // Get media files path
+      const files = getAllMediaPaths(photo.id);
+
+      // Check if they were created
+      for (const size in files) {
+        if (files.hasOwnProperty(size)) {
+          const fileExists = await exists(files[size]);
+          expect(fileExists).to.equal(true);
+        }
+      }
+
       // Get photo count
       const beforeCount = await countPhotos();
 
@@ -423,9 +434,17 @@ describe('Photos endpoints', async function () {
       const deletedPhoto = await getPhoto(photo.id);
       should().not.exist(deletedPhoto);
 
-      // Check if photos count was reduced by one
+      // Check if photos count on the database was reduced by one
       const afterCount = await countPhotos();
       expect(afterCount).to.eq(beforeCount - 1);
+
+      // Check if media files were removed
+      for (const size in files) {
+        if (files.hasOwnProperty(size)) {
+          const fileExists = await exists(files[size]);
+          expect(fileExists).to.equal(false);
+        }
+      }
     });
 
     it('return 200 for non-owner admin', async function () {

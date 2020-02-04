@@ -1,6 +1,7 @@
 {
-  "appUrl": "http://0.0.0.0:3000",
-  "host": "0.0.0.0",
+  "appUrl": "http://localhost:3000",
+  "protocol": "http",
+  "host": "localhost",
   "port": 3000,
   "pagination": {
     "limit": 15

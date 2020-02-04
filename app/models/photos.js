@@ -1,7 +1,8 @@
 import db from '../services/db';
-import { persistImageBase64, getAllMediaUrls } from '../services/media-store';
+import { persistImageBase64, getAllMediaUrls, getAllMediaPaths } from '../services/media-store';
 import { generateId } from './utils';
 import cloneDeep from 'lodash.clonedeep';
+import { remove } from 'fs-extra';
 
 /**
  * Default select fields for traces
@@ -126,6 +127,16 @@ export async function updatePhoto (id, data) {
  * @param {integer} id photo id
  */
 export async function deletePhoto (id) {
+  const files = await getAllMediaPaths(id);
+
+  // Delete media files for all sizes
+  for (const size in files) {
+    if (files.hasOwnProperty(size)) {
+      const filePath = files[size];
+      await remove(filePath);
+    }
+  }
+
   return db('photos')
     .delete()
     .where('id', id);
