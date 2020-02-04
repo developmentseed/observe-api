@@ -42,11 +42,5 @@ describe('Authorization', function () {
         expect(error.response.status).to.equal(401);
       }
     });
-    it('should refresh token near expiration date');
-  });
-
-  describe('update user admin status', function () {
-    it('should return refresh token when admin status is promoted');
-    it('should return refresh token when admin status is demoted');
   });
 });
