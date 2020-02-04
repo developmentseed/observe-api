@@ -7,7 +7,7 @@ Documentation is available at:
 - [API](http://developmentseed.github.io/observe-api)
 - [Platform](https://github.com/developmentseed/observe#documentation) 
 
-This software is in early stages of development. Please visit the [issues page](https://github.com/developmentseed/observe-api/issues) to learn about known bugs and features development.
+This software is in early stages of development. Please visit the [issues page](https://github.com/developmentseed/observe-api/issues) to learn about known bugs and feature development.
 
 ## Getting started
 
