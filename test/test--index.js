@@ -1,14 +1,9 @@
-import config from 'config';
 import { expect } from 'chai';
 import startServer from '../app';
 import db from '../app/services/db';
 import logger from '../app/services/logger';
 import { clearMediaStore } from '../app/services/media-store';
 import Client from './utils/http-client';
-
-const port = config.get('port');
-const apiUrl = `http://localhost:${port}`;
-global.apiUrl = apiUrl;
 
 describe('Observe API', function () {
   before(async function () {
@@ -28,7 +23,7 @@ describe('Observe API', function () {
 
   describe('GET /', function () {
     it('should have status code 200', async function () {
-      const client = new Client(apiUrl);
+      const client = new Client();
       const { status, data } = await client.get('/');
       expect(status).to.equal(200);
       expect(data).to.equal('Observe API');
@@ -38,6 +33,7 @@ describe('Observe API', function () {
   require('./test-users');
   require('./test-traces');
   require('./test-photos');
+  require('./test-auth');
 
   after(async function () {
     await global.server.stop();

@@ -1,5 +1,5 @@
 {
-  "appUrl": "APP_URL",
+  "protocol": "PROTOCOL",
   "host": "HOST",
   "port": "PORT",
   "knex": "PG_CONNECTION_STRING",
@@ -12,7 +12,10 @@
     "profileUrl": "OSM_OAUTH_PROFILE_URL",
     "allowedRedirectURLs": "OSM_ALLOWED_REDIRECT_URLS"
   },
-  "jwtSecret": "JWT_SECRET",
+  "jwt": {
+    "secret": "JWT_SECRET",
+    "expiresIn": "JWT_EXPIRES_IN"
+  },
   "media": {
     "store": {
       "type": "local",

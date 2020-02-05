@@ -3,19 +3,20 @@ import hapiAuthJwt2 from 'hapi-auth-jwt2';
 import * as users from '../../models/users';
 import config from 'config';
 
-const jwtSecret = config.get('jwtSecret');
-
+const jwtSecret = config.get('jwt.secret');
+const expiresIn = config.get('jwt.expiresIn');
 /**
  * Returns an access token for an existing user.
  *
  * @param {integer} osmId
  */
-export async function getAccessToken (osmId) {
-  const [user] = await users.get(osmId);
+export async function getAccessTokenFromOsmId (osmId) {
+  const user = await users.get(osmId);
   if (user) {
     return jwt.sign(
       { osmId: user.osmId, osmCreatedAt: user.osmCreatedAt },
-      jwtSecret
+      jwtSecret,
+      { expiresIn }
     );
   }
   throw Error(`Could not generate access token, user not found.`);
@@ -33,7 +34,7 @@ const validate = async function (decoded) {
   // Token should include osmId and osmCreatedAt
   if (!osmId || !osmCreatedAt) return { isValid: false };
 
-  const [user] = await users.get(osmId);
+  const user = await users.get(osmId);
 
   // User is found and metadata match, return valid
   if (

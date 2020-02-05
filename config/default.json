@@ -1,10 +1,12 @@
 {
-  "appUrl": "http://localhost:3000",
   "protocol": "http",
   "host": "localhost",
   "port": 3000,
   "pagination": {
     "limit": 15
+  },
+  "jwt": {
+    "expiresIn": "30d"
   },
   "elementIds": {
     "length": 15,
