@@ -1,6 +1,5 @@
 {
   "appUrl": "APP_URL",
-  "protocol": "PROTOCOL",
   "host": "HOST",
   "port": "PORT",
   "knex": "PG_CONNECTION_STRING",

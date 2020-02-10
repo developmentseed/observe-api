@@ -13,7 +13,7 @@ try {
 async function init () {
   const initServer = require('./app').default;
   const server = await initServer();
-  console.log(`Server running at: ${server.info.uri}`); // eslint-disable-line
+  console.log(`Server is running at ${server.info.uri}`); // eslint-disable-line
 }
 init();
 

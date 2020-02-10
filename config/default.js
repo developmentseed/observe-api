@@ -8,7 +8,6 @@ import { deferConfig } from 'config/defer';
 
 module.exports = {
   appUrl: 'http://localhost:3000',
-  protocol: 'http',
   host: 'localhost',
   port: 3000,
   mediaStorePath: deferConfig(function () {
