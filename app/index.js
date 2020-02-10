@@ -72,12 +72,12 @@ export default async function () {
   const mediaStore = config.get('media.store');
   if (mediaStore.type === 'local') {
     // Get media path from config
-    const mediaPath = mediaStore.path;
+    const mediaStorePath = config.get('mediaStorePath');
 
-    logger.info(`Uploaded media will be stored locally at ${mediaPath}`);
+    logger.info(`Media will be served/stored from path: ${mediaStorePath}`);
 
     // Create dir if not exists
-    await ensureDir(mediaPath);
+    await ensureDir(mediaStorePath);
 
     // Setup file serving
     await server.register(Inert);
@@ -86,7 +86,7 @@ export default async function () {
       path: '/media/{param*}',
       handler: {
         directory: {
-          path: mediaPath,
+          path: mediaStorePath,
           redirectToSlash: true,
           index: false
         }
