@@ -1,4 +1,5 @@
 {
+  "appUrl": "APP_URL",
   "protocol": "PROTOCOL",
   "host": "HOST",
   "port": "PORT",

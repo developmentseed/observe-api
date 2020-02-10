@@ -3,9 +3,10 @@ import path from 'path';
 import { remove, emptyDir } from 'fs-extra';
 import sharp from 'sharp';
 import { exiftool } from 'exiftool-vendored';
-import { mediaUrl, mediaStorePath } from '../utils';
 
 const { sizes } = config.get('media');
+const mediaUrl = config.get('mediaUrl');
+const mediaStorePath = config.get('mediaStorePath');
 
 export async function clearMediaStore () {
   await emptyDir(mediaStorePath);
