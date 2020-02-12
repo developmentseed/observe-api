@@ -6,7 +6,7 @@ import * as users from '../../models/users';
 import { getAccessTokenFromOsmId } from './jwt';
 import { Client as CustomOauthClient } from './custom-client';
 
-import { appUrl } from '../../utils';
+const appUrl = config.get('appUrl');
 
 // Get OAuth settings
 const {

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import Qs from 'qs';
-import { appUrl } from '../../app/utils';
+import config from 'config';
 
 // Set default serializer for axios
 axios.defaults.paramsSerializer = function (params) {
@@ -13,7 +13,7 @@ axios.defaults.paramsSerializer = function (params) {
 export default class HttpClient {
   constructor () {
     this.axios = axios.create({
-      baseURL: appUrl
+      baseURL: config.get('appUrl')
     });
   }
 
