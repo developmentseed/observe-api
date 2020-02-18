@@ -13,8 +13,13 @@ module.exports = {
   mediaStorePath: deferConfig(function () {
     // This calculate the absolute path to the media folder,
     // which will be used for file read/write operations
-    const appBasePath = path.join(__dirname, '..');
-    return path.join(appBasePath, this.media.store.path);
+    const mediaStorePath = this.media.store.path;
+    if (mediaStorePath.startsWith('/')) {
+      return path.normalize(mediaStorePath);
+    } else {
+      const appBasePath = path.join(__dirname, '..');
+      return path.join(appBasePath, this.media.store.path);
+    }
   }),
   mediaUrl: deferConfig(function () {
     return `${this.appUrl}/media`;
