@@ -1,5 +1,5 @@
 {
-  "appUrl": "http://0.0.0.0:3002",
+  "appUrl": "http://localhost:3002",
   "port": 3002,
   "knex": {
     "client": "pg",
@@ -15,7 +15,9 @@
     "clientSecret": "mockClientSecret",
     "clientId": "mockClientId"
   },
-  "jwtSecret": "secret-test",
+  "jwt": {
+    "secret": "secret-test"
+  },
   "media": {
     "store": {
       "type": "local",

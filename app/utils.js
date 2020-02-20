@@ -1,11 +1,3 @@
-import config from 'config';
-
-const appUrl = config.get('appUrl');
-
-export function mediaUrl () {
-  return `${appUrl}/media`;
-}
-
 /**
  * Small delay function using Promises.
  */

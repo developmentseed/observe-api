@@ -5,7 +5,7 @@ require = require('esm')(module); // eslint-disable-line
 //   https://github.com/dwyl/hapi-auth-jwt2#generating-your-secret-key
 try {
   const config = require('config');
-  config.get('jwtSecret');
+  config.get('jwt.secret');
 } catch (error) {
   throw Error('Config property "jwtSecret" must be set.');
 }
@@ -13,7 +13,7 @@ try {
 async function init () {
   const initServer = require('./app').default;
   const server = await initServer();
-  console.log(`Server running at: ${server.info.uri}`); // eslint-disable-line
+  console.log(`Server is running at ${server.info.uri}`); // eslint-disable-line
 }
 init();
 

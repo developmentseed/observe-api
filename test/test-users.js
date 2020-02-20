@@ -7,8 +7,6 @@ import Client from './utils/http-client';
 import { delay } from '../app/utils';
 const paginationLimit = config.get('pagination.limit');
 
-/* global apiUrl */
-
 describe('Users endpoints', function () {
   const users = [];
   let adminUser;
@@ -40,7 +38,7 @@ describe('Users endpoints', function () {
   describe('GET /users', function () {
     it('should return 401 for non-authenticated user', async function () {
       try {
-        const client = new Client(apiUrl);
+        const client = new Client();
         await client.get('/users');
 
         // The test should never reach here, force execute catch block.
@@ -52,21 +50,21 @@ describe('Users endpoints', function () {
     });
 
     it('should return 200 for regular user', async function () {
-      const client = new Client(apiUrl);
+      const client = new Client();
       await client.login(regularUser.osmId);
       const { status } = await client.get('/users');
       expect(status).to.equal(200);
     });
 
     it('should return 200 for admin user', async function () {
-      const client = new Client(apiUrl);
+      const client = new Client();
       await client.login(adminUser.osmId);
       const { status } = await client.get('/users');
       expect(status).to.equal(200);
     });
 
     it('follow default query order and default limit', async function () {
-      const client = new Client(apiUrl);
+      const client = new Client();
       await client.login(adminUser.osmId);
 
       // Prepare expected response for default query
@@ -94,7 +92,7 @@ describe('Users endpoints', function () {
     });
 
     it('check paginated query and sorting by one column', async function () {
-      const client = new Client(apiUrl);
+      const client = new Client();
       await client.login(adminUser.osmId);
 
       // Prepare expected response for page 3, ordering by creation date
@@ -127,7 +125,7 @@ describe('Users endpoints', function () {
     });
 
     it('check another page and sorting by two columns', async function () {
-      const client = new Client(apiUrl);
+      const client = new Client();
       await client.login(adminUser.osmId);
 
       // Prepare expected response for page 3, ordering by creation date
@@ -162,7 +160,7 @@ describe('Users endpoints', function () {
 
     it('invalid query params should 400 and return proper error', async function () {
       try {
-        const client = new Client(apiUrl);
+        const client = new Client();
         await client.login(adminUser.osmId);
 
         const page = 2;
@@ -192,7 +190,7 @@ describe('Users endpoints', function () {
   describe('GET /profile', async function () {
     it('returns 401 for non-authenticated user', async function () {
       try {
-        const client = new Client(apiUrl);
+        const client = new Client();
         await client.get('/profile');
 
         // The test should never reach here, force execute catch block.
@@ -205,7 +203,7 @@ describe('Users endpoints', function () {
 
     it('returns 200 and profile for authenticated user', async function () {
       const user = await createMockUser();
-      const client = new Client(apiUrl);
+      const client = new Client();
       await client.login(user.osmId);
 
       // Default query, should be order by display name and match limit

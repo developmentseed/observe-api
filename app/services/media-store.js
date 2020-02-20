@@ -1,31 +1,37 @@
 import config from 'config';
 import path from 'path';
-import { emptyDir, remove } from 'fs-extra';
+import { remove, emptyDir } from 'fs-extra';
 import sharp from 'sharp';
 import { exiftool } from 'exiftool-vendored';
-import { mediaUrl } from '../utils';
 
-const { store, sizes } = config.get('media');
-const mediaPath = store.path;
+const { sizes } = config.get('media');
+const mediaUrl = config.get('mediaUrl');
+const mediaStorePath = config.get('mediaStorePath');
 
 export async function clearMediaStore () {
-  await emptyDir(mediaPath);
+  await emptyDir(mediaStorePath);
 }
 
 export function getMediaSizeUrl (id, size) {
-  // Include suffix, if passed.
-  return `${mediaUrl()}/${id}-${size}.jpg`;
+  return `${mediaUrl}/${id}-${size}.jpg`;
 }
 
 export function getAllMediaUrls (id) {
-  return sizes.reduce((acc, i) => {
-    acc[i.id] = getMediaSizeUrl(id, i.id);
+  return sizes.reduce((acc, size) => {
+    acc[size.id] = getMediaSizeUrl(id, size.id);
+    return acc;
+  }, {});
+}
+
+export function getAllMediaPaths (id) {
+  return sizes.reduce((acc, size) => {
+    acc[size.id] = path.join(mediaStorePath, `${id}-${size.id}.jpg`);
     return acc;
   }, {});
 }
 
 export async function persistImageBase64 (name, data, meta) {
-  const baseFilePath = path.join(mediaPath, name);
+  const baseFilePath = path.join(mediaStorePath, name);
   const originalFilePath = `${baseFilePath}.jpg`;
   const { lon, lat, heading, createdAt } = meta;
 
