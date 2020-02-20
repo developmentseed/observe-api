@@ -2,11 +2,12 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [v0.1.1] - 2020-01-18
+## [v0.1.1] - 2020-01-20
 
 Fixes:
 
 - Remove media files on photo delete #21
+- Allow absolute media store path #60 
 
 Changes:
 
