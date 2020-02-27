@@ -1,7 +1,7 @@
 {
   "name": "observe-api",
-  "version": "0.1.1",
-  "defaultVersion": "0.1.1",
+  "version": "0.1.2",
+  "defaultVersion": "0.1.2",
   "description": "Observe API",
   "title": "API server for Observe platform"
 }

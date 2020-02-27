@@ -1,5 +1,5 @@
-import path from 'path';
-import { deferConfig } from 'config/defer';
+const path = require('path');
+const { deferConfig } = require('config/defer');
 
 /*
  * Default configuration values. This file makes use of deferConfig(), which
