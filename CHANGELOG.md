@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [v0.1.2] - 2020-01-27
+
+Fixes:
+
+- Fix config error when running migrations #64
+
+[v0.1.2]: https://github.com/developmentseed/observe-api/compare/v0.1.1...v0.1.2
+
 ## [v0.1.1] - 2020-01-20
 
 Fixes:
