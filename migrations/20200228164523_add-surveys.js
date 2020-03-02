@@ -6,6 +6,7 @@ exports.up = function (knex) {
     table.timestamp('createdAt');
     table.integer('ownerId');
     table.specificType('questions', 'INT[]');
+    table.timestamp('updatedAt').defaultTo(knex.fn.now());
   });
 };
 

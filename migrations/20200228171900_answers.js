@@ -7,8 +7,7 @@ exports.up = function (knex) {
     table.integer('questionId').notNullable();
     table.foreign('questionId').references('questions.id');
     table.integer('questionVersion').notNullable();
-    table.foreign('questionVersion').references('question_versions.id');
-    table.string('answer');
+    table.jsonb('answer');
   });
 };
 

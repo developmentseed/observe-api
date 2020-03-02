@@ -5,6 +5,7 @@ exports.up = function (knex) {
     table.unique('id');
     table.specificType('geom', 'GEOMETRY');
     table.jsonb('attributes');
+    table.index('geom', 'GIST');
   });
 };
 
