@@ -6,7 +6,7 @@ exports.up = function (knex) {
     table.unique(['id', 'version']);
     table.timestamp('createdAt').defaultTo(knex.fn.now());
     table.string('label');
-    table.enum('type', ['boolen', 'multiple_choice', 'range', 'text', 'date', 'timestamp']);
+    table.enum('type', ['boolean', 'multiple_choice', 'range', 'text', 'date', 'timestamp']);
     table.jsonb('options');
     table.index(['id', 'version'], 'GIN');
   });
