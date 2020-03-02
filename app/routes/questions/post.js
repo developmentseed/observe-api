@@ -1,6 +1,4 @@
-import Boom from '@hapi/boom';
 import Joi from '@hapi/joi';
-import logger from '../../services/logger';
 import { createQuestion } from '../../models/questions';
 /**
  * @apiGroup Questions
