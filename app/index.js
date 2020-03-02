@@ -46,7 +46,8 @@ export default async function () {
         'app/routes/photos/*.js',
         'app/routes/profile/*.js',
         'app/routes/users/*.js',
-        'app/routes/questions/*.js'
+        'app/routes/questions/*.js',
+        'app/routes/surveys/*.js'
       ]
     }
   });
