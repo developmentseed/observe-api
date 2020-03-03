@@ -36,8 +36,11 @@ export async function getQuestion (id, version = 'latest') {
 
 export async function getQuestionsLatest (ids) {
   const questions = await db('questions')
-    .select()
-    .whereIn('id', ids);
+    .select('id', 'createdAt', 'label', 'type', 'options')
+    .max('version').as('version')
+    .whereIn('id', ids)
+    .groupBy('id', 'createdAt', 'label', 'type', 'options')
+    .limit(1);
 
   return questions;
 }
