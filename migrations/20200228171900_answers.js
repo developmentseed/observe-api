@@ -5,8 +5,8 @@ exports.up = function (knex) {
     table.integer('observationId').notNullable();
     table.foreign('observationId').references('observations.id');
     table.integer('questionId').notNullable();
-    table.foreign('questionId').references('questions.id');
     table.integer('questionVersion').notNullable();
+    table.foreign(['questionId', 'questionVersion']).references(['id', 'version']).on('questions');
     table.jsonb('answer');
   });
 };
