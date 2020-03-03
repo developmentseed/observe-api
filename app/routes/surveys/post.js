@@ -25,9 +25,8 @@ export default [
           name: Joi.string()
             .required()
             .error(new Error('Survey should have a name')),
-          questions: Joi.array()
-            .required()
-            .error(new Error('Survey should have an array of questions, at least one.'))
+          optionalQuestions: Joi.array(),
+          mandatoryQuestions: Joi.array()
         }).required()
       },
       handler: async function (request) {
