@@ -35,14 +35,9 @@ export async function getQuestion (id, version = 'latest') {
 }
 
 export async function getQuestionsLatest (ids) {
-  const questions = await db('questions')
-    .select('id', 'createdAt', 'label', 'type', 'options')
-    .max('version').as('version')
-    .whereIn('id', ids)
-    .groupBy('id', 'createdAt', 'label', 'type', 'options')
-    .limit(1);
+  const questions = await db.raw('WITH latest_version AS (SELECT id, MAX(version) as version FROM questions WHERE id IN (??) GROUP BY id) SELECT latest_version.id, latest_version.version, questions."createdAt", questions.label, questions.type, questions.options from latest_version INNER JOIN questions ON questions.id=latest_version.id AND questions.version=latest_version.version;', [ids]);
 
-  return questions;
+  return questions.rows;
 }
 
 export async function updateQuestion (data, version) {
