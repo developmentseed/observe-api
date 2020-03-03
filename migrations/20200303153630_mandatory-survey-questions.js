@@ -1,14 +1,14 @@
 
 exports.up = function (knex) {
   return knex.schema.alterTable('surveys', function (table) {
-    table.renameColumn('questions', 'optional_questions');
-    table.specificType('mandatory_questions', 'INT[]');
+    table.renameColumn('questions', 'optionalQuestions');
+    table.specificType('mandatoryQuestions', 'INT[]');
   });
 };
 
 exports.down = function (knex) {
   return knex.schema.alterTable('surveys', function (table) {
-    table.renameColumn('optional_questions', 'questions');
-    table.dropColumn('mandatory_questions');
+    table.renameColumn('optionalQuestions', 'questions');
+    table.dropColumn('mandatoryQuestions');
   });
 };
