@@ -42,22 +42,22 @@ export async function getQuestionsLatest (ids) {
   return questions.rows;
 }
 
-export async function updateQuestion (data, version) {
+export async function updateQuestion (data) {
   const {
     id,
+    version,
     label,
     type,
     options
   } = data;
 
-  const newVersion = version + 1;
   const response = await db('questions').insert({
-    id: id,
-    version: newVersion,
+    id,
+    version,
     label,
     type,
     options
   }, ['id']);
 
-  return response;
+  return getQuestion(response[0].id, version);
 }

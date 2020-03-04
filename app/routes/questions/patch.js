@@ -25,10 +25,8 @@ export default [
       auth: 'jwt',
       validate: {
         payload: Joi.object({
-          id: Joi.number().required(),
-          version: Joi.number().required(),
-          label: Joi.string().required(),
-          type: Joi.string().required(),
+          label: Joi.string(),
+          type: Joi.string(),
           options: Joi.object()
         }).required()
       },
@@ -38,7 +36,14 @@ export default [
           const question = await getQuestion(request.params.id);
 
           if (!question) return Boom.notFound('Question not found.');
-          const id = await updateQuestion(request.payload, question.version);
+          const data = {
+            'id': question.id,
+            'version': question.version + 1, // create new version
+            'label': request.payload.label || question.label,
+            'type': request.payload.type || question.type,
+            'options': request.payload.options || question.options
+          };
+          const id = await updateQuestion(data);
           return id;
         } catch (error) {
           logger.error(error);
