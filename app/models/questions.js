@@ -19,18 +19,20 @@ export async function createQuestion (data) {
 }
 
 export async function getQuestion (id, version = 'latest') {
-  const question = await db('questions')
-    .select()
-    .where('id', '=', id)
-    .andWhere(builder => {
-      if (version !== 'latest') {
-        builder.where('version', version);
-      } else {
-        builder.max('version');
-      }
-    })
-    .first();
-
+  let question = null;
+  if (version === 'latest') {
+    question = await db('questions')
+      .select('id', 'version', 'createdAt', 'label', 'type', 'options')
+      .where('id', id)
+      .orderBy('version', 'desc')
+      .first();
+  } else {
+    question = await db('questions')
+      .select()
+      .where('id', id)
+      .andWhere('version', version)
+      .first();
+  }
   return question;
 }
 
