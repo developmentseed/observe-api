@@ -1,5 +1,5 @@
 import db from '../services/db';
-import { getQuestion, getQuestionsLatest } from './questions';
+import { getQuestionsLatest } from './questions';
 
 export async function createSurvey (data) {
   const {
