@@ -13,8 +13,50 @@ import { createObservation } from '../../models/observations';
  *
  * @apiParam {integer} Survey ID
  * @apiParam {string} Created timestamp
- * @apiParam {string} OSM object ID
+ * @apiParam {object} OSM object
  * @apiParam {object} Questions and answers
+ *
+ * @apiParamExample {json} Example:
+ * {
+ * "createdAt": "2020-03-03T12:17:24.878Z",
+ * "osmObject": {
+ * "id": "node/60952254",
+ *   "type": "Feature",
+ *   "geometry": {
+ *     "coordinates": [
+ *       77.6047644,
+ *       12.970884
+ *     ],
+ *     "type": "Point"
+ *   },
+ *   "properties": {
+ *     "changeset": "33994798",
+ *     "highway": "traffic_signals",
+ *     "icon": "temaki_traffic_signals",
+ *     "id": "node/60952254",
+ *     "junction": "yes",
+ *     "name": "Prof Ashirvadam Junction",
+ *     "timestamp": "2015-09-13T08:26:39Z",
+ *     "uid": "1306",
+ *     "user": "PlaneMad",
+ *     "version": "12"
+ *   }
+ * },
+ * "surveyId": 1,
+ * "answers": [
+ *   {
+ *     "questionId": 1,
+ *     "questionVersion": 3,
+ *     "answer": {
+ *       "no": "No"
+ *     }
+ *   }
+ *  ]
+ * }
+ *
+ * @apiUse AuthorizationHeader
+ * @apiUse Success200
+ * @apiUse Error4xx
  */
 
 export default [
