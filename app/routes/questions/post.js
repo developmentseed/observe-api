@@ -1,5 +1,8 @@
 import Joi from '@hapi/joi';
+import logger from '../../services/logger';
+import Boom from '@hapi/boom';
 import { createQuestion } from '../../models/questions';
+
 /**
  * @apiGroup Questions
  *
@@ -27,8 +30,13 @@ export default [
         }).required()
       },
       handler: async function (request) {
-        const question = await createQuestion(request.payload);
-        return question;
+        try {
+          const question = await createQuestion(request.payload);
+          return question;
+        } catch (error) {
+          logger.error(error);
+          return Boom.badImplementation('Unexpected error.');
+        }
       }
     }
   }
