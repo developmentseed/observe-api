@@ -11,7 +11,19 @@ import { createSurvey } from '../../models/surveys';
  * @apiDescription Create a new survey
  *
  * @apiParam {string} Name
- * @apiParam {array} Question IDs
+ * @apiParam {array} Mandatory question IDs
+ * @apiParam {array} Optional question IDs
+ *
+ * @apiParamExample {json} Example:
+ * {
+ *  "name": "Survey restaurants in Washington, DC",
+ *  "mandatoryQuestions": [1, 2]
+ *  "optionalQuestions": [3, 4]
+ * }
+ *
+ * @apiUse AuthorizationHeader
+ * @apiUse Success200
+ * @apiUse Error4xx
  */
 
 export default [

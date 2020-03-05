@@ -22,7 +22,7 @@ export async function createObservation (data) {
         await createOsmObject(osmObject, trx);
       }
 
-      const observationId = await db('observations')
+      const [ observationId ] = await db('observations')
         .insert({
           surveyId,
           userId,
@@ -32,7 +32,7 @@ export async function createObservation (data) {
 
       for (let index = 0; index < answers.length; index++) {
         const answer = answers[index];
-        answer['observationId'] = observationId[0];
+        answer['observationId'] = observationId;
         await createAnswer(answer, trx);
       }
       return observationId;

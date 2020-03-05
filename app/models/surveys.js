@@ -9,7 +9,7 @@ export async function createSurvey (data) {
     mandatoryQuestions
   } = data;
 
-  const id = await db('surveys').insert({
+  const [ id ] = await db('surveys').insert({
     name,
     ownerId,
     optionalQuestions,
