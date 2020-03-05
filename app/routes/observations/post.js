@@ -33,10 +33,6 @@ export default [
       },
       handler: async function (request) {
         try {
-          // if it does, create an observation
-          // use the observation id to create answers
-
-          // check if this survey exists
           const { credentials: { osmId } } = request.auth;
           const data = {
             surveyId: request.payload.surveyId,
@@ -45,10 +41,13 @@ export default [
             osmObject: request.payload.osmObject,
             answers: request.payload.answers
           };
+
+          // check if this survey exists
           const survey = getSurvey(data.surveyId);
           if (!survey) return Boom.notFound('survey not found');
+
+          // if it does, create an observation
           const id = await createObservation(data);
-          console.log(id);
           return id;
         } catch (error) {
           logger.error(error);
