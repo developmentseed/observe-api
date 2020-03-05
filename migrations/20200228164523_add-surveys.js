@@ -5,7 +5,8 @@ exports.up = function (knex) {
     table.string('name');
     table.timestamp('createdAt').defaultTo(knex.fn.now());
     table.integer('ownerId');
-    table.specificType('questions', 'INT[]');
+    table.specificType('optionalQuestions', 'INT[]');
+    table.specificType('mandatoryQuestions', 'INT[]');
     table.timestamp('updatedAt').defaultTo(knex.fn.now());
   });
 };
