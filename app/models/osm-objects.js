@@ -6,6 +6,7 @@ export async function createOsmObject (data, trx) {
   const response = await db('osm_objects')
     .insert({
       id: data.id,
+      version: data.properties.version,
       geom: wkt,
       attributes: data.properties
     }, 'id')

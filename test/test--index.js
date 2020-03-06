@@ -9,9 +9,14 @@ describe('Observe API', function () {
   before(async function () {
     logger.info('Clearing database...');
     await db.schema.dropTableIfExists('knex_migrations');
-    await db.schema.dropTableIfExists('users');
     await db.schema.dropTableIfExists('traces');
     await db.schema.dropTableIfExists('photos');
+    await db.schema.dropTableIfExists('answers');
+    await db.schema.dropTableIfExists('observations');
+    await db.schema.dropTableIfExists('osm_objects');
+    await db.schema.dropTableIfExists('surveys');
+    await db.schema.dropTableIfExists('questions');
+    await db.schema.dropTableIfExists('users');
     await db.migrate.latest();
     await clearMediaStore();
 

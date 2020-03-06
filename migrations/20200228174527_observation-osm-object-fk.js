@@ -1,7 +1,7 @@
 
 exports.up = function (knex) {
   return knex.schema.table('observations', function (table) {
-    table.foreign('osmObject').references('osm_objects.id');
+    table.foreign(['osmObjectId', 'osmObjectVersion']).references(['osm_objects.id', 'osm_objects.version']);
   });
 };
 

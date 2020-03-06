@@ -14,7 +14,8 @@ export async function createObservation (data) {
         answers
       } = data;
 
-      const osmObjectId = `${osmObject.id}/${osmObject.properties.version}`;
+      const osmObjectId = osmObject.id;
+      const osmObjectVersion = osmObject.properties.version;
       osmObject.id = osmObjectId;
 
       const osmObjectExists = await getOsmObject(osmObjectId);
@@ -27,7 +28,8 @@ export async function createObservation (data) {
           surveyId,
           userId,
           createdAt,
-          osmObject: osmObjectId
+          osmObjectId,
+          osmObjectVersion
         }, 'id').transacting(trx);
 
       for (let index = 0; index < answers.length; index++) {
@@ -40,4 +42,16 @@ export async function createObservation (data) {
   } catch (error) {
     logger.error(error);
   }
+}
+
+export async function getObservations (surveyId, osmObjectId) {
+  const observations = await db('observations')
+    .select()
+    .where(builder => {
+      builder.where('surveyId', surveyId);
+      if (osmObjectId) {
+        builder.andWhere('osmObjectId', osmObjectId);
+      }
+    });
+  return observations;
 }

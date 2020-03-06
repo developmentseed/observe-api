@@ -8,7 +8,8 @@ exports.up = function (knex) {
     table.foreign('userId').references('users.osmId');
     table.integer('surveyId').notNullable();
     table.foreign('surveyId').references('surveys.id');
-    table.string('osmObject');
+    table.string('osmObjectId');
+    table.integer('osmObjectVersion');
   });
 };
 
