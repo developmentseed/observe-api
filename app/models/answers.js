@@ -19,3 +19,11 @@ export async function createAnswer (data, trx) {
 
   return id;
 }
+
+export async function getAnswers (observationId) {
+  const answers = await db('answers')
+    .select()
+    .where('observationId', observationId);
+
+  return answers;
+}

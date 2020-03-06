@@ -1,6 +1,6 @@
 import db from '../services/db';
 import logger from '../services/logger';
-import { createAnswer } from './answers';
+import { createAnswer, getAnswers } from './answers';
 import { createOsmObject, getOsmObject } from './osm-objects';
 
 export async function createObservation (data) {
@@ -53,5 +53,12 @@ export async function getObservations (surveyId, osmObjectId) {
         builder.andWhere('osmObjectId', osmObjectId);
       }
     });
+
+  for (let index = 0; index < observations.length; index++) {
+    const observation = observations[index];
+    const answers = await getAnswers(observation.id);
+    observation.answers = answers;
+  }
+
   return observations;
 }
