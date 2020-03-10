@@ -48,7 +48,8 @@ import { createObservation } from '../../models/observations';
  *     "questionId": 1,
  *     "questionVersion": 3,
  *     "answer": {
- *       "no": "No"
+ *       // array of answers as an object
+ *       "answer": ["no"]
  *     }
  *   }
  *  ]

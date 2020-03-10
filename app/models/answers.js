@@ -29,23 +29,20 @@ export async function getAnswers (observationId) {
 }
 
 export async function getAnswerSummary (observationIds, questionId) {
-  const positiveAnswerCount = await db('answers')
-    .count()
+  const answerCounts = await db('answers')
+    .select(db.raw("count (id), jsonb_array_elements((answer->>'answer')::jsonb) as response"))
     .whereIn('observationId', observationIds)
     .andWhere('questionId', questionId)
-    .andWhereRaw("answer->>'yes'=?", ['Yes']);
+    .groupBy('response');
 
-  const totalCount = await db('answers')
-    .count()
-    .whereIn('observationId', observationIds)
-    .andWhere('questionId', questionId);
-
-  const negativeAnswerCount = totalCount[0].count - positiveAnswerCount[0].count;
-  const summary = {
-    'total': totalCount[0].count,
-    'yes': positiveAnswerCount[0].count,
-    'no': negativeAnswerCount
-  };
+  const summary = answerCounts.reduce((summary, c) => {
+    const count = parseInt(c.count);
+    summary.total = count + summary.total;
+    summary[c.response] = summary[c.response] ? count + summary[c.response] : count;
+    return summary;
+  }, {
+    'total': 0
+  });
 
   return summary;
 }
