@@ -39,3 +39,26 @@ export async function insertFeatureCollection (geojson) {
     logger.error(error);
   }
 }
+
+export async function getOsmObjectsByQuadkey (quadkey) {
+  const osmObjects = await db('osm_objects')
+    .select(['id', db.raw('ST_AsGeoJSON(geom) as geometry'), 'attributes'])
+    .whereRaw('quadkey LIKE ?', [`${quadkey}%`]);
+
+  if (!osmObjects) return null;
+
+  const featureCollection = osmObjects.reduce((featureCollection, osmObject) => {
+    const feature = {
+      'id': osmObject.id,
+      'type': 'Feature',
+      'geometry': JSON.parse(osmObject.geometry),
+      'properties': osmObject.attributes
+    };
+    featureCollection.features.push(feature);
+    return featureCollection;
+  }, {
+    'type': 'FeatureCollection',
+    'features': []
+  });
+  return featureCollection;
+}
