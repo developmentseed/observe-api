@@ -1,4 +1,5 @@
 import db from '../services/db';
+import logger from '../services/logger';
 import { stringify as geojsonTowkt } from 'wellknown';
 
 export async function createOsmObject (data, trx) {
@@ -8,7 +9,8 @@ export async function createOsmObject (data, trx) {
       id: data.id,
       version: data.properties.version,
       geom: wkt,
-      attributes: data.properties
+      attributes: data.properties,
+      quadkey: data.quadkey
     }, 'id')
     .transacting(trx);
 
@@ -22,4 +24,18 @@ export async function getOsmObject (id) {
     .first();
 
   return response;
+}
+
+export async function insertFeatureCollection (geojson) {
+  try {
+    return await db.transaction(async trx => {
+      for (let index = 0; index < geojson.features.length; index++) {
+        const feature = geojson.features[index];
+        await createOsmObject(feature, trx);
+      }
+      return geojson.features.length;
+    });
+  } catch (error) {
+    logger.error(error);
+  }
 }
