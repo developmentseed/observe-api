@@ -1,6 +1,7 @@
 import db from '../services/db';
 import logger from '../services/logger';
 import { stringify as geojsonTowkt } from 'wellknown';
+import { stat } from 'fs-extra';
 
 export async function createOsmObject (data, trx) {
   const wkt = geojsonTowkt(data.geometry);
@@ -61,4 +62,21 @@ export async function getOsmObjectsByQuadkey (quadkey) {
     'features': []
   });
   return featureCollection;
+}
+
+export async function getOsmObjectStats () {
+  const [ countObservations ] = await db('osm_objects')
+    .countDistinct('osm_objects.id')
+    .join('observations', 'osm_objects.id', '=', 'observations.osmObjectId')
+    .groupBy('osm_objects.id');
+
+  const [ totalOsmObjects ] = await db('osm_objects')
+    .countDistinct('id');
+
+  const stats = {
+    'total': parseInt(totalOsmObjects.count),
+    'surveyed': parseInt(countObservations.count)
+  };
+
+  return stats;
 }
