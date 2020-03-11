@@ -1,7 +1,6 @@
 import db from '../services/db';
 import logger from '../services/logger';
 import { stringify as geojsonTowkt } from 'wellknown';
-import { stat } from 'fs-extra';
 
 export async function createOsmObject (data, trx) {
   const wkt = geojsonTowkt(data.geometry);
