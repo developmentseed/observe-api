@@ -1,6 +1,7 @@
 import db from '../services/db';
 import logger from '../services/logger';
 import { stringify as geojsonTowkt } from 'wellknown';
+import groupBy from 'lodash.groupby';
 
 export async function createOsmObject (data, trx) {
   const wkt = geojsonTowkt(data.geometry);
@@ -49,6 +50,11 @@ export async function getOsmObjects (quadkey, offset, limit) {
 
   if (!osmObjects) return null;
 
+  const osmObjectIds = osmObjects.map(o => {
+    return o.id;
+  });
+
+  const observationCounts = await getObservationData(osmObjectIds);
   const featureCollection = osmObjects.reduce((featureCollection, osmObject) => {
     const feature = {
       'id': osmObject.id,
@@ -56,6 +62,12 @@ export async function getOsmObjects (quadkey, offset, limit) {
       'geometry': JSON.parse(osmObject.geometry),
       'properties': osmObject.attributes
     };
+
+    feature.properties['observationCounts'] = null;
+    if (observationCounts.hasOwnProperty(osmObject.id)) {
+      feature.observationCounts = observationCounts[osmObject.id];
+    }
+
     featureCollection.features.push(feature);
     return featureCollection;
   }, {
@@ -94,4 +106,15 @@ function whereBuiler (builder, quadkey) {
   if (quadkey) {
     builder.whereRaw('quadkey LIKE ?', [`${quadkey}%`]);
   }
+}
+
+export async function getObservationData (osmObjectIds) {
+  const counts = await db('observations')
+    .select(db.raw('count(answers.id), answers."questionId", observations."osmObjectId", jsonb_array_elements((answers.answer->>\'answer\')::jsonb) as res'))
+    .join('answers', 'answers.observationId', '=', 'observations.id')
+    .whereIn('observations.osmObjectId', osmObjectIds)
+    .groupBy(['answers.questionId', 'observations.osmObjectId', 'res']);
+
+  const results = groupBy(counts, 'osmObjectId');
+  return results;
 }
