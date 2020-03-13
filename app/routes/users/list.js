@@ -70,7 +70,8 @@ module.exports = [
             traces: Joi.string().valid('asc', 'desc'),
             photos: Joi.string().valid('asc', 'desc'),
             isAdmin: Joi.string().valid('asc', 'desc'),
-            createdAt: Joi.string().valid('asc', 'desc')
+            createdAt: Joi.string().valid('asc', 'desc'),
+            observations: Joi.string().valid('asc', 'desc')
           }),
           username: Joi.string()
             .empty('')
@@ -113,6 +114,9 @@ module.exports = [
                 break;
               case 'createdAt':
                 column = 'users.osmCreatedAt';
+                break;
+              case 'observations':
+                column = 'observations';
                 break;
               default:
                 column = sortKey;

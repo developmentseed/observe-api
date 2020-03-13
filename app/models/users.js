@@ -28,9 +28,10 @@ export function update (osmId, data) {
 export function list ({ offset, limit, orderBy, filterBy }) {
   return db('users')
     .select('osmId', 'osmDisplayName', 'osmCreatedAt', 'isAdmin')
-    .count({ traces: 'traces.ownerId', photos: 'photos.ownerId' })
+    .count({ traces: 'traces.ownerId', photos: 'photos.ownerId', observations: 'observations.userId' })
     .leftJoin('traces', 'users.osmId', '=', 'traces.ownerId')
     .leftJoin('photos', 'users.osmId', '=', 'photos.ownerId')
+    .leftJoin('observations', 'users.osmId', '=', 'observations.userId')
     .where(builder => whereBuilder(builder, filterBy))
     .groupBy('users.osmId')
     .offset(offset)
