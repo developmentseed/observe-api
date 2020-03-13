@@ -11,6 +11,7 @@ export default [
    *
    * @apiQueryParam {integer} surveyId - Survey ID
    * @apiQueryParam {string} osmObjectId - OSM ID (optional)
+   * @apiQueryParam {string} username - username (optional)
    *
    */
     path: '/observations',
@@ -19,12 +20,14 @@ export default [
       validate: {
         query: Joi.object({
           surveyId: Joi.number().required(),
-          osmObjectId: Joi.string()
+          osmObjectId: Joi.string(),
+          username: Joi.string()
         })
       },
       handler: async function (request) {
         try {
-          const observations = await getObservationsWithAnswers(request.query.surveyId, request.query.osmObjectId);
+          const { surveyId, osmObjectId, username } = request.query;
+          const observations = await getObservationsWithAnswers(surveyId, osmObjectId, username);
           if (!observations) return Boom.notFound('No observations found');
 
           return observations;
@@ -43,6 +46,7 @@ export default [
    * @apiQueryParam {integer} surveyId - Survey ID
    * @apiQueryParam {integer} questionId - Question ID
    * @apiQueryParam {string} osmObjectId - OSM ID (optional)
+   * @apiQueryParam {string} username - username (optional)
    *
    */
     path: '/observations/summary',
@@ -51,13 +55,15 @@ export default [
       validate: {
         query: Joi.object({
           surveyId: Joi.number().required(),
-          questionId: Joi.number().required(),
-          osmObjectId: Joi.string()
+          questionId: Joi.number(),
+          osmObjectId: Joi.string(),
+          username: Joi.string()
         })
       },
       handler: async function (request) {
         try {
-          const observations = await getObservationsSummary(request.query.surveyId, request.query.questionId, request.query.osmObjectId);
+          const { surveyId, questionId, osmObjectId, username } = request.query;
+          const observations = await getObservationsSummary(surveyId, questionId, osmObjectId, username);
           if (!observations) return Boom.notFound('No observations found');
 
           return observations;

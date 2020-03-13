@@ -44,21 +44,23 @@ export async function createObservation (data) {
   }
 }
 
-export async function fetchObservations (surveyId, osmObjectId) {
+export async function fetchObservations (surveyId, osmObjectId, username) {
+  const filterBy = {
+    surveyId,
+    osmObjectId,
+    username
+  };
+
   const observations = await db('observations')
     .select()
-    .where(builder => {
-      builder.where('surveyId', surveyId);
-      if (osmObjectId) {
-        builder.andWhere('osmObjectId', osmObjectId);
-      }
-    });
+    .join('users', 'users.osmId', '=', 'observations.userId')
+    .where(builder => whereBuilder(builder, filterBy));
 
   return observations;
 }
 
-export async function getObservationsWithAnswers (surveyId, osmObjectId) {
-  const observations = await fetchObservations(surveyId, osmObjectId);
+export async function getObservationsWithAnswers (surveyId, osmObjectId, username) {
+  const observations = await fetchObservations(surveyId, osmObjectId, username);
 
   if (!observations) return null;
 
@@ -71,8 +73,8 @@ export async function getObservationsWithAnswers (surveyId, osmObjectId) {
   return observations;
 }
 
-export async function getObservationsSummary (surveyId, questionId, osmObjectId) {
-  const observations = await fetchObservations(surveyId, osmObjectId);
+export async function getObservationsSummary (surveyId, questionId, osmObjectId, username) {
+  const observations = await fetchObservations(surveyId, osmObjectId, username);
 
   if (!observations) return null;
 
@@ -80,6 +82,45 @@ export async function getObservationsSummary (surveyId, questionId, osmObjectId)
     return o.id;
   });
 
-  const summary = getAnswerSummary(observationIds, questionId);
+  const locationCount = await countObservationLocations(surveyId, username);
+  const summary = {
+    'totalObservations': observationIds.length,
+    'locationCount': locationCount
+  };
+
+  if (questionId) {
+    summary['answerSummary'] = await getAnswerSummary(observationIds, questionId);
+  }
+
   return summary;
+}
+
+export async function countObservationLocations (surveyId, username) {
+  const filterBy = {
+    surveyId,
+    username
+  };
+
+  const [ counter ] = await db('observations')
+    .join('users', 'users.osmId', '=', 'observations.userId')
+    .where(builder => whereBuilder(builder, filterBy))
+    .countDistinct('osmObjectId');
+
+  return parseInt(counter.count);
+}
+
+function whereBuilder (builder, filterBy) {
+  const { surveyId, osmObjectId, username } = filterBy;
+
+  if (surveyId) {
+    builder.where('surveyId', surveyId);
+  }
+
+  if (osmObjectId) {
+    builder.where('osmObjectId', osmObjectId);
+  }
+
+  if (username) {
+    builder.where('users.osmDisplayName', username);
+  }
 }
