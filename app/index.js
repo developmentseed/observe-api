@@ -67,7 +67,7 @@ export default async function () {
         page: { active: true }
       },
       routes: {
-        include: ['/users', '/traces', '/photos']
+        include: ['/users', '/traces', '/photos', '/osmobjects']
       }
     }
   });

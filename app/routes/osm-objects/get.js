@@ -1,7 +1,7 @@
 import Joi from '@hapi/joi';
 import logger from '../../services/logger';
 import Boom from '@hapi/boom';
-import { getOsmObjectsByQuadkey, getOsmObjectStats } from '../../models/osm-objects';
+import { getOsmObjects, getOsmObjectStats, countOsmObjects } from '../../models/osm-objects';
 
 export default [
   {
@@ -16,21 +16,28 @@ export default [
      * @apiUse Success200
      * @apiUse Error4xx
      */
-    path: '/osmobjects/{quadkey}',
+    path: '/osmobjects',
     method: ['GET'],
     options: {
       validate: {
-        params: Joi.object({
-          quadkey: Joi.string().required()
-        }).required()
+        query: Joi.object({
+          limit: Joi.number().integer().min(1).max(100),
+          page: Joi.number().integer().min(1),
+          quadkey: Joi.string()
+        })
       },
-      handler: async function (request) {
+      handler: async function (request, h) {
         try {
-          const features = getOsmObjectsByQuadkey(request.params.quadkey);
+          const { limit, page } = request.query;
+          const { quadkey } = request.query;
+          const offset = limit * (page - 1);
 
-          if (!features) return Boom.notFound('No features found for that tile');
+          const featureCollection = await getOsmObjects(quadkey, offset, limit);
+          const count = await countOsmObjects(quadkey);
 
-          return features;
+          if (!featureCollection) return Boom.notFound('No features found for that tile');
+
+          return h.paginate(featureCollection.features, count);
         } catch (error) {
           logger.error(error);
           return Boom.badImplementation('Unexpected error.');

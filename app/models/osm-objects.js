@@ -40,10 +40,12 @@ export async function insertFeatureCollection (geojson) {
   }
 }
 
-export async function getOsmObjectsByQuadkey (quadkey) {
+export async function getOsmObjects (quadkey, offset, limit) {
   const osmObjects = await db('osm_objects')
     .select(['id', db.raw('ST_AsGeoJSON(geom) as geometry'), 'attributes'])
-    .whereRaw('quadkey LIKE ?', [`${quadkey}%`]);
+    .where(builder => whereBuiler(builder, quadkey))
+    .offset(offset)
+    .limit(limit);
 
   if (!osmObjects) return null;
 
@@ -63,6 +65,14 @@ export async function getOsmObjectsByQuadkey (quadkey) {
   return featureCollection;
 }
 
+export async function countOsmObjects (quadkey) {
+  const [ counter ] = await db('osm_objects')
+    .where(builder => whereBuiler(builder, quadkey))
+    .countDistinct('osm_objects.id');
+
+  return counter.count;
+}
+
 export async function getOsmObjectStats () {
   const [ countObservations ] = await db('osm_objects')
     .countDistinct('osm_objects.id')
@@ -78,4 +88,10 @@ export async function getOsmObjectStats () {
   };
 
   return stats;
+}
+
+function whereBuiler (builder, quadkey) {
+  if (quadkey) {
+    builder.whereRaw('quadkey LIKE ?', [`${quadkey}%`]);
+  }
 }
