@@ -86,6 +86,7 @@ describe('Users endpoints', function () {
         // Remove properties not covered by this test
         delete found.photos;
         delete found.traces;
+        delete found.observations;
 
         expect(expected).to.deep.equal(found);
       }
@@ -119,6 +120,7 @@ describe('Users endpoints', function () {
         // Remove properties not covered by this test
         delete found.photos;
         delete found.traces;
+        delete found.observations;
 
         expect(expected).to.deep.equal(found);
       }
@@ -153,6 +155,7 @@ describe('Users endpoints', function () {
         // Remove properties not covered by this test
         delete found.photos;
         delete found.traces;
+        delete found.observations;
 
         expect(expected).to.deep.equal(found);
       }
