@@ -7,7 +7,7 @@ export default [
   {
   /**
    * @apiGroup GET /observations
-   * @apiDescription Get observations for a survey and OSM ID
+   * @apiDescription Get observations for a survey optionally filtered by OSM Object ID or username.
    *
    * @apiQueryParam {integer} surveyId - Survey ID
    * @apiQueryParam {string} osmObjectId - OSM ID (optional)
@@ -41,7 +41,7 @@ export default [
   {
   /**
    * @apiGroup GET /observations/summary
-   * @apiDescription Get summary of observations for a survey and OSM ID, for a specific question
+   * @apiDescription Get summary of observations for a survey, for a specific question. Filter by OSM Object ID or username.
    *
    * @apiQueryParam {integer} surveyId - Survey ID
    * @apiQueryParam {integer} questionId - Question ID

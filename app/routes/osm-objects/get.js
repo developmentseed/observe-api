@@ -13,6 +13,9 @@ export default [
      * @apiDescription Get OSM Objects as a FeatureCollection for the given quadkey
      *
      * @apiParam {string} quadkey
+     * @apiParam {integer} limit
+     * @apiParam {integer} page
+     *
      * @apiUse Success200
      * @apiUse Error4xx
      */
@@ -51,7 +54,7 @@ export default [
      *
      * @api GET /osmobjects/stats
      *
-     * @apiDescription Get stats about OSM Objects and Observations
+     * @apiDescription Get stats about OSM Objects and Observations. Returns number of total and unsurveyed objects.
      *
      * @apiUse Success200
      * @apiUse Error4xx

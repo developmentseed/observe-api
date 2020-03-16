@@ -13,6 +13,17 @@ import { createQuestion } from '../../models/questions';
  * @apiParam {string} label
  * @apiParam {string} type
  * @apiParam {json} options
+ *
+ * @apiParamExample {json} Example:
+ * {
+ *  "version": 1,
+ *  "label": "Does this restaurant use plastic?",
+ *  "type": "boolean",
+ *  "options": {
+ *    "yes": "Yes",
+ *    "no": "No"
+ *  }
+}
  */
 
 export default [

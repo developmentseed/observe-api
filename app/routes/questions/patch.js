@@ -10,8 +10,6 @@ import { getQuestion, updateQuestion } from '../../models/questions';
  *
  * @apiDescription Create a new version of a question
  *
- * @apiParam {integer} id
- * @apiParam {integer} current version
  * @apiParam {string} label
  * @apiParam {string} type
  * @apiParam {json} options
