@@ -19,12 +19,17 @@ export async function createOsmObject (data, trx) {
 }
 
 export async function getOsmObject (id) {
-  const response = await db('osm_objects')
-    .select()
+  const osmObject = await db('osm_objects')
+    .select(['id', db.raw('ST_AsGeoJSON(geom) as geometry'), 'attributes'])
     .where('id', id)
     .first();
 
-  return response;
+  return {
+    id: osmObject.id,
+    type: 'Feature',
+    geometry: JSON.parse(osmObject.geometry),
+    properties: osmObject.attributes
+  };
 }
 
 export async function insertFeatureCollection (geojson) {

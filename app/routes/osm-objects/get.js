@@ -1,75 +1,43 @@
-import Joi from '@hapi/joi';
-import logger from '../../services/logger';
 import Boom from '@hapi/boom';
-import { getOsmObjects, getOsmObjectStats, countOsmObjects } from '../../models/osm-objects';
+import Joi from '@hapi/joi';
+import { getOsmObject } from '../../models/osm-objects';
+import logger from '../../services/logger';
 
+/**
+ * @apiGroup osmObjects
+ *
+ * @api {get} /osmobjects/:id  4. GET /osmobjects/:id
+ * @apiDescription Get photo.
+ *
+ * @apiParam {string} id OSM object id.
+ *
+ * @apiUse Error4xx
+ */
 export default [
   {
-    /**
-     * @apiGroup OSM Objects
-     *
-     * @api GET /osmobjects
-     *
-     * @apiDescription Get OSM Objects as a FeatureCollection for the given quadkey
-     *
-     * @apiParam {string} quadkey
-     * @apiParam {integer} limit
-     * @apiParam {integer} page
-     *
-     * @apiUse Success200
-     * @apiUse Error4xx
-     */
-    path: '/osmobjects',
+    path: '/osmobjects/{osmId*2}',
     method: ['GET'],
     options: {
       validate: {
-        query: Joi.object({
-          limit: Joi.number().integer().min(1).max(100),
-          page: Joi.number().integer().min(1),
-          quadkey: Joi.string()
+        params: Joi.object({
+          osmId: Joi.string()
+            .pattern(/^(node|way|relation)\/[0-9]+$/)
+            .allow('', null)
         })
-      },
-      handler: async function (request, h) {
-        try {
-          const { limit, page } = request.query;
-          const { quadkey } = request.query;
-          const offset = limit * (page - 1);
-
-          const featureCollection = await getOsmObjects(quadkey, offset, limit);
-          const count = await countOsmObjects(quadkey);
-
-          if (!featureCollection) return Boom.notFound('No features found for that tile');
-
-          return h.paginate(featureCollection.features, count);
-        } catch (error) {
-          logger.error(error);
-          return Boom.badImplementation('Unexpected error.');
-        }
       }
-    }
-  },
-  {
-    /**
-     * @apiGroup OSM Objects
-     *
-     * @api GET /osmobjects/stats
-     *
-     * @apiDescription Get stats about OSM Objects and Observations. Returns number of total and unsurveyed objects.
-     *
-     * @apiUse Success200
-     * @apiUse Error4xx
-     */
-    path: '/osmobjects/stats',
-    method: ['GET'],
-    options: {
-      handler: async function (request) {
-        try {
-          const stats = await getOsmObjectStats();
-          return stats;
-        } catch (error) {
-          logger.error(error);
-          return Boom.badImplementation('Unexpected error.');
-        }
+    },
+    handler: async function (request) {
+      try {
+        const { osmId } = request.params;
+
+        const osmObject = await getOsmObject(osmId);
+
+        if (!osmObject) return Boom.notFound(`OSM object ${osmId} not found`);
+
+        return osmObject;
+      } catch (error) {
+        logger.error(error);
+        return Boom.badImplementation('Unexpected error.');
       }
     }
   }
