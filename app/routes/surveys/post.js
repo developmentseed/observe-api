@@ -43,7 +43,6 @@ export default [
       },
       handler: async function (request) {
         try {
-          logger.error(JSON.stringify(request.auth));
           const { credentials: { osmId } } = request.auth;
           const surveyId = await createSurvey({
             ...request.payload,
