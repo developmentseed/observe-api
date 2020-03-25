@@ -30,7 +30,6 @@ export default [
       handler: async function (request) {
         try {
           const { surveyId, osmObjectId, userId } = request.query;
-          console.log(userId);
           const observations = await getObservationsWithAnswers(
             surveyId,
             osmObjectId,

@@ -6,13 +6,7 @@ import { createOsmObject, getOsmObject } from './osm-objects';
 export async function createObservation (data) {
   try {
     return await db.transaction(async trx => {
-      const {
-        surveyId,
-        userId,
-        createdAt,
-        osmObject,
-        answers
-      } = data;
+      const { surveyId, userId, createdAt, osmObject, answers } = data;
 
       const osmObjectId = osmObject.id;
       const osmObjectVersion = osmObject.properties.version;
@@ -23,14 +17,18 @@ export async function createObservation (data) {
         await createOsmObject(osmObject, trx);
       }
 
-      const [ observationId ] = await db('observations')
-        .insert({
-          surveyId,
-          userId,
-          createdAt,
-          osmObjectId,
-          osmObjectVersion
-        }, 'id').transacting(trx);
+      const [observationId] = await db('observations')
+        .insert(
+          {
+            surveyId,
+            userId,
+            createdAt,
+            osmObjectId,
+            osmObjectVersion
+          },
+          'id'
+        )
+        .transacting(trx);
 
       for (let index = 0; index < answers.length; index++) {
         const answer = answers[index];
@@ -91,14 +89,17 @@ export async function getObservationsSummary (
     return o.id;
   });
 
-  const locationCount = await countObservationLocations(surveyId, username);
+  const locationCount = await countObservationLocations(surveyId, userId);
   const summary = {
-    'totalObservations': observationIds.length,
-    'locationCount': locationCount
+    totalObservations: observationIds.length,
+    locationCount: locationCount
   };
 
   if (questionId) {
-    summary['answerSummary'] = await getAnswerSummary(observationIds, questionId);
+    summary['answerSummary'] = await getAnswerSummary(
+      observationIds,
+      questionId
+    );
   }
 
   return summary;
@@ -110,7 +111,7 @@ export async function countObservationLocations (surveyId, userId) {
     userId
   };
 
-  const [ counter ] = await db('observations')
+  const [counter] = await db('observations')
     .join('users', 'users.osmId', '=', 'observations.userId')
     .where(builder => whereBuilder(builder, filterBy))
     .countDistinct('osmObjectId');
