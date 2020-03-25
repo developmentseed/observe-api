@@ -2,14 +2,14 @@ import db from '../services/db';
 import { getQuestionsLatest } from './questions';
 
 export async function createSurvey (data) {
-  const { name, ownerId, optionalQuestions, mandatoryQuestions } = data;
+  const { name, ownerId, optionalQuestions, questions } = data;
 
   const [id] = await db('surveys').insert(
     {
       name,
       ownerId,
       optionalQuestions,
-      mandatoryQuestions
+      questions
     },
     'id'
   );

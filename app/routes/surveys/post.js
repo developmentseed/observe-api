@@ -11,13 +11,13 @@ import { createSurvey } from '../../models/surveys';
  * @apiDescription Create a new survey
  *
  * @apiParam {string} Name
- * @apiParam {array} Mandatory question IDs
- * @apiParam {array} Optional question IDs
+ * @apiParam {array} Question ids
+ * @apiParam {array} Optional question ids
  *
  * @apiParamExample {json} Example:
  * {
  *  "name": "Survey restaurants in Washington, DC",
- *  "mandatoryQuestions": [1, 2]
+ *  "questions": [1, 2]
  *  "optionalQuestions": [3, 4]
  * }
  *
@@ -38,7 +38,7 @@ export default [
             .required()
             .error(new Error('Survey should have a name')),
           optionalQuestions: Joi.array(),
-          mandatoryQuestions: Joi.array()
+          questions: Joi.array()
         }).required()
       },
       handler: async function (request) {
