@@ -44,11 +44,11 @@ export async function createObservation (data) {
   }
 }
 
-export async function fetchObservations (surveyId, osmObjectId, username) {
+export async function fetchObservations (surveyId, osmObjectId, userId) {
   const filterBy = {
     surveyId,
     osmObjectId,
-    username
+    userId
   };
 
   const observations = await db('observations')
@@ -59,8 +59,12 @@ export async function fetchObservations (surveyId, osmObjectId, username) {
   return observations;
 }
 
-export async function getObservationsWithAnswers (surveyId, osmObjectId, username) {
-  const observations = await fetchObservations(surveyId, osmObjectId, username);
+export async function getObservationsWithAnswers (
+  surveyId,
+  osmObjectId,
+  userId
+) {
+  const observations = await fetchObservations(surveyId, osmObjectId, userId);
 
   if (!observations) return null;
 
@@ -73,8 +77,13 @@ export async function getObservationsWithAnswers (surveyId, osmObjectId, usernam
   return observations;
 }
 
-export async function getObservationsSummary (surveyId, questionId, osmObjectId, username) {
-  const observations = await fetchObservations(surveyId, osmObjectId, username);
+export async function getObservationsSummary (
+  surveyId,
+  questionId,
+  osmObjectId,
+  userId
+) {
+  const observations = await fetchObservations(surveyId, osmObjectId, userId);
 
   if (!observations) return null;
 
@@ -95,10 +104,10 @@ export async function getObservationsSummary (surveyId, questionId, osmObjectId,
   return summary;
 }
 
-export async function countObservationLocations (surveyId, username) {
+export async function countObservationLocations (surveyId, userId) {
   const filterBy = {
     surveyId,
-    username
+    userId
   };
 
   const [ counter ] = await db('observations')
@@ -110,7 +119,7 @@ export async function countObservationLocations (surveyId, username) {
 }
 
 function whereBuilder (builder, filterBy) {
-  const { surveyId, osmObjectId, username } = filterBy;
+  const { surveyId, osmObjectId, userId } = filterBy;
 
   if (surveyId) {
     builder.where('surveyId', surveyId);
@@ -120,7 +129,7 @@ function whereBuilder (builder, filterBy) {
     builder.where('osmObjectId', osmObjectId);
   }
 
-  if (username) {
-    builder.where('users.osmDisplayName', username);
+  if (userId) {
+    builder.where('users.osmId', userId);
   }
 }
