@@ -97,16 +97,20 @@ export async function countOsmObjects (quadkey) {
 }
 
 export async function getOsmObjectStats () {
-  const [countObservations] = await db('osm_objects')
-    .countDistinct('osm_objects.id')
-    .join('observations', 'osm_objects.id', '=', 'observations.osmObjectId')
-    .groupBy('osm_objects.id');
-
   const [totalOsmObjects] = await db('osm_objects').countDistinct('id');
 
+  const [surveyors] = await db('observations').countDistinct(
+    'observations.userId'
+  );
+
+  const [surveyedPlaces] = await db('observations').countDistinct(
+    'observations.osmObjectId'
+  );
+
   const stats = {
-    total: parseInt(totalOsmObjects.count),
-    surveyed: parseInt(countObservations.count)
+    placesCount: parseInt(totalOsmObjects.count),
+    surveyedPlacesCount: parseInt(surveyedPlaces.count),
+    surveyorsCount: parseInt(surveyors.count)
   };
 
   return stats;
