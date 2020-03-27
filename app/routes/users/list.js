@@ -2,6 +2,9 @@ import Boom from '@hapi/boom';
 import Joi from '@hapi/joi';
 import * as users from '../../models/users';
 import logger from '../../services/logger';
+import config from 'config';
+
+const defaultLimit = config.get('pagination.limit');
 
 /**
  * @apiGroup Users
@@ -82,7 +85,12 @@ module.exports = [
     handler: async function (request, h) {
       try {
         // Get query params
-        const { limit, page, sort, username } = request.query;
+        const {
+          limit = defaultLimit,
+          page,
+          sort,
+          username
+        } = request.query;
         const offset = limit * (page - 1);
         let orderBy = [
           { column: 'isAdmin', order: 'desc' },
@@ -140,6 +148,43 @@ module.exports = [
           filterBy
         });
         const count = await users.count(filterBy);
+
+        return h.paginate(results, count);
+      } catch (error) {
+        logger.error(error);
+        return Boom.badImplementation('Unexpected error.');
+      }
+    }
+  },
+  {
+    path: '/top-surveyors',
+    method: ['GET'],
+    options: {
+      validate: {
+        query: Joi.object({
+          limit: Joi.number()
+            .integer()
+            .min(1)
+            .max(100),
+          page: Joi.number()
+            .integer()
+            .min(1)
+        })
+      }
+    },
+    handler: async function (request, h) {
+      try {
+        // Get query params
+        const { limit = defaultLimit, page } = request.query;
+        const offset = limit * (page - 1);
+        let orderBy = [{ column: 'observations', order: 'desc' }];
+
+        const results = await users.list({
+          offset,
+          limit,
+          orderBy
+        });
+        const count = await users.count();
 
         return h.paginate(results, count);
       } catch (error) {

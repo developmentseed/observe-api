@@ -25,7 +25,7 @@ export function update (osmId, data) {
     .returning('*');
 }
 
-export function list ({ offset, limit, orderBy, filterBy }) {
+export function list ({ offset, limit, orderBy, filterBy = {} }) {
   return db('users')
     .select('osmId', 'osmDisplayName', 'osmCreatedAt', 'isAdmin')
     .count({ traces: 'traces.ownerId', photos: 'photos.ownerId', observations: 'observations.userId' })
