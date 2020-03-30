@@ -103,13 +103,55 @@ export async function getOsmObjectStats () {
     'observations.userId'
   );
 
-  const [surveyedPlaces] = await db('observations').countDistinct(
-    'observations.osmObjectId'
-  );
+  // This query first aggregates answers by places in a sub-query to determine
+  // the most prevalent survey answer, for questions of type boolean. Then it
+  // count places where the answer is mostrly equal to true.
+  const placeStats = (await db.raw(`
+    select
+      count("osmObjectId") as total,
+      count(
+        (
+          CASE
+            WHEN total_true > total_false THEN 1
+          END
+        )
+      ) as mostly_true
+    from (
+        select
+          observations."osmObjectId",
+          answers."questionId",
+          count(answers.id) as total,
+          count(
+            (
+              CASE
+                WHEN answer :: jsonb -> 'value' = 'true' THEN 1
+              END
+            )
+          ) as total_true,
+          count(
+            (
+              CASE
+                WHEN answer :: jsonb -> 'value' = 'false' THEN 1
+              END
+            )
+          ) as total_false
+        from answers
+        left join observations ON answers."observationId" = observations.id
+        left join questions ON answers."questionId" = questions.id
+          AND answers."questionVersion" = questions.version
+        group By
+          observations."osmObjectId",
+          answers."questionId",
+          questions.type
+        having
+          questions.type = 'boolean'
+      ) as answer_totals
+  `)).rows[0];
 
   const stats = {
     placesCount: parseInt(totalOsmObjects.count),
-    surveyedPlacesCount: parseInt(surveyedPlaces.count),
+    nonPlasticPlacesCount: parseInt(placeStats.mostly_true),
+    surveyedPlacesCount: parseInt(placeStats.total),
     surveyorsCount: parseInt(surveyors.count)
   };
 
