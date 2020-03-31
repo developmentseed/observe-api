@@ -1,7 +1,6 @@
 import db from '../services/db';
 import logger from '../services/logger';
 import { stringify as geojsonTowkt } from 'wellknown';
-import groupBy from 'lodash.groupby';
 
 export async function createOsmObject (data, trx) {
   const wkt = geojsonTowkt(data.geometry);
@@ -165,16 +164,45 @@ function whereBuiler (builder, quadkey) {
 }
 
 export async function getObservationData (osmObjectIds) {
-  const counts = await db('observations')
-    .select(
-      db.raw(
-        'count(answers.id), answers."questionId", observations."osmObjectId", jsonb_array_elements((answers.answer->>\'answer\')::jsonb) as res'
-      )
-    )
-    .join('answers', 'answers.observationId', '=', 'observations.id')
-    .whereIn('observations.osmObjectId', osmObjectIds)
-    .groupBy(['answers.questionId', 'observations.osmObjectId', 'res']);
+  const { rows } = await db.raw(`
+      select
+        observations."osmObjectId",
+        answers."questionId",
+        count(answers.id)::int as total,
+        count(
+          (
+            CASE
+              WHEN answer :: jsonb -> 'value' = 'true' THEN 1
+            END
+          )
+        )::int as total_true,
+        count(
+          (
+            CASE
+              WHEN answer :: jsonb -> 'value' = 'false' THEN 1
+            END
+          )
+        )::int as total_false
+      from answers
+      left join observations ON answers."observationId" = observations.id
+      left join questions ON answers."questionId" = questions.id
+        AND answers."questionVersion" = questions.version
+      group By
+        observations."osmObjectId",
+        answers."questionId",
+        questions.type
+      having
+        questions.type = 'boolean'
+        ${osmObjectIds &&
+          osmObjectIds.length &&
+          `AND array[observations."osmObjectId"]::text[]  <@ array['${osmObjectIds.join(
+            "','"
+          )}']::text[]`}
+    `);
 
-  const results = groupBy(counts, 'osmObjectId');
-  return results;
+  return rows.reduce((acc, r) => {
+    acc[r.osmObjectId] = r;
+    delete acc[r.osmObjectId]['osmObjectId'];
+    return acc;
+  }, {});
 }
