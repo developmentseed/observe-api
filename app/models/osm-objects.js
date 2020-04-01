@@ -26,11 +26,16 @@ export async function getOsmObject (id) {
     .where('id', id)
     .first();
 
+  const observationCounts = await getObservationData([id]);
+
   return {
     id: osmObject.id,
     type: 'Feature',
     geometry: JSON.parse(osmObject.geometry),
-    properties: osmObject.attributes
+    properties: {
+      ...osmObject.attributes,
+      observationCounts: observationCounts[id]
+    }
   };
 }
 
@@ -73,7 +78,10 @@ export async function getOsmObjects (quadkey, offset, limit) {
 
       feature.properties['observationCounts'] = null;
       if (observationCounts.hasOwnProperty(osmObject.id)) {
-        feature.observationCounts = observationCounts[osmObject.id];
+        feature.properties = {
+          ...feature.properties,
+          observationCounts: observationCounts[osmObject.id]
+        };
       }
 
       featureCollection.features.push(feature);
