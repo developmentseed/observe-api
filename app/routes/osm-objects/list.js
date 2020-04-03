@@ -1,7 +1,11 @@
 import Joi from '@hapi/joi';
 import logger from '../../services/logger';
 import Boom from '@hapi/boom';
-import { getOsmObjects, getOsmObjectStats, countOsmObjects } from '../../models/osm-objects';
+import {
+  getOsmObjects,
+  getOsmObjectStats,
+  countOsmObjects
+} from '../../models/osm-objects';
 
 export default [
   {
@@ -24,21 +28,38 @@ export default [
     options: {
       validate: {
         query: Joi.object({
-          limit: Joi.number().integer().min(1).max(100),
-          page: Joi.number().integer().min(1),
-          quadkey: Joi.string()
+          limit: Joi.number()
+            .integer()
+            .min(1)
+            .max(100),
+          page: Joi.number()
+            .integer()
+            .min(1),
+          quadkey: Joi.string(),
+          observations: Joi.string()
         })
       },
       handler: async function (request, h) {
         try {
           const { limit, page } = request.query;
-          const { quadkey } = request.query;
           const offset = limit * (page - 1);
 
-          const featureCollection = await getOsmObjects(quadkey, offset, limit);
+          // Get filters
+          const { quadkey, observations } = request.query;
+
+          const featureCollection = await getOsmObjects(
+            {
+              quadkey,
+              observations
+            },
+            offset,
+            limit
+          );
           const count = await countOsmObjects(quadkey);
 
-          if (!featureCollection) return Boom.notFound('No features found for that tile');
+          if (!featureCollection) {
+            return Boom.notFound('No features found for that tile');
+          }
 
           return h.paginate(featureCollection.features, count);
         } catch (error) {

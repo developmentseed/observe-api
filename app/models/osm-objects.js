@@ -20,13 +20,48 @@ export async function createOsmObject (data, trx) {
   return response;
 }
 
+const observationsPerPlaceQuery = db('answers')
+  .select('observations.osmObjectId')
+  .count({
+    total: 'answers.id',
+    totalTrue: db.raw(`(
+        CASE
+          WHEN answer :: jsonb -> 'value' = 'true' THEN 1
+        END
+      )`),
+    totalFalse: db.raw(`
+    (
+      CASE
+        WHEN answer :: jsonb -> 'value' = 'false' THEN 1
+      END
+    )
+  `)
+  })
+  .leftJoin('observations', 'answers.observationId', '=', 'observations.id')
+  .leftJoin('questions', function () {
+    this.on('answers.questionId', '=', 'questions.id').andOn(
+      'answers.questionVersion',
+      '=',
+      'questions.version'
+    );
+  })
+  .groupBy('observations.osmObjectId')
+  .groupBy('answers.questionId')
+  .groupBy('questions.type')
+  .having('questions.type', '=', 'boolean');
+
 export async function getOsmObject (id) {
   const osmObject = await db('osm_objects')
     .select(['id', db.raw('ST_AsGeoJSON(geom) as geometry'), 'attributes'])
+    .select({
+      total: 'observationCounts.total',
+      totalTrue: 'observationCounts.totalTrue',
+      totalFalse: 'observationCounts.totalFalse'
+    })
+    .with('observationCounts', observationsPerPlaceQuery)
+    .leftJoin('observationCounts', 'observationCounts.osmObjectId', '=', 'id')
     .where('id', id)
     .first();
-
-  const observationCounts = await getObservationData([id]);
 
   return {
     id: osmObject.id,
@@ -34,7 +69,11 @@ export async function getOsmObject (id) {
     geometry: JSON.parse(osmObject.geometry),
     properties: {
       ...osmObject.attributes,
-      observationCounts: observationCounts[id]
+      observations: {
+        total: osmObject.total,
+        totalTrue: osmObject.totalTrue,
+        totalFalse: osmObject.totalFalse
+      }
     }
   };
 }
@@ -53,36 +92,46 @@ export async function insertFeatureCollection (geojson) {
   }
 }
 
-export async function getOsmObjects (quadkey, offset, limit) {
+export async function getOsmObjects (filterBy, offset, limit) {
   const osmObjects = await db('osm_objects')
-    .select(['id', db.raw('ST_AsGeoJSON(geom) as geometry'), 'attributes'])
-    .where(builder => whereBuiler(builder, quadkey))
+    .select({
+      id: 'osm_objects.id',
+      geometry: db.raw('ST_AsGeoJSON(geom)'),
+      attributes: 'osm_objects.attributes',
+      total: 'observationCounts.total',
+      totalTrue: 'observationCounts.totalTrue',
+      totalFalse: 'observationCounts.totalFalse'
+    })
+    .with('observationCounts', observationsPerPlaceQuery)
+    .leftJoin('observationCounts', 'observationCounts.osmObjectId', '=', 'id')
+    .where(builder => whereBuilder(builder, filterBy))
     .offset(offset)
-    .limit(limit);
+    .limit(limit)
+    .map(o => {
+      // When there is no observations, totals are null. This sets them to 0.
+      o.total = o.total || 0;
+      o.totalTrue = o.totalTrue || 0;
+      o.totalFalse = o.totalFalse || 0;
+      return o;
+    });
 
   if (!osmObjects) return null;
 
-  const osmObjectIds = osmObjects.map(o => {
-    return o.id;
-  });
-
-  const observationCounts = await getObservationData(osmObjectIds);
   const featureCollection = osmObjects.reduce(
     (featureCollection, osmObject) => {
       const feature = {
         id: osmObject.id,
         type: 'Feature',
         geometry: JSON.parse(osmObject.geometry),
-        properties: osmObject.attributes
+        properties: {
+          ...osmObject.attributes,
+          observations: {
+            total: osmObject.total,
+            totalTrue: osmObject.totalTrue,
+            totalFalse: osmObject.totalFalse
+          }
+        }
       };
-
-      feature.properties['observationCounts'] = null;
-      if (observationCounts.hasOwnProperty(osmObject.id)) {
-        feature.properties = {
-          ...feature.properties,
-          observationCounts: observationCounts[osmObject.id]
-        };
-      }
 
       featureCollection.features.push(feature);
       return featureCollection;
@@ -97,7 +146,7 @@ export async function getOsmObjects (quadkey, offset, limit) {
 
 export async function countOsmObjects (quadkey) {
   const [counter] = await db('osm_objects')
-    .where(builder => whereBuiler(builder, quadkey))
+    .where(builder => whereBuilder(builder, quadkey))
     .countDistinct('osm_objects.id');
 
   return counter.count;
@@ -165,9 +214,19 @@ export async function getOsmObjectStats () {
   return stats;
 }
 
-function whereBuiler (builder, quadkey) {
+function whereBuilder (builder, filterBy = {}) {
+  const { observations, quadkey } = filterBy;
+
   if (quadkey) {
     builder.whereRaw('quadkey LIKE ?', [`${quadkey}%`]);
+  }
+
+  if (observations === 'true') {
+    builder.whereRaw('"totalTrue" > "totalFalse"');
+  } else if (observations === 'false') {
+    builder.whereRaw('"totalTrue" < "totalFalse"');
+  } else if (observations === 'no') {
+    builder.where('total', 'is', null);
   }
 }
 
