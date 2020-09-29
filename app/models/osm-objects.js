@@ -239,7 +239,7 @@ export async function getOsmObjectStats () {
 }
 
 function whereBuilder (builder, filterBy = {}) {
-  const { observations, quadkey } = filterBy;
+  const { observations, quadkey, q, bbox } = filterBy;
 
   if (quadkey) {
     builder.whereRaw('quadkey LIKE ?', [`${quadkey}%`]);
@@ -251,6 +251,10 @@ function whereBuilder (builder, filterBy = {}) {
     builder.whereRaw('"totalTrue" < "totalFalse"');
   } else if (observations === 'no') {
     builder.where('total', 'is', null);
+  }
+
+  if (q) {
+    builder.whereRaw("jsonb_to_tsvector('english', attributes, '[\"string\"]') @@ plainto_tsquery(?)", [q]);
   }
 }
 
@@ -296,4 +300,18 @@ export async function getObservationData (osmObjectIds) {
     delete acc[r.osmObjectId]['osmObjectId'];
     return acc;
   }, {});
+}
+
+export async function searchOsmObjects (filterBy) {
+  const results = await db('osm_objects')
+    .select({
+      id: 'osm_objects.id',
+      geometry: db.raw('ST_AsGeoJSON(geom)'),
+      attributes: 'osm_objects.attributes'
+    })
+    .where(builder => whereBuilder(builder, filterBy));
+
+  console.log('results', results);
+  if (!results) return null;
+  return results;
 }
