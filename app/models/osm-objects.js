@@ -63,12 +63,36 @@ export async function getOsmObject (id) {
     .where('id', id)
     .first();
 
+  // const comments = db('answers')
+  const comments = await db('answers')
+    .select(
+      'observationId',
+      // 'observations.osmObjectId',
+      'observations.createdAt',
+      'users.osmDisplayName',
+      db.raw("answer::jsonb->'value' as text")
+    )
+    .joinRaw(db.raw(`
+      left join users
+        inner join observations
+        On observations."userId" = users."osmId"
+      ON answers."observationId" = observations.id
+    `))
+    .leftJoin('questions', 'answers.questionId', '=', 'questions.id')
+    .orderBy('observations.createdAt', 'desc')
+    .where({
+      'questions.type': 'text',
+      'observations.osmObjectId': id
+    })
+    .limit(10);
+
   return {
     id: osmObject.id,
     type: 'Feature',
     geometry: JSON.parse(osmObject.geometry),
     properties: {
       ...osmObject.attributes,
+      comments,
       observations: {
         total: osmObject.total,
         totalTrue: osmObject.totalTrue,
@@ -146,7 +170,7 @@ export async function getOsmObjects (filterBy, offset, limit) {
 
 export async function countOsmObjects (quadkey) {
   const [counter] = await db('osm_objects')
-    .where(builder => whereBuilder(builder, quadkey))
+    .where(builder => whereBuilder(builder, { quadkey }))
     .countDistinct('osm_objects.id');
 
   return counter.count;
