@@ -239,7 +239,7 @@ export async function getOsmObjectStats () {
 }
 
 function whereBuilder (builder, filterBy = {}) {
-  const { observations, quadkey, q, bbox } = filterBy;
+  const { observations, quadkey, q } = filterBy;
 
   if (quadkey) {
     builder.whereRaw('quadkey LIKE ?', [`${quadkey}%`]);
@@ -311,7 +311,25 @@ export async function searchOsmObjects (filterBy) {
     })
     .where(builder => whereBuilder(builder, filterBy));
 
-  console.log('results', results);
+  const featureCollection = results.reduce(
+    (featureCollection, result) => {
+      const feature = {
+        id: result.id,
+        type: 'Feature',
+        geometry: JSON.parse(result.geometry),
+        properties: {
+          ...result.attributes
+        }
+      };
+
+      featureCollection.features.push(feature);
+      return featureCollection;
+    },
+    {
+      type: 'FeatureCollection',
+      features: []
+    }
+  );
   if (!results) return null;
-  return results;
+  return featureCollection;
 }

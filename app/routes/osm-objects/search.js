@@ -10,7 +10,7 @@ import logger from '../../services/logger';
  * @apiDescription Search OSM Objects.
  *
  * @apiParam {string} q Search string.
- * @apiParam {string} bbox Bounding box to limit the search
+ * @apiParam {string} quadkey to search within
  * @apiUse Error4xx
  */
 
@@ -22,15 +22,16 @@ export default [
       validate: {
         query: Joi.object({
           q: Joi.string().required(),
-          bbox: Joi.string().optional()
+          quadkey: Joi.string().optional()
         })
       }
     },
     handler: async function (request, h) {
       try {
-        const { q, bbox } = request.query;
+        const { q, quadkey } = request.query;
         const results = await searchOsmObjects({
-          q
+          q,
+          quadkey
         });
 
         return results;
