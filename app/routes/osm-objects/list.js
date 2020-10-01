@@ -36,7 +36,8 @@ export default [
             .integer()
             .min(1),
           quadkey: Joi.string(),
-          observations: Joi.string()
+          observations: Joi.string(),
+          q: Joi.string()
         })
       },
       handler: async function (request, h) {
@@ -45,12 +46,13 @@ export default [
           const offset = limit * (page - 1);
 
           // Get filters
-          const { quadkey, observations } = request.query;
+          const { quadkey, observations, q } = request.query;
 
           const featureCollection = await getOsmObjects(
             {
               quadkey,
-              observations
+              observations,
+              q
             },
             offset,
             limit

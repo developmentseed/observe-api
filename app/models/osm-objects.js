@@ -301,35 +301,3 @@ export async function getObservationData (osmObjectIds) {
     return acc;
   }, {});
 }
-
-export async function searchOsmObjects (filterBy) {
-  const results = await db('osm_objects')
-    .select({
-      id: 'osm_objects.id',
-      geometry: db.raw('ST_AsGeoJSON(geom)'),
-      attributes: 'osm_objects.attributes'
-    })
-    .where(builder => whereBuilder(builder, filterBy));
-
-  const featureCollection = results.reduce(
-    (featureCollection, result) => {
-      const feature = {
-        id: result.id,
-        type: 'Feature',
-        geometry: JSON.parse(result.geometry),
-        properties: {
-          ...result.attributes
-        }
-      };
-
-      featureCollection.features.push(feature);
-      return featureCollection;
-    },
-    {
-      type: 'FeatureCollection',
-      features: []
-    }
-  );
-  if (!results) return null;
-  return featureCollection;
-}
