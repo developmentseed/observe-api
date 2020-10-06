@@ -1,7 +1,15 @@
 const db = require('../services/db');
 
-export function get (osmId) {
+export function get (id) {
+  return db('users').where('id', id).first();
+}
+
+export function getByOsmId (osmId) {
   return db('users').where('osmId', osmId).first();
+}
+
+export function getByEmail (email) {
+  return db('users').where('email', email).first();
 }
 
 /**
