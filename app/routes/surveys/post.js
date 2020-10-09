@@ -43,10 +43,10 @@ export default [
       },
       handler: async function (request) {
         try {
-          const { credentials: { osmId } } = request.auth;
+          const { credentials: { id } } = request.auth;
           const surveyId = await createSurvey({
             ...request.payload,
-            ownerId: osmId
+            ownerId: id
           });
           return surveyId;
         } catch (error) {

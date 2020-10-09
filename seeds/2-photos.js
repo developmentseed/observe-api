@@ -6,7 +6,7 @@ const { createMockPhoto, getRandomInt } = require('../test/utils/mock-factory');
 exports.seed = async function (knex) {
   console.log('Seeding photos...') // eslint-disable-line
 
-  const users = await knex('users').select('osmId');
+  const users = await knex('users').select('id');
 
   const totalUsers = users.length;
 
@@ -16,6 +16,6 @@ exports.seed = async function (knex) {
 
   for (let i = 0; i < 50; i++) {
     const user = users[getRandomInt(totalUsers)];
-    await createMockPhoto({ osmId: user.osmId });
+    await createMockPhoto({ id: user.id });
   }
 };

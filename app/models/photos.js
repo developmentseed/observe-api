@@ -16,7 +16,7 @@ const defaultSelect = [
   'osmElement',
   'ownerId',
   'uploadedAt',
-  'users.osmDisplayName as ownerDisplayName'
+  'users.displayName as ownerDisplayName'
 ];
 
 // Utility function for JSON responses
@@ -44,7 +44,7 @@ export function photoToJson (originalPhoto) {
 export function select () {
   return db('photos')
     .select(defaultSelect)
-    .join('users', 'users.osmId', '=', 'photos.ownerId');
+    .join('users', 'users.id', '=', 'photos.ownerId');
 }
 
 /**
@@ -180,7 +180,7 @@ function whereBuilder (builder, filterBy) {
  */
 export async function countPhotos (filterBy = {}) {
   const countQuery = db('photos')
-    .join('users', 'users.osmId', '=', 'photos.ownerId')
+    .join('users', 'users.id', '=', 'photos.ownerId')
     .where(builder => whereBuilder(builder, filterBy))
     .count();
   return parseInt((await countQuery)[0].count);
@@ -194,7 +194,7 @@ export async function countPhotos (filterBy = {}) {
 export async function listPhotos ({ offset, limit, orderBy, filterBy }) {
   return db('photos')
     .select(defaultSelect)
-    .join('users', 'users.osmId', '=', 'photos.ownerId')
+    .join('users', 'users.id', '=', 'photos.ownerId')
     .where(builder => whereBuilder(builder, filterBy))
     .offset(offset)
     .orderBy(orderBy)

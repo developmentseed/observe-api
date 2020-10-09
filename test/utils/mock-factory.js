@@ -17,9 +17,12 @@ export function getRandomInt (max) {
  */
 export async function createMockUser (data) {
   // Randomize id and display name separately to test sorting.
+  const randomId = getRandomInt(100000);
   const profile = {
-    osmId: getRandomInt(100000),
-    osmDisplayName: 'User' + getRandomInt(100000),
+    osmId: randomId,
+    email: `${randomId}@example.com`,
+    displayName: 'User' + randomId,
+    osmDisplayName: 'User' + randomId,
     osmCreatedAt: new Date().toISOString()
   };
   const [user] = await users.create({ ...profile, ...data }).returning('*');
@@ -45,7 +48,7 @@ export async function createMockTrace (owner) {
     {
       ...traceJson
     },
-    owner.osmId
+    owner.id
   );
 
   // Return trace without geometry
@@ -64,10 +67,10 @@ export async function createMockPhoto (owner) {
     osmElement: `node/${getRandomInt(100000)}`
   };
 
-  const photo = await createPhoto({ ...data, ownerId: owner.osmId });
+  const photo = await createPhoto({ ...data, ownerId: owner.id });
 
   // Add owner display name, as they should be included on responses
-  photo.ownerDisplayName = owner.osmDisplayName;
+  photo.ownerDisplayName = owner.displayName;
 
   return photo;
 }

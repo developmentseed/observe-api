@@ -112,7 +112,7 @@ module.exports = [
 
             switch (sortKey) {
               case 'username':
-                column = 'users.osmDisplayName';
+                column = 'users.displayName';
                 break;
               case 'traces':
                 column = 'traces';
@@ -121,7 +121,7 @@ module.exports = [
                 column = 'photos';
                 break;
               case 'createdAt':
-                column = 'users.osmCreatedAt';
+                column = 'users.created_at';
                 break;
               case 'observations':
                 column = 'observations';
@@ -173,6 +173,7 @@ module.exports = [
       }
     },
     handler: async function (request, h) {
+      logger.info(request);
       try {
         // Get query params
         const { limit = defaultLimit, page } = request.query;

@@ -49,6 +49,8 @@ const handler = async function (request, h) {
     return Boom.badImplementation('Could not complete authentication flow.');
   }
 
+  credentials.profile.isAdmin = user.isAdmin;
+
   let accessToken = await getAccessTokenFromUserId(user.id);
 
   // If `redirect` is passed

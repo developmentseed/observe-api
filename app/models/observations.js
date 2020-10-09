@@ -51,7 +51,7 @@ export async function fetchObservations (surveyId, osmObjectId, userId) {
 
   const observations = await db('observations')
     .select()
-    .join('users', 'users.osmId', '=', 'observations.userId')
+    .join('users', 'users.id', '=', 'observations.userId')
     .where(builder => whereBuilder(builder, filterBy));
 
   return observations;
@@ -112,7 +112,7 @@ export async function countObservationLocations (surveyId, userId) {
   };
 
   const [counter] = await db('observations')
-    .join('users', 'users.osmId', '=', 'observations.userId')
+    .join('users', 'users.id', '=', 'observations.userId')
     .where(builder => whereBuilder(builder, filterBy))
     .countDistinct('osmObjectId');
 
@@ -131,6 +131,6 @@ function whereBuilder (builder, filterBy) {
   }
 
   if (userId) {
-    builder.where('users.osmId', userId);
+    builder.where('users.id', userId);
   }
 }

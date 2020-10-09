@@ -76,10 +76,10 @@ export default [
       },
       handler: async function (request) {
         try {
-          const { credentials: { osmId } } = request.auth;
+          const { credentials: { id } } = request.auth;
           const data = {
             surveyId: request.payload.surveyId,
-            userId: osmId,
+            userId: id,
             createdAt: request.payload.createdAt,
             osmObject: request.payload.osmObject,
             answers: request.payload.answers
@@ -90,8 +90,8 @@ export default [
           if (!survey) return Boom.notFound('survey not found');
 
           // if it does, create an observation
-          const id = await createObservation(data);
-          return id;
+          const observationId = await createObservation(data);
+          return observationId;
         } catch (error) {
           logger.error(error);
           return Boom.badImplementation('Unexpected error.');

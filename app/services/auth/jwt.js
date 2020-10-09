@@ -8,7 +8,7 @@ const expiresIn = config.get('jwt.expiresIn');
 /**
  * Returns an access token for an existing user.
  *
- * @param {integer} osmId
+ * @param {integer} userId
  */
 export async function getAccessTokenFromUserId (userId) {
   const user = await users.get(userId);
