@@ -254,7 +254,7 @@ function whereBuilder (builder, filterBy = {}) {
   }
 
   if (q) {
-    builder.whereRaw("jsonb_to_tsvector('english', attributes, '[\"string\"]') @@ plainto_tsquery(?)", [q]);
+    builder.whereRaw("jsonb_to_tsvector('english', attributes, '[\"string\"]') @@ to_tsquery(?)", [q + ':*']);
   }
 }
 
