@@ -8,7 +8,7 @@ import { remove } from 'fs-extra';
  * Default select fields for traces
  */
 const defaultSelect = [
-  'id',
+  'photos.id',
   db.raw('ST_AsGeoJSON(location) as location'),
   'heading',
   'createdAt',
@@ -55,7 +55,7 @@ export function select () {
  */
 export async function getPhoto (id) {
   const photo = await select()
-    .where('id', '=', id)
+    .where('photos.id', '=', id)
     .first();
 
   // Return formatted photo or null if not found
@@ -155,7 +155,7 @@ function whereBuilder (builder, filterBy) {
   } = filterBy;
 
   if (username) {
-    builder.where('users.osmDisplayName', 'ilike', `%${username}%`);
+    builder.where('users.displayName', 'ilike', `%${username}%`);
   }
 
   if (startDate) {

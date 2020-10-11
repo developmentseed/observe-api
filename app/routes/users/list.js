@@ -94,7 +94,7 @@ module.exports = [
         const offset = limit * (page - 1);
         let orderBy = [
           { column: 'isAdmin', order: 'desc' },
-          { column: 'osmCreatedAt', order: 'asc' }
+          { column: 'created_at', order: 'asc' }
         ];
 
         /**
@@ -173,7 +173,6 @@ module.exports = [
       }
     },
     handler: async function (request, h) {
-      logger.info(request);
       try {
         // Get query params
         const { limit = defaultLimit, page } = request.query;

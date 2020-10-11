@@ -29,6 +29,8 @@ export async function createMockUser (data) {
 
   // Knex returns date objects, parse into string
   user.osmCreatedAt = user.osmCreatedAt.toISOString();
+  user.created_at = new Date(user.created_at).toISOString();
+  user.updated_at = new Date(user.updated_at).toISOString();
 
   return user;
 }

@@ -5,7 +5,7 @@ import { generateId } from './utils';
  * Default select fields for traces
  */
 const defaultSelect = [
-  'id',
+  'traces.id',
   'ownerId',
   'description',
   'length',
@@ -35,7 +35,7 @@ export async function getTrace (id) {
   const trace = await db('traces')
     .select(defaultSelect)
     .join('users', 'users.id', '=', 'traces.ownerId')
-    .where('id', id)
+    .where('traces.id', id)
     .first();
 
   // Return formatted trace or null if not found
@@ -57,7 +57,7 @@ export async function getTraceJson (id) {
       ])
     )
     .join('users', 'users.id', '=', 'traces.ownerId')
-    .where('id', '=', id)
+    .where('traces.id', '=', id)
     .first();
 
   // Return formatted trace or null if not found

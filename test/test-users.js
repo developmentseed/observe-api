@@ -52,7 +52,6 @@ describe('Users endpoints', function () {
     it('should return 200 for regular user', async function () {
       const client = new Client();
       await client.login(regularUser.id);
-      console.log(await client.get('/users'));
       const { status } = await client.get('/users');
       expect(status).to.equal(200);
     });
@@ -71,7 +70,7 @@ describe('Users endpoints', function () {
       // Prepare expected response for default query
       let expectedResponse = orderBy(
         users,
-        ['isAdmin', 'osmCreatedAt'],
+        ['isAdmin', 'createdAt'],
         ['desc', 'asc']
       ).slice(0, paginationLimit);
 
@@ -100,7 +99,7 @@ describe('Users endpoints', function () {
       // Prepare expected response for page 3, ordering by creation date
       const page = 3;
       const offset = paginationLimit * (page - 1);
-      const expectedResponse = orderBy(users, 'osmCreatedAt').slice(
+      const expectedResponse = orderBy(users, 'created_at').slice(
         offset,
         offset + paginationLimit
       );

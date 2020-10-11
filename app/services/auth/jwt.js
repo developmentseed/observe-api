@@ -12,6 +12,7 @@ const expiresIn = config.get('jwt.expiresIn');
  */
 export async function getAccessTokenFromUserId (userId) {
   const user = await users.get(userId);
+
   if (user) {
     return jwt.sign(
       { userId: user.id, createdAt: user.created_at },

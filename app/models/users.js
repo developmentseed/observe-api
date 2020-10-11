@@ -35,7 +35,7 @@ export function update (userId, data) {
 
 export function list ({ offset, limit, orderBy, filterBy = {} }) {
   return db('users')
-    .select('id', 'email', 'osmId', 'displayName', 'osmDisplayName', 'osmCreatedAt', 'created_at', 'isAdmin')
+    .select('users.id', 'email', 'osmId', 'displayName', 'osmDisplayName', 'osmCreatedAt', 'created_at', 'updated_at', 'isAdmin')
     .count({ traces: 'traces.ownerId', photos: 'photos.ownerId', observations: 'observations.userId' })
     .leftJoin('traces', 'users.id', '=', 'traces.ownerId')
     .leftJoin('photos', 'users.id', '=', 'photos.ownerId')
