@@ -1,7 +1,8 @@
 import Bell from '@hapi/bell';
 import osmStrategy from './openstreetmap';
 import googleStrategy from './google';
-import { getAccessTokenFromUserId } from './jwt';
+import logger from '../../services/logger';
+import * as users from '../../models/users';
 
 /**
  * Setup OAuth provider for hapi-bell.
@@ -13,10 +14,13 @@ async function setupOAuth (server) {
   if (process.env.NODE_ENV === 'test') {
     Bell.simulate(async req => {
       const { userId } = req.query;
+      const user = await users.get(userId);
 
-      const accessToken = await getAccessTokenFromUserId(parseInt(userId));
-
-      return { accessToken };
+      return { profile: {
+        osmId: user.osmId,
+        email: user.email,
+        displayName: user.displayName
+      } };
     });
   }
 

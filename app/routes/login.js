@@ -80,7 +80,7 @@ module.exports = [
     path: '/login',
     method: ['GET', 'POST'],
     options: {
-      auth: 'google',
+      auth: config.get('oauthStrategy'),
       handler
     }
   }
