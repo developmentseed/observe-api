@@ -1,7 +1,6 @@
 import Bell from '@hapi/bell';
 import osmStrategy from './openstreetmap';
 import googleStrategy from './google';
-import logger from '../../services/logger';
 import * as users from '../../models/users';
 
 /**
