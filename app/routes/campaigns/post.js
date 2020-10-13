@@ -2,7 +2,6 @@ import Boom from '@hapi/boom';
 import Joi from '@hapi/joi';
 import logger from '../../services/logger';
 import { createCampaign } from '../../models/campaigns';
-import { join } from '../../services/db';
 
 /**
  * @apiGroup Campaigns
@@ -47,6 +46,9 @@ export default [
         return campaignId;
       } catch (error) {
         logger.error(error);
+        if (error.code === '23505') {
+          return Boom.conflict('A campaign with this slug already exists. Slug should be unique');
+        }
         return Boom.badImplementation('Unexpected error.');
       }
     }
