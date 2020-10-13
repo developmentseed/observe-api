@@ -49,7 +49,8 @@ export default async function () {
         'app/routes/questions/*.js',
         'app/routes/surveys/*.js',
         'app/routes/observations/*.js',
-        'app/routes/osm-objects/*.js'
+        'app/routes/osm-objects/*.js',
+        'app/routes/campaigns/*.js'
       ]
     }
   });
