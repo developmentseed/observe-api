@@ -239,7 +239,7 @@ export async function getOsmObjectStats () {
 }
 
 function whereBuilder (builder, filterBy = {}) {
-  const { observations, quadkey } = filterBy;
+  const { observations, quadkey, q } = filterBy;
 
   if (quadkey) {
     builder.whereRaw('quadkey LIKE ?', [`${quadkey}%`]);
@@ -251,6 +251,10 @@ function whereBuilder (builder, filterBy = {}) {
     builder.whereRaw('"totalTrue" < "totalFalse"');
   } else if (observations === 'no') {
     builder.where('total', 'is', null);
+  }
+
+  if (q) {
+    builder.whereRaw("jsonb_to_tsvector('english', attributes, '[\"string\"]') @@ to_tsquery(?)", [q + ':*']);
   }
 }
 
