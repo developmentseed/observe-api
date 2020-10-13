@@ -5,7 +5,7 @@ exports.up = function (knex) {
     table.timestamp('createdAt');
     table.string('name');
     table.string('slug');
-    table.specificType('geom', 'GEOMETRY');
+    table.specificType('aoi', 'GEOMETRY');
     table.specificType('surveys', 'INT[]');
   });
 };
