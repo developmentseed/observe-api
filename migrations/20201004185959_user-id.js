@@ -16,6 +16,7 @@ exports.up = async function (knex) {
   });
 
   await knex.raw('UPDATE observations SET "userId"=(SELECT id from users where "osmId"=observations."userId")');
+  await knex.raw('UPDATE users SET "displayName"="osmDisplayName"');
 
   await knex.schema.alterTable('observations', function (table) {
     table.foreign('userId').references('users.id');
