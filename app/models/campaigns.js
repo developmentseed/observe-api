@@ -15,3 +15,33 @@ export async function createCampaign (data) {
   );
   return id;
 }
+
+export async function getCampaign (id) {
+  const campaign = await db('campaigns')
+    .select({
+      id: 'campaigns.id',
+      name: 'campaigns.name',
+      slug: 'campaigns.slug',
+      createdAt: 'campaigns.createdAt',
+      surveys: 'campaigns.surveys',
+      aoi: db.raw('ST_AsGeoJSON(aoi)')
+    })
+    .where('id', '=', id)
+    .first();
+
+  return campaign;
+}
+
+export async function getCampaigns () {
+  const campaigns = await db('campaigns')
+    .select({
+      id: 'campaigns.id',
+      name: 'campaigns.name',
+      slug: 'campaigns.slug',
+      createdAt: 'campaigns.createdAt',
+      surveys: 'campaigns.surveys',
+      aoi: db.raw('ST_AsGeoJSON(aoi)')
+    });
+
+  return campaigns;
+}
