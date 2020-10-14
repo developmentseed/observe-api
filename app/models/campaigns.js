@@ -1,5 +1,6 @@
 import db from '../services/db';
 import { stringify as geojsonTowkt } from 'wellknown';
+import { getSurveys } from './surveys';
 
 export async function createCampaign (data) {
   const { name, aoi, slug, surveys } = data;
@@ -29,6 +30,10 @@ export async function getCampaign (id) {
     .where('id', '=', id)
     .first();
 
+  if (campaign && campaign.surveys) {
+    return populateSurveys(campaign);
+  }
+
   return campaign;
 }
 
@@ -41,7 +46,15 @@ export async function getCampaigns () {
       createdAt: 'campaigns.createdAt',
       surveys: 'campaigns.surveys',
       aoi: db.raw('ST_AsGeoJSON(aoi)')
-    });
+    })
+    .map(populateSurveys);
 
   return campaigns;
+}
+
+async function populateSurveys (campaign) {
+  if (campaign.surveys) {
+    campaign.surveys = await getSurveys(campaign.surveys);
+  }
+  return campaign;
 }

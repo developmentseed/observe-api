@@ -39,10 +39,19 @@ export async function getSurvey (id) {
   return populateQuestions(survey);
 }
 
-export async function getSurveys () {
-  const surveys = await db('surveys')
-    .select()
-    .map(populateQuestions);
+export async function getSurveys (ids = null) {
+  if (ids) {
+    const surveys = await db('surveys')
+      .select()
+      .whereIn('id', ids)
+      .map(populateQuestions);
 
-  return surveys;
+    return surveys;
+  } else {
+    const surveys = await db('surveys')
+      .select()
+      .map(populateQuestions);
+
+    return surveys;
+  }
 }
