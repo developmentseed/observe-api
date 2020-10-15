@@ -68,3 +68,9 @@ export async function updateCampaign (id, data) {
 
   return thisId;
 }
+
+export async function deleteCampaign (id) {
+  await db('campaigns')
+    .delete()
+    .where('id', id);
+}

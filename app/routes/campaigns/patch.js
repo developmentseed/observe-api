@@ -49,8 +49,8 @@ export default [
           // FIXME
           // // Verify ownership
           // const { userId, isAdmin } = request.auth.credentials;
-          // if (trace.ownerId !== userId && !isAdmin) {
-          //   return Boom.forbidden('Must be owner or admin to edit a campaign.');
+          // if (!isAdmin) {
+          //   return Boom.forbidden('Must be an admin to edit a campaign.');
           // }
 
           // Patch
