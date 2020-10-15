@@ -58,3 +58,13 @@ async function populateSurveys (campaign) {
   }
   return campaign;
 }
+
+export async function updateCampaign (id, data) {
+  const [ thisId ] = await db('campaigns')
+    .where('id', '=', id)
+    .update({
+      ...data
+    }, 'id');
+
+  return thisId;
+}
