@@ -11,7 +11,7 @@ exports.up = async function (knex) {
     table.increments('id').primary();
     table.string('displayName');
     table.string('email');
-    table.timestamps(true, true);
+    table.timestamp('createdAt').defaultTo(knex.fn.now());
     table.integer('osmId').nullable().alter();
   });
 
@@ -38,8 +38,7 @@ exports.down = async function (knex) {
 
   await knex.schema.alterTable('users', function (table) {
     table.integer('osmId').primary().alter();
-    table.dropColumns('id', 'displayName', 'email');
-    table.dropTimestamps();
+    table.dropColumns('id', 'displayName', 'email', 'createdAt');
   });
 
   await knex.schema.alterTable('observations', function (table) {

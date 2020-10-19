@@ -11,7 +11,7 @@ const defaultSelect = [
   'photos.id',
   db.raw('ST_AsGeoJSON(location) as location'),
   'heading',
-  'createdAt',
+  'photos.createdAt',
   'description',
   'osmElement',
   'ownerId',

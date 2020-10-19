@@ -15,7 +15,7 @@ export async function getAccessTokenFromUserId (userId) {
 
   if (user) {
     return jwt.sign(
-      { userId: user.id, createdAt: user.created_at },
+      { userId: user.id, createdAt: user.createdAt },
       jwtSecret,
       { expiresIn }
     );
@@ -41,7 +41,7 @@ const validate = async function (decoded) {
   if (
     user &&
     user.id === userId &&
-    user.created_at.toISOString() === createdAt
+    user.createdAt.toISOString() === createdAt
   ) {
     return { isValid: true, credentials: user };
   }

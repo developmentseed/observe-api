@@ -99,7 +99,7 @@ describe('Users endpoints', function () {
       // Prepare expected response for page 3, ordering by creation date
       const page = 3;
       const offset = paginationLimit * (page - 1);
-      const expectedResponse = orderBy(users, 'created_at').slice(
+      const expectedResponse = orderBy(users, 'createdAt').slice(
         offset,
         offset + paginationLimit
       );
@@ -135,7 +135,7 @@ describe('Users endpoints', function () {
       const offset = paginationLimit * (page - 1);
       const expectedResponse = orderBy(
         users,
-        ['displayName', 'created_at'],
+        ['displayName', 'createdAt'],
         ['desc', 'asc']
       ).slice(offset, offset + paginationLimit);
 

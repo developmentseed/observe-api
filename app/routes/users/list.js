@@ -94,7 +94,7 @@ module.exports = [
         const offset = limit * (page - 1);
         let orderBy = [
           { column: 'isAdmin', order: 'desc' },
-          { column: 'created_at', order: 'asc' }
+          { column: 'createdAt', order: 'asc' }
         ];
 
         /**
@@ -121,7 +121,7 @@ module.exports = [
                 column = 'photos';
                 break;
               case 'createdAt':
-                column = 'users.created_at';
+                column = 'users.createdAt';
                 break;
               case 'observations':
                 column = 'observations';
