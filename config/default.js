@@ -34,7 +34,6 @@ module.exports = {
     length: 15,
     alphabet: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
   },
-  oauthStrategy: 'openstreetmap',
   osmOAuth: {
     requestTokenUrl:
       'https://master.apis.dev.openstreetmap.org/oauth/request_token',

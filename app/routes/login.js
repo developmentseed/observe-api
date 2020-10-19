@@ -75,13 +75,25 @@ const handler = async function (request, h) {
   }
 };
 
+// Add the idp handlers
+let idpRoutes = ['openstreetmap', 'google'].map(idp => ({
+  path: `/login/${idp}`,
+  method: ['GET', 'POST'],
+  options: {
+    auth: idp,
+    handler
+  }
+}));
+
 module.exports = [
   {
     path: '/login',
     method: ['GET', 'POST'],
     options: {
-      auth: config.get('oauthStrategy'),
+      auth: 'openstreetmap', // default to OSM for backwards compatibility
       handler
     }
   }
-];
+]
+  .concat(idpRoutes)
+;
