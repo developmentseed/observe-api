@@ -8,6 +8,7 @@ exports.up = function (knex) {
     table.specificType('aoi', 'GEOMETRY');
     table.specificType('surveys', 'INT[]');
     table.unique('slug');
+    table.integer('ownerId');
   });
 };
 

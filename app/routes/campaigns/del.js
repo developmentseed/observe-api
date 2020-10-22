@@ -20,8 +20,7 @@ export default [
     path: '/campaigns/{id}',
     method: ['DELETE'],
     options: {
-      // FIXME
-      // auth: 'jwt',
+      auth: 'jwt',
       validate: {
         params: Joi.object({
           id: Joi.string().required()
@@ -35,12 +34,11 @@ export default [
 
           if (!campaign) return Boom.notFound('Campaign not found.');
 
-          // FIXME
-          // Verify admin
-          // const { userId, isAdmin } = request.auth.credentials;
-          // if (!isAdmin) {
-          //   return Boom.forbidden('Must be an admin to delete a campaign.');
-          // }
+          // Verify ownership
+          const { id: userId, isAdmin } = request.auth.credentials;
+          if (campaign.ownerId !== userId && !isAdmin) {
+            return Boom.forbidden('Must be owner or admin to delete a campaign.');
+          }
 
           // Perform delete
           await deleteCampaign(id);

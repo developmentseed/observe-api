@@ -20,8 +20,6 @@ export default [
     path: '/campaigns/{id}',
     method: ['GET'],
     options: {
-      // FIXME: add auth
-      // auth: 'jwt',
       validate: {
         params: Joi.object({
           id: Joi.number().required()

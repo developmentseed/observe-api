@@ -27,8 +27,7 @@ export default [
     path: '/campaigns',
     method: ['POST'],
     options: {
-      // FIXME: this endpoint should use auth
-      // auth: 'jwt',
+      auth: 'jwt',
       validate: {
         payload: Joi.object({
           name: Joi.string().required().error(new Error('Campaign should have a name')),
@@ -40,9 +39,11 @@ export default [
     },
     handler: async function (request) {
       try {
-        // FIXME: this endpoint should use auth
-        // const { credentials: { osmId } } = request.auth;
-        const campaignId = await createCampaign(request.payload);
+        const { credentials: { id } } = request.auth;
+        const campaignId = await createCampaign({
+          ...request.payload,
+          ownerId: id
+        });
         return campaignId;
       } catch (error) {
         logger.error(error);

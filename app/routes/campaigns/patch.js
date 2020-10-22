@@ -25,8 +25,7 @@ export default [
     path: '/campaigns/{id}',
     method: ['PATCH'],
     options: {
-      // FIXME
-      // auth: 'jwt',
+      auth: 'jwt',
       validate: {
         params: Joi.object({
           id: Joi.string()
@@ -46,12 +45,11 @@ export default [
 
           if (!campaign) return Boom.notFound('Campaign not found.');
 
-          // FIXME
-          // // Verify ownership
-          // const { userId, isAdmin } = request.auth.credentials;
-          // if (!isAdmin) {
-          //   return Boom.forbidden('Must be an admin to edit a campaign.');
-          // }
+          // Verify ownership
+          const { id: userId, isAdmin } = request.auth.credentials;
+          if (campaign.ownerId !== userId && !isAdmin) {
+            return Boom.forbidden('Must be owner or admin to edit a campaign.');
+          }
 
           // Patch
           const updatedId = await updateCampaign(id, request.payload);

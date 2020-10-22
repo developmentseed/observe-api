@@ -3,14 +3,15 @@ import { stringify as geojsonTowkt } from 'wellknown';
 import { getSurveys } from './surveys';
 
 export async function createCampaign (data) {
-  const { name, aoi, slug, surveys } = data;
+  const { name, aoi, slug, surveys, ownerId } = data;
   const wkt = geojsonTowkt(aoi);
   const [id] = await db('campaigns').insert(
     {
       name: name,
       slug: slug,
       aoi: wkt,
-      surveys: surveys
+      surveys: surveys,
+      ownerId: ownerId
     },
     'id'
   );
@@ -21,6 +22,7 @@ export async function getCampaign (id) {
   const campaign = await db('campaigns')
     .select({
       id: 'campaigns.id',
+      ownerId: 'campaigns.ownerId',
       name: 'campaigns.name',
       slug: 'campaigns.slug',
       createdAt: 'campaigns.createdAt',
@@ -41,6 +43,7 @@ export async function getCampaigns () {
   const campaigns = await db('campaigns')
     .select({
       id: 'campaigns.id',
+      ownerId: 'campaigns.ownerId',
       name: 'campaigns.name',
       slug: 'campaigns.slug',
       createdAt: 'campaigns.createdAt',
