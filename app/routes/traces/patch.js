@@ -43,8 +43,8 @@ export default [
           if (!trace) return Boom.notFound('Trace not found.');
 
           // Verify ownership
-          const { osmId, isAdmin } = request.auth.credentials;
-          if (trace.ownerId !== osmId && !isAdmin) {
+          const { id: userId, isAdmin } = request.auth.credentials;
+          if (trace.ownerId !== userId && !isAdmin) {
             return Boom.forbidden('Must be owner or admin to edit a trace.');
           }
 

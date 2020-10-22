@@ -71,14 +71,14 @@ export default [
         try {
           // Get user id
           const {
-            credentials: { osmId }
+            credentials: { id }
           } = request.auth;
 
           // Get properties from TraceJson
           const { tracejson } = request.payload;
 
           // Insert trace as return
-          return await createTrace(tracejson, osmId);
+          return await createTrace(tracejson, id);
         } catch (error) {
           logger.error(error);
           return Boom.badImplementation('Unexpected error.');

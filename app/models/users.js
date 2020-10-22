@@ -1,7 +1,15 @@
 const db = require('../services/db');
 
-export function get (osmId) {
+export function get (id) {
+  return db('users').where('id', id).first();
+}
+
+export function getByOsmId (osmId) {
   return db('users').where('osmId', osmId).first();
+}
+
+export function getByEmail (email) {
+  return db('users').where('email', email).first();
 }
 
 /**
@@ -18,27 +26,27 @@ export function create (data) {
   return db('users').insert({ ...data });
 }
 
-export function update (osmId, data) {
+export function update (userId, data) {
   return db('users')
     .update(data)
-    .where('osmId', osmId)
+    .where('id', userId)
     .returning('*');
 }
 
 export function list ({ offset, limit, orderBy, filterBy = {} }) {
   return db('users')
-    .select('osmId', 'osmDisplayName', 'osmCreatedAt', 'isAdmin')
+    .select('users.id', 'email', 'osmId', 'displayName', 'osmCreatedAt', 'osmDisplayName', 'users.createdAt', 'isAdmin')
     .count({ traces: 'traces.ownerId', photos: 'photos.ownerId', observations: 'observations.userId' })
-    .leftJoin('traces', 'users.osmId', '=', 'traces.ownerId')
-    .leftJoin('photos', 'users.osmId', '=', 'photos.ownerId')
-    .leftJoin('observations', 'users.osmId', '=', 'observations.userId')
+    .leftJoin('traces', 'users.id', '=', 'traces.ownerId')
+    .leftJoin('photos', 'users.id', '=', 'photos.ownerId')
+    .leftJoin('observations', 'users.id', '=', 'observations.userId')
     .where(builder => whereBuilder(builder, filterBy))
-    .groupBy('users.osmId')
+    .groupBy('users.id')
     .offset(offset)
     .orderBy(orderBy)
     .limit(limit)
     .map(r => {
-      r.osmCreatedAt = r.osmCreatedAt.toISOString();
+      r.createdAt = r.createdAt.toISOString();
       return r;
     });
 }
@@ -52,6 +60,6 @@ function whereBuilder (builder, filterBy) {
   } = filterBy;
 
   if (username) {
-    builder.where('users.osmDisplayName', 'ilike', `%${username}%`);
+    builder.where('users.displayName', 'ilike', `%${username}%`);
   }
 }

@@ -5,14 +5,14 @@ import { generateId } from './utils';
  * Default select fields for traces
  */
 const defaultSelect = [
-  'id',
+  'traces.id',
   'ownerId',
   'description',
   'length',
   'recordedAt',
   'uploadedAt',
   'updatedAt',
-  'users.osmDisplayName as ownerDisplayName'
+  'users.displayName as ownerDisplayName'
 ];
 
 /**
@@ -34,8 +34,8 @@ const formatTimestamps = trace => {
 export async function getTrace (id) {
   const trace = await db('traces')
     .select(defaultSelect)
-    .join('users', 'users.osmId', '=', 'traces.ownerId')
-    .where('id', id)
+    .join('users', 'users.id', '=', 'traces.ownerId')
+    .where('traces.id', id)
     .first();
 
   // Return formatted trace or null if not found
@@ -56,8 +56,8 @@ export async function getTraceJson (id) {
         'timestamps'
       ])
     )
-    .join('users', 'users.osmId', '=', 'traces.ownerId')
-    .where('id', '=', id)
+    .join('users', 'users.id', '=', 'traces.ownerId')
+    .where('traces.id', '=', id)
     .first();
 
   // Return formatted trace or null if not found
@@ -137,7 +137,7 @@ export function deleteTrace (id) {
 export function listTraces ({ offset, limit, orderBy, filterBy = {} }) {
   return db('traces')
     .select(defaultSelect)
-    .join('users', 'users.osmId', '=', 'traces.ownerId')
+    .join('users', 'users.id', '=', 'traces.ownerId')
     .where(builder => whereBuilder(builder, filterBy))
     .offset(offset)
     .orderBy(orderBy)
@@ -150,7 +150,7 @@ export function listTraces ({ offset, limit, orderBy, filterBy = {} }) {
  */
 export async function getTracesCount (filterBy = {}) {
   const countQuery = db('traces')
-    .join('users', 'users.osmId', '=', 'traces.ownerId')
+    .join('users', 'users.id', '=', 'traces.ownerId')
     .where(builder => whereBuilder(builder, filterBy))
     .count();
   return parseInt((await countQuery)[0].count);
@@ -163,7 +163,7 @@ function whereBuilder (builder, filterBy) {
   const { username, startDate, endDate, lengthMin, lengthMax } = filterBy;
 
   if (username) {
-    builder.where('users.osmDisplayName', 'ilike', `%${username}%`);
+    builder.where('users.displayName', 'ilike', `%${username}%`);
   }
 
   if (startDate) {

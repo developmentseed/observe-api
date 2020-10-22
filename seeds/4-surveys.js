@@ -48,7 +48,7 @@ exports.seed = async function (knex) {
         const observation = {
           surveyId: survey.id,
           osmObject: place,
-          userId: user.osmId,
+          userId: user.id,
           createdAt: new Date().toISOString(),
           answers: questions.map(q => {
             return {
@@ -59,7 +59,7 @@ exports.seed = async function (knex) {
               }
             };
           })
-        }
+        };
 
         await createObservation(observation);
       }

@@ -51,26 +51,26 @@ describe('Users endpoints', function () {
 
     it('should return 200 for regular user', async function () {
       const client = new Client();
-      await client.login(regularUser.osmId);
+      await client.login(regularUser.id);
       const { status } = await client.get('/users');
       expect(status).to.equal(200);
     });
 
     it('should return 200 for admin user', async function () {
       const client = new Client();
-      await client.login(adminUser.osmId);
+      await client.login(adminUser.id);
       const { status } = await client.get('/users');
       expect(status).to.equal(200);
     });
 
     it('follow default query order and default limit', async function () {
       const client = new Client();
-      await client.login(adminUser.osmId);
+      await client.login(adminUser.id);
 
       // Prepare expected response for default query
       let expectedResponse = orderBy(
         users,
-        ['isAdmin', 'osmCreatedAt'],
+        ['isAdmin', 'createdAt'],
         ['desc', 'asc']
       ).slice(0, paginationLimit);
 
@@ -94,12 +94,12 @@ describe('Users endpoints', function () {
 
     it('check paginated query and sorting by one column', async function () {
       const client = new Client();
-      await client.login(adminUser.osmId);
+      await client.login(adminUser.id);
 
       // Prepare expected response for page 3, ordering by creation date
       const page = 3;
       const offset = paginationLimit * (page - 1);
-      const expectedResponse = orderBy(users, 'osmCreatedAt').slice(
+      const expectedResponse = orderBy(users, 'createdAt').slice(
         offset,
         offset + paginationLimit
       );
@@ -128,14 +128,14 @@ describe('Users endpoints', function () {
 
     it('check another page and sorting by two columns', async function () {
       const client = new Client();
-      await client.login(adminUser.osmId);
+      await client.login(adminUser.id);
 
       // Prepare expected response for page 3, ordering by creation date
       const page = 2;
       const offset = paginationLimit * (page - 1);
       const expectedResponse = orderBy(
         users,
-        ['osmDisplayName', 'osmCreatedAt'],
+        ['displayName', 'createdAt'],
         ['desc', 'asc']
       ).slice(offset, offset + paginationLimit);
 
@@ -164,7 +164,7 @@ describe('Users endpoints', function () {
     it('invalid query params should 400 and return proper error', async function () {
       try {
         const client = new Client();
-        await client.login(adminUser.osmId);
+        await client.login(adminUser.id);
 
         const page = 2;
         const invalidSort = {
@@ -207,7 +207,7 @@ describe('Users endpoints', function () {
     it('returns 200 and profile for authenticated user', async function () {
       const user = await createMockUser();
       const client = new Client();
-      await client.login(user.osmId);
+      await client.login(user.id);
 
       // Default query, should be order by display name and match limit
       const { data } = await client.get('/profile');

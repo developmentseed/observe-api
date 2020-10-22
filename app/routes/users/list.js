@@ -94,7 +94,7 @@ module.exports = [
         const offset = limit * (page - 1);
         let orderBy = [
           { column: 'isAdmin', order: 'desc' },
-          { column: 'osmCreatedAt', order: 'asc' }
+          { column: 'createdAt', order: 'asc' }
         ];
 
         /**
@@ -112,7 +112,7 @@ module.exports = [
 
             switch (sortKey) {
               case 'username':
-                column = 'users.osmDisplayName';
+                column = 'users.displayName';
                 break;
               case 'traces':
                 column = 'traces';
@@ -121,7 +121,7 @@ module.exports = [
                 column = 'photos';
                 break;
               case 'createdAt':
-                column = 'users.osmCreatedAt';
+                column = 'users.createdAt';
                 break;
               case 'observations':
                 column = 'observations';

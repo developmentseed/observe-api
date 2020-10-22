@@ -60,8 +60,8 @@ export default [
           if (!photo) return Boom.notFound('Photo not found.');
 
           // Verify ownership
-          const { osmId, isAdmin } = request.auth.credentials;
-          if (photo.ownerId !== osmId && !isAdmin) {
+          const { id: userId, isAdmin } = request.auth.credentials;
+          if (photo.ownerId !== userId && !isAdmin) {
             return Boom.forbidden('Must be owner or admin to edit a photo.');
           }
 

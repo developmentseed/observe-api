@@ -6,7 +6,7 @@ const { createMockTrace, getRandomInt } = require('../test/utils/mock-factory');
 exports.seed = async function (knex) {
   console.log('Seeding traces...') // eslint-disable-line
 
-  const users = await knex('users').select('osmId');
+  const users = await knex('users').select('id');
 
   const totalUsers = users.length;
 
@@ -16,6 +16,6 @@ exports.seed = async function (knex) {
 
   for (let i = 0; i < 50; i++) {
     const user = users[getRandomInt(totalUsers)];
-    await createMockTrace({ osmId: user.osmId });
+    await createMockTrace({ id: user.id });
   }
 };

@@ -66,12 +66,12 @@ export default [
         try {
           // Get user id
           const {
-            credentials: { osmId }
+            credentials: { id }
           } = request.auth;
 
           const photo = await createPhoto({
             ...request.payload,
-            ownerId: osmId
+            ownerId: id
           });
 
           return photo;

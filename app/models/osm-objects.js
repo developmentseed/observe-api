@@ -75,7 +75,7 @@ export async function getOsmObject (id) {
     .joinRaw(db.raw(`
       left join users
         inner join observations
-        On observations."userId" = users."osmId"
+        On observations."userId" = users."id"
       ON answers."observationId" = observations.id
     `))
     .leftJoin('questions', 'answers.questionId', '=', 'questions.id')
