@@ -4,7 +4,7 @@
  * and other attributes such as a threshold (in the case of a numerical metric),
  * a location (for a geofence), etc.
  */
-exports.up = async function(knex) {
+exports.up = async function (knex) {
   await knex.schema.createTable('badges', function (table) {
     table.increments('id').primary();
     table.string('name');
@@ -19,8 +19,7 @@ exports.up = async function(knex) {
   });
 };
 
-exports.down = async function(knex) {
+exports.down = async function (knex) {
   await knex.schema.dropTable('badges_users');
   await knex.schema.dropTable('badges');
 };
-

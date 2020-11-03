@@ -3,12 +3,12 @@ require = require('esm')(module); // eslint-disable-line
 
 (async () => {
   try {
-    const run = require('../app/services/badges/index').default
-    await run()
-    process.exit()
+    const run = require('../app/services/badges/index').default;
+    await run();
+    process.exit();
   } catch (error) {
-    console.error('Could not complete badge calculation.', error)
-    process.exit(1)
+    process.stderr('Could not complete badge calculation.', error);
+    process.exit(1);
   }
 }
-)()
+)();
