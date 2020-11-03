@@ -50,7 +50,23 @@ export async function fetchObservations (surveyId, osmObjectId, userId) {
   };
 
   const observations = await db('observations')
-    .select()
+    .select(
+      [
+        'observations.id',
+        'observations.createdAt',
+        'observations.uploadedAt',
+        'userId',
+        'surveyId',
+        'osmObjectId',
+        'osmObjectVersion',
+        'users.osmId',
+        'users.osmDisplayName',
+        'users.osmCreatedAt',
+        'users.isAdmin',
+        'users.displayName',
+        'users.email'
+      ]
+    )
     .join('users', 'users.id', '=', 'observations.userId')
     .where(builder => whereBuilder(builder, filterBy));
 

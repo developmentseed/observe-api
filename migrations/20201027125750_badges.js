@@ -9,16 +9,17 @@ exports.up = async function(knex) {
     table.increments('id').primary();
     table.string('name');
     table.json('description');
+    table.binary('image');
   });
   await knex.schema.createTable('badges_users', function (table) {
     table.increments('id').primary();
-    table.foreign('badgeId').references('badges.id').onDelete('CASCADE');
-    table.foreign('userId').references('users.id').onDelete('CASCADE');
+    table.integer('badgeId').references('id').inTable('badges').onDelete('CASCADE');
+    table.integer('userId').references('id').inTable('users').onDelete('CASCADE');
     table.timestamp('createdAt').defaultTo();
   });
 };
 
-exports.down = function(knex) {
+exports.down = async function(knex) {
   await knex.schema.dropTable('badges_users');
   await knex.schema.dropTable('badges');
 };
