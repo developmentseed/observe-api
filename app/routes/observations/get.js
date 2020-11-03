@@ -22,6 +22,7 @@ export default [
     options: {
       validate: {
         query: Joi.object({
+          campaignId: Joi.number().required(),
           surveyId: Joi.number().required(),
           osmObjectId: Joi.string(),
           userId: Joi.string()
@@ -29,8 +30,9 @@ export default [
       },
       handler: async function (request) {
         try {
-          const { surveyId, osmObjectId, userId } = request.query;
+          const { campaignId, surveyId, osmObjectId, userId } = request.query;
           const observations = await getObservationsWithAnswers(
+            campaignId,
             surveyId,
             osmObjectId,
             userId
@@ -61,6 +63,7 @@ export default [
     options: {
       validate: {
         query: Joi.object({
+          campaignId: Joi.number().required(),
           surveyId: Joi.number().required(),
           questionId: Joi.number(),
           osmObjectId: Joi.string(),
@@ -69,8 +72,9 @@ export default [
       },
       handler: async function (request) {
         try {
-          const { surveyId, questionId, osmObjectId, userId } = request.query;
+          const { campaignId, surveyId, questionId, osmObjectId, userId } = request.query;
           const observations = await getObservationsSummary(
+            campaignId,
             surveyId,
             questionId,
             osmObjectId,

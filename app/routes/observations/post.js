@@ -3,6 +3,7 @@ import Joi from '@hapi/joi';
 import logger from '../../services/logger';
 import { getSurvey } from '../../models/surveys';
 import { createObservation } from '../../models/observations';
+import { getCampaign } from '../../models/campaigns';
 
 /**
  * @apiGroup Observations
@@ -12,6 +13,7 @@ import { createObservation } from '../../models/observations';
  * @apiDescription Submit a new observation
  *
  * @apiParam {integer} Survey ID
+ * @apiParam {integer} Campaign ID
  * @apiParam {string} Created timestamp
  * @apiParam {object} OSM object
  * @apiParam {object} Questions and answers
@@ -43,6 +45,7 @@ import { createObservation } from '../../models/observations';
  *   }
  * },
  * "surveyId": 1,
+ * "campaignId": 1,
  * "answers": [
  *   {
  *     "questionId": 1,
@@ -69,6 +72,7 @@ export default [
       validate: {
         payload: Joi.object({
           surveyId: Joi.number().required(),
+          campaignId: Joi.number().required(),
           createdAt: Joi.date().iso().required(),
           osmObject: Joi.object().required(),
           answers: Joi.array().required()
@@ -79,14 +83,19 @@ export default [
           const { credentials: { id } } = request.auth;
           const data = {
             surveyId: request.payload.surveyId,
+            campaignId: request.payload.campaignId,
             userId: id,
             createdAt: request.payload.createdAt,
             osmObject: request.payload.osmObject,
             answers: request.payload.answers
           };
 
+          // check if this campaign exists
+          const campaign = await getCampaign(data.campaignId);
+          if (!campaign) return Boom.notFound('campaign not found');
+
           // check if this survey exists
-          const survey = getSurvey(data.surveyId);
+          const survey = await getSurvey(data.surveyId);
           if (!survey) return Boom.notFound('survey not found');
 
           // if it does, create an observation
