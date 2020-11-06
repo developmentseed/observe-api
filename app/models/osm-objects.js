@@ -63,6 +63,7 @@ export async function getOsmObject (id) {
     .where('id', id)
     .first();
 
+  // FIXME if osmObject is undefined should return here.
   // const comments = db('answers')
   const comments = await db('answers')
     .select(

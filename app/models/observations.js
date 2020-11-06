@@ -6,11 +6,10 @@ import { createOsmObject, getOsmObject } from './osm-objects';
 export async function createObservation (data) {
   try {
     return await db.transaction(async trx => {
-      const { surveyId, userId, createdAt, osmObject, answers } = data;
+      const { surveyId, campaignId, userId, createdAt, osmObject, answers } = data;
 
       const osmObjectId = osmObject.id;
       const osmObjectVersion = osmObject.properties.version;
-      osmObject.id = osmObjectId;
 
       const osmObjectExists = await getOsmObject(osmObjectId);
       if (!osmObjectExists) {
@@ -21,6 +20,7 @@ export async function createObservation (data) {
         .insert(
           {
             surveyId,
+            campaignId,
             userId,
             createdAt,
             osmObjectId,
@@ -42,8 +42,9 @@ export async function createObservation (data) {
   }
 }
 
-export async function fetchObservations (surveyId, osmObjectId, userId) {
+export async function fetchObservations (campaignId, surveyId, osmObjectId, userId) {
   const filterBy = {
+    campaignId,
     surveyId,
     osmObjectId,
     userId
@@ -58,11 +59,12 @@ export async function fetchObservations (surveyId, osmObjectId, userId) {
 }
 
 export async function getObservationsWithAnswers (
+  campaignId,
   surveyId,
   osmObjectId,
   userId
 ) {
-  const observations = await fetchObservations(surveyId, osmObjectId, userId);
+  const observations = await fetchObservations(campaignId, surveyId, osmObjectId, userId);
 
   if (!observations) return null;
 
@@ -76,12 +78,13 @@ export async function getObservationsWithAnswers (
 }
 
 export async function getObservationsSummary (
+  campaignId,
   surveyId,
   questionId,
   osmObjectId,
   userId
 ) {
-  const observations = await fetchObservations(surveyId, osmObjectId, userId);
+  const observations = await fetchObservations(campaignId, surveyId, osmObjectId, userId);
 
   if (!observations) return null;
 
@@ -120,7 +123,11 @@ export async function countObservationLocations (surveyId, userId) {
 }
 
 function whereBuilder (builder, filterBy) {
-  const { surveyId, osmObjectId, userId } = filterBy;
+  const { campaignId, surveyId, osmObjectId, userId } = filterBy;
+
+  if (campaignId) {
+    builder.where('campaignId', campaignId);
+  }
 
   if (surveyId) {
     builder.where('surveyId', surveyId);
