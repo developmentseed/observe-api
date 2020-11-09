@@ -3,6 +3,7 @@ require = require("esm")(module); // eslint-disable-line
 
 const { getRandomInt } = require('../test/utils/mock-factory');
 const { createObservation } = require('../app/models/observations');
+const { add, formatISO } = require('date-fns')
 
 function generateAnswerValue (q) {
   switch (q.type) {
@@ -26,6 +27,8 @@ exports.seed = async function (knex) {
 
   const surveys = await knex('surveys').select('*');
 
+  let dateAdded = new Date();
+
   // For each survey
   for (let s = 0; s < surveys.length; s++) {
     const survey = surveys[s];
@@ -43,13 +46,15 @@ exports.seed = async function (knex) {
         .limit(1 + getRandomInt(10));
 
       for (let u = 0; u < users.length; u++) {
+        dateAdded = add(dateAdded, { days: 1 })
+
         const user = users[u];
 
         const observation = {
           surveyId: survey.id,
           osmObject: place,
           userId: user.id,
-          createdAt: new Date().toISOString(),
+          createdAt: formatISO(dateAdded),
           answers: questions.map(q => {
             return {
               questionId: q.id,

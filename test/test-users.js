@@ -5,6 +5,7 @@ import { expect } from 'chai';
 import { createMockUser } from './utils/mock-factory';
 import Client from './utils/http-client';
 import { delay } from '../app/utils';
+import logger from '../app/services/logger';
 const paginationLimit = config.get('pagination.limit');
 
 describe('Users endpoints', function () {
@@ -190,6 +191,34 @@ describe('Users endpoints', function () {
     });
   });
 
+  describe('GET /users/id', async function () {
+    it('returns 200 for an existing user', async function () {
+      const client = new Client();
+      const user = await createMockUser();
+      const { data } = await client.get(`/users/${user.id}`);
+
+      expect(data).to.have.property('photos');
+      expect(data).to.have.property('traces');
+      expect(data).to.have.property('observations');
+      expect(data).to.have.property('surveys');
+      expect(data).to.have.property('badges');
+    });
+
+    it('returns 404 for a non-existent user', async function () {
+      try {
+        const client = new Client();
+        const maxId = (await db('users').max('id').first()).max;
+
+        await client.get(`/users/${maxId + 1}`);
+
+        // The test should never reach here, force execute catch block.
+        throw Error('An error was expected.');
+      } catch (error) {
+        expect(error.response.status).to.equal(404);
+      }
+    });
+  });
+
   describe('GET /profile', async function () {
     it('returns 401 for non-authenticated user', async function () {
       try {
@@ -199,6 +228,7 @@ describe('Users endpoints', function () {
         // The test should never reach here, force execute catch block.
         throw Error('An error was expected.');
       } catch (error) {
+        logger.error(error);
         // Check for the appropriate status response
         expect(error.response.status).to.equal(401);
       }

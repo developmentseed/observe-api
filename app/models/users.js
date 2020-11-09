@@ -13,6 +13,34 @@ export function getByEmail (email) {
 }
 
 /**
+ * Get all objects in database related to a user
+ *
+ * TODO This uses sequential blocking promises and might be improved with
+ * Promise.all
+ *
+ * @param {int} id - id of user
+ */
+export async function getWithProfile (id) {
+  let user = await db('users').select(
+    ['id', 'displayName', 'email', 'osmCreatedAt', 'osmDisplayName', 'osmId', 'createdAt']
+  ).where('id', id).first();
+
+  if (!user) return null;
+
+  user['surveys'] = await db('surveys').where('ownerId', id);
+  user['observations'] = await db('observations').where('userId', id);
+  user['photos'] = await db('photos').where('ownerId', id);
+  user['traces'] = await db('traces').where('ownerId', id);
+
+  // earned badges
+  user['badges'] = await db('badges_users')
+    .select('badgeId', 'userId', 'createdAt', 'name', 'description', 'image')
+    .where('userId', id).leftJoin('badges', 'badges_users.badgeId', '=', 'badges.id');
+
+  return user;
+}
+
+/**
  * Get total users count.
  */
 export async function count (filterBy = {}) {
