@@ -1,29 +1,23 @@
-import { compose, groupBy, equals, path, prop, mapObjIndexed, map, filter, sort, forEachObjIndexed, any } from 'ramda';
+import { groupBy, prop, mapObjIndexed, map, filter, sort, forEachObjIndexed, propEq } from 'ramda';
 import { compareAsc } from 'date-fns';
 
 /**
- * Given all observations a threshold and a value, return the users that have had
- * _threshold_ observations with that answer as a value
- * and the time when they recorded that number of answers
+ * Given all observations a threshold and a campaignId, return the users that have had
+ * _threshold_ observations in that campaign
  *
  * @param {Object} attributes
  * @param {integer} attributes.threshold - number of observations to achieve badge
- * @param {string} attributes.answerValue - value of answers to filter by
+ * @param {integer} attributes.campaignId - campaignId to filter by
  * @param {Observation[]} observations
  */
-export default function numAnswersWithValue (attributes, observations) {
-  const { threshold, answerValue } = attributes;
+export default function numObservationsInCampaign (attributes, observations) {
+  const { threshold, campaignId } = attributes;
   if (!threshold || threshold < 1) {
     throw new Error('numObservations needs a positive integer threshold');
   }
 
-  // Filter observations for questions with the answerValue = value
-  const answerPredicate = compose(
-    any(equals(answerValue)),
-    map(path(['answer', 'value'])),
-    prop('answers')
-  );
-  const filteredObservations = filter(answerPredicate, observations);
+  // Filter observations in campaign
+  const filteredObservations = filter(propEq('campaignId', campaignId), observations);
 
   // Group observations by the user id
   const userObservations = groupBy(prop('userId'), filteredObservations);

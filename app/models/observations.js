@@ -56,6 +56,7 @@ export async function fetchObservations (campaignId, surveyId, osmObjectId, user
         'observations.id',
         'observations.createdAt',
         'observations.uploadedAt',
+        'observations.campaignId',
         'userId',
         'surveyId',
         'osmObjectId',

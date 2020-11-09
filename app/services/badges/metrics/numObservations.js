@@ -7,7 +7,7 @@ import { compareAsc } from 'date-fns';
  * observations
  *
  * @param {Object} attributes
- * @param {Object} attributes.threshold - number of observations to achieve badge
+ * @param {integer} attributes.threshold - number of observations to achieve badge
  * @param {Observation[]} observations
  */
 export default function numObservations (attributes, observations) {
