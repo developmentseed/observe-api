@@ -8,7 +8,7 @@ import metrics from './metrics';
  */
 export default async function () {
   const badgeDescriptions = await badges.listBadges();
-  const allObservations = await observations.fetchObservations();
+  const allObservations = await observations.getObservationsWithAnswers();
 
   // for each badge description
   // check the metric, and pass it to the appropriate
