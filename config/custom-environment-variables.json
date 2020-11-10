@@ -16,6 +16,10 @@
     "secret": "JWT_SECRET",
     "expiresIn": "JWT_EXPIRES_IN"
   },
+  "googleOAuth": {
+    "clientId": "GOOGLE_OAUTH_CLIENT_ID",
+    "clientSecret": "GOOGLE_OAUTH_CLIENT_SECRET"
+  },
   "media": {
     "store": {
       "type": "local",
