@@ -1,11 +1,13 @@
 // Enable ECMAScript module loader
-require = require("esm")(module); // eslint-disable-line
+require = require('esm')(module); // eslint-disable-line
+
+const db = require('../app/services/db');
 
 const { getRandomInt } = require('../test/utils/mock-factory');
 const { createObservation } = require('../app/models/observations');
-const { add, formatISO } = require('date-fns')
+const { add, formatISO } = require('date-fns');
 
-function generateAnswerValue (q) {
+function generateAnswerValue(q) {
   switch (q.type) {
     case 'boolean':
       return Math.random() > 0.3;
@@ -22,8 +24,17 @@ function generateAnswerValue (q) {
   }
 }
 
-exports.seed = async function (knex) {
-  console.log("Seeding surveys..."); // eslint-disable-line
+exports.seed = async function(knex) {
+  const { count } = await db('surveys')
+    .count()
+    .first();
+  if (count > 0) {
+    // eslint-disable-next-line
+    console.log('There are SURVEYS in the database already, bypass seeding...');
+    return;
+  }
+
+  console.log('Seeding surveys...'); // eslint-disable-line
 
   const surveys = await knex('surveys').select('*');
 
@@ -46,7 +57,7 @@ exports.seed = async function (knex) {
         .limit(1 + getRandomInt(10));
 
       for (let u = 0; u < users.length; u++) {
-        dateAdded = add(dateAdded, { days: 1 })
+        dateAdded = add(dateAdded, { days: 1 });
 
         const user = users[u];
 
