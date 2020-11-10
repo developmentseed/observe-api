@@ -27,7 +27,7 @@ exports.seed = async function(knex) {
 
   await db('campaigns').insert({
     name: 'Washington DC',
-    slug: 'washignton-dc',
+    slug: 'washington-dc',
     aoi: stringify({
       type: 'Feature',
       properties: {},
