@@ -5,7 +5,9 @@ const db = require('../app/services/db');
 const { stringify } = require('wellknown');
 
 exports.seed = async function(knex) {
-  const {count} = await db('campaigns').count().first();
+  const { count } = await db('campaigns')
+    .count()
+    .first();
   if (count > 0) {
     // eslint-disable-next-line
     console.log(
@@ -15,6 +17,8 @@ exports.seed = async function(knex) {
   }
 
   console.log('Seeding campaigns...'); // eslint-disable-line
+
+  await db.raw('ALTER SEQUENCE campaigns_id_seq RESTART WITH 1');
 
   const adminId = (await db('users')
     .select('id')
