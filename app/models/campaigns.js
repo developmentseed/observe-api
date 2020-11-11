@@ -63,6 +63,10 @@ async function populateSurveys (campaign) {
 }
 
 export async function updateCampaign (id, data) {
+  const wkt = data.hasOwnProperty('aoi') ? geojsonTowkt(data.aoi) : undefined;
+  if (wkt) {
+    data.aoi = wkt;
+  }
   const [ thisId ] = await db('campaigns')
     .where('id', '=', id)
     .update({
