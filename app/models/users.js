@@ -22,7 +22,7 @@ export function getByEmail (email) {
  */
 export async function getWithProfile (id) {
   let user = await db('users').select(
-    ['id', 'displayName', 'email', 'osmCreatedAt', 'osmDisplayName', 'osmId', 'createdAt']
+    ['id', 'displayName', db.raw('MD5(email) as gravatar'), 'osmCreatedAt', 'osmDisplayName', 'osmId', 'createdAt']
   ).where('id', id).first();
 
   if (!user) return null;
