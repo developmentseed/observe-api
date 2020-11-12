@@ -1,5 +1,5 @@
 // Enable ECMAScript module loader
-const require = require('esm')(module); // eslint-disable-line
+require = require('esm')(module); // eslint-disable-line
 
 (async () => {
   try {
