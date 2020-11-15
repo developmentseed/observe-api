@@ -65,6 +65,7 @@ export default async function () {
         }
       },
       meta: {
+        baseUri: config.get('appUrl'),
         page: { active: true }
       },
       routes: {
