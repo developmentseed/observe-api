@@ -1,23 +1,26 @@
-import { groupBy, prop, mapObjIndexed, map, filter, sort, forEachObjIndexed } from 'ramda';
+import { groupBy, prop, mapObjIndexed, map, filter, sort, forEachObjIndexed, propEq } from 'ramda';
 import { compareAsc } from 'date-fns';
 
 /**
- * Given all observations and a threshold, return the users that have had
- * _threshold_ observations and the time when they recorded that number of
- * observations
+ * Given all observations a threshold and a campaignId, return the users that have had
+ * _threshold_ observations in that campaign
  *
  * @param {Object} attributes
  * @param {integer} attributes.threshold - number of observations to achieve badge
+ * @param {integer} attributes.campaignId - campaignId to filter by
  * @param {Observation[]} observations
  */
-export default function numObservations (attributes, observations) {
-  const { threshold } = attributes;
+export default function numObservationsInCampaign (attributes, observations) {
+  const { threshold, campaignId } = attributes;
   if (!threshold || threshold < 1) {
     throw new Error('numObservations needs a positive integer threshold');
   }
 
+  // Filter observations in campaign
+  const filteredObservations = filter(propEq('campaignId', campaignId), observations);
+
   // Group observations by the user id
-  const userObservations = groupBy(prop('userId'), observations);
+  const userObservations = groupBy(prop('userId'), filteredObservations);
 
   // Filter only users that have more than _threshold_ observations
   const winners = filter((arr) => arr.length >= threshold, userObservations);

@@ -1,7 +1,11 @@
 import numObservations from './numObservations';
+import numAnswersWithValue from './numAnswersWithValue';
+import numObservationsInCampaign from './numObservationsInCampaign';
 
 const metrics = {
-  numObservations
+  numObservations,
+  numAnswersWithValue,
+  numObservationsInCampaign
 };
 
 export default metrics;
