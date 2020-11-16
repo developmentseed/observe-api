@@ -30,9 +30,8 @@
     "calculate-badges": "node scripts/calculate-badges"
   },
   "engines": {
-    "node": "10.x"
+    "node": "12.x"
   },
-  "type": "module",
   "devDependencies": {
     "apidoc": "^0.17.7",
     "axios": "^0.19.0",
