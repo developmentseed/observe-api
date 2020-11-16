@@ -7,7 +7,9 @@ require = require('esm')(module); // eslint-disable-line
     await run();
     process.exit();
   } catch (error) {
-    process.stderr('Could not complete badge calculation.', error);
+    process.stderr.write('Could not complete badge calculation.\r\n');
+    process.stderr.write(error.message);
+    process.stderr.write('\r\n');
     process.exit(1);
   }
 }

@@ -16,6 +16,7 @@ describe('Observe API', function () {
     await db.schema.dropTableIfExists('osm_objects');
     await db.schema.dropTableIfExists('surveys');
     await db.schema.dropTableIfExists('questions');
+    await db.schema.dropTableIfExists('campaigns');
     await db.schema.dropTableIfExists('badges_users');
     await db.schema.dropTableIfExists('badges');
     await db.schema.dropTableIfExists('users');
