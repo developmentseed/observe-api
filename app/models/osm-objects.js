@@ -103,14 +103,31 @@ export async function getOsmObject (id) {
   };
 }
 
+async function osmObjectExists (id) {
+  const obj = await db('osm_objects')
+    .where('id', id);
+
+  if (obj) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 export async function insertFeatureCollection (geojson) {
   try {
     return await db.transaction(async trx => {
+      let insertedCount = 0;
       for (let index = 0; index < geojson.features.length; index++) {
         const feature = geojson.features[index];
-        await createOsmObject(feature, trx);
+        // check if this feature exists
+        const exists = await osmObjectExists(feature.id);
+        if (!exists) {
+          insertedCount = insertedCount + 1;
+          await createOsmObject(feature, trx);
+        }
       }
-      return geojson.features.length;
+      return insertedCount;
     });
   } catch (error) {
     logger.error(error);
