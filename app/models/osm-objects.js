@@ -104,14 +104,11 @@ export async function getOsmObject (id) {
 }
 
 async function osmObjectExists (id) {
-  const obj = await db('osm_objects')
+  const [{ count }] = await db('osm_objects')
+    .count()
     .where('id', id);
 
-  if (obj) {
-    return true;
-  } else {
-    return false;
-  }
+  return parseInt(count) > 0;
 }
 
 export async function insertFeatureCollection (geojson) {
