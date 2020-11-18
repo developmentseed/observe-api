@@ -33,9 +33,11 @@ export default [
       },
       handler: async function (request) {
         try {
+          logger.info('Parsing OSM objects...');
           // FIXME: should validate geojson feature collection here or above
-          const response = await insertFeatureCollection(request.payload);
-          return response;
+          const objectsCount = await insertFeatureCollection(request.payload);
+          logger.info(`Parsing completed, ${objectsCount} OSM object(s) added.`);
+          return objectsCount;
         } catch (error) {
           logger.error(error);
           return Boom.badImplementation('Unexpected error.');
