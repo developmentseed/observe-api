@@ -45,6 +45,10 @@ module.exports = {
     allowedRedirectURLs:
       'http://observe-dev.surge.sh,http://localhost:3030,http://localhost:9000,observe://apilogin'
   },
+  googleOAuth: {
+    clientId: '',
+    clientSecret: ''
+  },
   media: {
     store: {
       type: 'local',

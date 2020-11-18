@@ -1,12 +1,20 @@
 // Enable ECMAScript module loader
 require = require("esm")(module); // eslint-disable-line
 
+const traces = require('../app/models/traces');
 const { createMockTrace, getRandomInt } = require('../test/utils/mock-factory');
 
 exports.seed = async function (knex) {
+  const tracesCount = await traces.getTracesCount();
+  if (tracesCount > 0) {
+    // eslint-disable-next-line
+    console.log('There are TRACES in the database already, bypass seeding...'); 
+    return;
+  }
+
   console.log('Seeding traces...') // eslint-disable-line
 
-  const users = await knex('users').select('osmId');
+  const users = await knex('users').select('id');
 
   const totalUsers = users.length;
 
@@ -16,6 +24,6 @@ exports.seed = async function (knex) {
 
   for (let i = 0; i < 50; i++) {
     const user = users[getRandomInt(totalUsers)];
-    await createMockTrace({ osmId: user.osmId });
+    await createMockTrace({ id: user.id });
   }
 };
