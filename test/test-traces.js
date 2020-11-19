@@ -36,7 +36,7 @@ describe('Traces endpoints', async function () {
         // Create client
         const regularUser = await createMockUser();
         const client = new Client();
-        await client.login(regularUser.osmId);
+        await client.login(regularUser.id);
 
         // Fetch resource
         await client.get('/traces/ABCDEFGHIJKLMNO');
@@ -57,7 +57,7 @@ describe('Traces endpoints', async function () {
 
       // Create a client
       const client = new Client();
-      await client.login(regularUser.osmId);
+      await client.login(regularUser.id);
 
       // Fetch resource
       const { status, data } = await client.get(`/traces/${id}`);
@@ -70,10 +70,10 @@ describe('Traces endpoints', async function () {
       expect(data.properties).to.have.property('id');
       expect(data.properties).to.have.property('uploadedAt');
       expect(data.properties).to.have.property('updatedAt');
-      expect(data.properties).to.have.property('ownerId', regularUser.osmId);
+      expect(data.properties).to.have.property('ownerId', regularUser.id);
       expect(data.properties).to.have.property(
         'ownerDisplayName',
-        regularUser.osmDisplayName
+        regularUser.displayName
       );
       expect(data.properties.length).greaterThan(0);
       expect(data.properties.description).to.deep.equal(description);
@@ -103,7 +103,7 @@ describe('Traces endpoints', async function () {
     it('return 200 for authenticated user and store trace', async function () {
       const regularUser = await createMockUser();
       const client = new Client();
-      await client.login(regularUser.osmId);
+      await client.login(regularUser.id);
       const { status, data } = await client.post('/traces', {
         tracejson: validTraceJson
       });
@@ -131,7 +131,7 @@ describe('Traces endpoints', async function () {
 
         const regularUser = await createMockUser();
         const client = new Client();
-        await client.login(regularUser.osmId);
+        await client.login(regularUser.id);
         await client.post('/traces', { tracejson: invalidTraceJson });
 
         // This line should be reached, force executing the catch block with
@@ -171,7 +171,7 @@ describe('Traces endpoints', async function () {
         const trace = await createMockTrace(regularUser1);
 
         const client = new Client();
-        await client.login(regularUser2.osmId);
+        await client.login(regularUser2.id);
         await client.patch(`/traces/${trace.id}`, {
           description: 'a new description'
         });
@@ -190,7 +190,7 @@ describe('Traces endpoints', async function () {
         // Create client
         const regularUser = await createMockUser();
         const client = new Client();
-        await client.login(regularUser.osmId);
+        await client.login(regularUser.id);
 
         // Fetch resource
         await client.patch('/traces/ABCDEFGHIJKLMNO', {
@@ -212,7 +212,7 @@ describe('Traces endpoints', async function () {
       // Create client
       const regularUser = await createMockUser();
       const client = new Client();
-      await client.login(regularUser.osmId);
+      await client.login(regularUser.id);
 
       // Create mock trace
       const trace = await createMockTrace(regularUser);
@@ -242,7 +242,7 @@ describe('Traces endpoints', async function () {
       const regularUser = await createMockUser();
       const adminUser = await createMockUser({ isAdmin: true });
       const client = new Client();
-      await client.login(adminUser.osmId);
+      await client.login(adminUser.id);
 
       // Create mock trace
       const trace = await createMockTrace(regularUser);
@@ -286,7 +286,7 @@ describe('Traces endpoints', async function () {
         const trace = await createMockTrace(regularUser1);
 
         const client = new Client();
-        await client.login(regularUser2.osmId);
+        await client.login(regularUser2.id);
         await client.del(`/traces/${trace.id}`);
 
         // This line should be reached, force executing the catch block with
@@ -303,7 +303,7 @@ describe('Traces endpoints', async function () {
         // Create client
         const regularUser = await createMockUser();
         const client = new Client();
-        await client.login(regularUser.osmId);
+        await client.login(regularUser.id);
 
         // Fetch resource
         await client.del('/traces/ABCDEFGHIJKLMNO');
@@ -320,7 +320,7 @@ describe('Traces endpoints', async function () {
       // Create client
       const regularUser = await createMockUser();
       const client = new Client();
-      await client.login(regularUser.osmId);
+      await client.login(regularUser.id);
 
       // Create mock trace
       const trace = await createMockTrace(regularUser);
@@ -349,7 +349,7 @@ describe('Traces endpoints', async function () {
       const regularUser = await createMockUser();
       const adminUser = await createMockUser({ isAdmin: true });
       const client = new Client();
-      await client.login(adminUser.osmId);
+      await client.login(adminUser.id);
 
       // Create mock trace
       const trace = await createMockTrace(regularUser);
@@ -415,21 +415,21 @@ describe('Traces endpoints', async function () {
 
     it('return 200 for regular user', async function () {
       const client = new Client();
-      await client.login(regularUser.osmId);
+      await client.login(regularUser.id);
       const { status } = await client.get('/traces');
       expect(status).to.equal(200);
     });
 
     it('return 200 for admin user', async function () {
       const client = new Client();
-      await client.login(adminUser.osmId);
+      await client.login(adminUser.id);
       const { status } = await client.get('/traces');
       expect(status).to.equal(200);
     });
 
     it('default query order by "recordedAt", follow limit default', async function () {
       const client = new Client();
-      await client.login(adminUser.osmId);
+      await client.login(adminUser.id);
 
       // Prepare expected response for default query
       let expectedResponse = orderBy(traces, 'recordedAt', 'desc').slice(
@@ -445,7 +445,7 @@ describe('Traces endpoints', async function () {
 
     it('check paginated query and sorting by one column', async function () {
       const client = new Client();
-      await client.login(adminUser.osmId);
+      await client.login(adminUser.id);
 
       // Prepare expected response for page 3, ordering by creation date
       const page = 3;
@@ -467,7 +467,7 @@ describe('Traces endpoints', async function () {
 
     it('check another page and sorting by two columns', async function () {
       const client = new Client();
-      await client.login(adminUser.osmId);
+      await client.login(adminUser.id);
 
       // Prepare expected response for page 3, ordering by creation date
       const page = 2;
@@ -491,7 +491,7 @@ describe('Traces endpoints', async function () {
     it('invalid query params return 400 status and proper error', async function () {
       try {
         const client = new Client();
-        await client.login(adminUser.osmId);
+        await client.login(adminUser.id);
 
         const page = 2;
         const invalidSort = {

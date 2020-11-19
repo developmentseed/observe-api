@@ -135,7 +135,7 @@ export default [
         if (sort) {
           orderBy = Object.keys(sort).map(key => {
             return {
-              column: key === 'username' ? 'users.osmDisplayName' : key,
+              column: key === 'username' ? 'users.displayName' : key,
               order: sort[key]
             };
           });
