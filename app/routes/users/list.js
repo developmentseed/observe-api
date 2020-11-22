@@ -168,21 +168,25 @@ module.exports = [
             .max(100),
           page: Joi.number()
             .integer()
-            .min(1)
+            .min(1),
+          campaignId: Joi.number()
+            .integer()
         })
       }
     },
     handler: async function (request, h) {
       try {
         // Get query params
-        const { limit = defaultLimit, page } = request.query;
+        const { limit = defaultLimit, page, campaignId } = request.query;
         const offset = limit * (page - 1);
         let orderBy = [{ column: 'observations', order: 'desc' }];
+        let filterBy = { campaignId };
 
         const results = await users.list({
           offset,
           limit,
-          orderBy
+          orderBy,
+          filterBy
         });
         const count = await users.count();
 
