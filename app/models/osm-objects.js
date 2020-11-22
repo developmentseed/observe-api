@@ -191,16 +191,24 @@ export async function countOsmObjects (quadkey) {
   return counter.count;
 }
 
-export async function getOsmObjectStats () {
-  const [totalOsmObjects] = await db('osm_objects').countDistinct('id');
+export async function getOsmObjectStats (campaignId) {
+  let totalOsmObjectsPromise = db('osm_objects').countDistinct('osm_objects.id');
+  let surveyorsPromise = db('observations').countDistinct('observations.userId');
+  let observationsFilter = '';
 
-  const [surveyors] = await db('observations').countDistinct(
-    'observations.userId'
-  );
+  if (campaignId) {
+    totalOsmObjectsPromise = totalOsmObjectsPromise
+      .innerJoin('observations', 'osm_objects.id', '=', 'observations.osmObjectId')
+      .where('campaignId', campaignId);
+    surveyorsPromise = surveyorsPromise.where('campaignId', campaignId);
+    observationsFilter = `where "campaignId"=${campaignId}`;
+  }
+  const [totalOsmObjects] = await totalOsmObjectsPromise;
+  const [surveyors] = await surveyorsPromise;
 
   // This query first aggregates answers by places in a sub-query to determine
   // the most prevalent survey answer, for questions of type boolean. Then it
-  // count places where the answer is mostrly equal to true.
+  // count places where the answer is mostly equal to true.
   const placeStats = (await db.raw(`
     select
       count("osmObjectId") as total,
@@ -231,9 +239,10 @@ export async function getOsmObjectStats () {
             )
           ) as total_false
         from answers
-        left join observations ON answers."observationId" = observations.id
+        inner join observations ON answers."observationId" = observations.id
         left join questions ON answers."questionId" = questions.id
           AND answers."questionVersion" = questions.version
+        ${observationsFilter}
         group By
           observations."osmObjectId",
           answers."questionId",

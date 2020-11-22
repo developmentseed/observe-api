@@ -85,9 +85,16 @@ export default [
     path: '/osmobjects/stats',
     method: ['GET'],
     options: {
+      validate: {
+        query: Joi.object({
+          campaignId: Joi.number()
+            .integer()
+        })
+      },
       handler: async function (request) {
         try {
-          const stats = await getOsmObjectStats();
+          const { campaignId } = request.query;
+          const stats = await getOsmObjectStats(campaignId);
           return stats;
         } catch (error) {
           logger.error(error);
