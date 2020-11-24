@@ -67,7 +67,7 @@ export function list ({ offset, limit, orderBy, filterBy = {} }) {
     .count({ traces: 'traces.ownerId', photos: 'photos.ownerId', observations: 'observations.userId' })
     .leftJoin('traces', 'users.id', '=', 'traces.ownerId')
     .leftJoin('photos', 'users.id', '=', 'photos.ownerId')
-    .innerJoin('observations', 'users.id', '=', 'observations.userId')
+    .leftJoin('observations', 'users.id', '=', 'observations.userId')
     .where(builder => whereBuilder(builder, filterBy))
     .groupBy('users.id')
     .offset(offset)
@@ -92,6 +92,8 @@ function whereBuilder (builder, filterBy) {
     builder.where('users.displayName', 'ilike', `%${username}%`);
   }
   if (campaignId) {
-    builder.where('observations.campaignId', '=', campaignId);
+    builder
+      .innerJoin('observations', 'users.id', '=', 'observations.userId')
+      .where('observations.campaignId', '=', campaignId);
   }
 }
