@@ -78,6 +78,9 @@ module.exports = [
           }),
           username: Joi.string()
             .empty('')
+            .optional(),
+          campaignId: Joi.number()
+            .integer()
             .optional()
         })
       }
@@ -89,7 +92,8 @@ module.exports = [
           limit = defaultLimit,
           page,
           sort,
-          username
+          username,
+          campaignId
         } = request.query;
         const offset = limit * (page - 1);
         let orderBy = [
@@ -138,7 +142,8 @@ module.exports = [
         }
 
         const filterBy = {
-          username
+          username,
+          campaignId
         };
 
         const results = await users.list({
@@ -147,6 +152,7 @@ module.exports = [
           orderBy,
           filterBy
         });
+
         const count = await users.count(filterBy);
 
         return h.paginate(results, count);
