@@ -84,10 +84,16 @@ export function list ({ offset, limit, orderBy, filterBy = {} }) {
  */
 function whereBuilder (builder, filterBy) {
   const {
-    username
+    username,
+    campaignId
   } = filterBy;
 
   if (username) {
     builder.where('users.displayName', 'ilike', `%${username}%`);
+  }
+  if (campaignId) {
+    builder
+      .innerJoin('observations', 'users.id', '=', 'observations.userId')
+      .where('observations.campaignId', '=', campaignId);
   }
 }
