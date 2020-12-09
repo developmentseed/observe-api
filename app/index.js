@@ -45,7 +45,12 @@ export default async function () {
         'app/routes/traces/*.js',
         'app/routes/photos/*.js',
         'app/routes/profile/*.js',
-        'app/routes/users/*.js'
+        'app/routes/users/*.js',
+        'app/routes/questions/*.js',
+        'app/routes/surveys/*.js',
+        'app/routes/observations/*.js',
+        'app/routes/osm-objects/*.js',
+        'app/routes/campaigns/*.js'
       ]
     }
   });
@@ -60,10 +65,11 @@ export default async function () {
         }
       },
       meta: {
+        baseUri: config.get('appUrl'),
         page: { active: true }
       },
       routes: {
-        include: ['/users', '/traces', '/photos']
+        include: ['/users', '/traces', '/photos', '/osmobjects']
       }
     }
   });

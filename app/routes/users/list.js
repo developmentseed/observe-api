@@ -2,6 +2,9 @@ import Boom from '@hapi/boom';
 import Joi from '@hapi/joi';
 import * as users from '../../models/users';
 import logger from '../../services/logger';
+import config from 'config';
+
+const defaultLimit = config.get('pagination.limit');
 
 /**
  * @apiGroup Users
@@ -70,10 +73,14 @@ module.exports = [
             traces: Joi.string().valid('asc', 'desc'),
             photos: Joi.string().valid('asc', 'desc'),
             isAdmin: Joi.string().valid('asc', 'desc'),
-            createdAt: Joi.string().valid('asc', 'desc')
+            createdAt: Joi.string().valid('asc', 'desc'),
+            observations: Joi.string().valid('asc', 'desc')
           }),
           username: Joi.string()
             .empty('')
+            .optional(),
+          campaignId: Joi.number()
+            .integer()
             .optional()
         })
       }
@@ -81,11 +88,17 @@ module.exports = [
     handler: async function (request, h) {
       try {
         // Get query params
-        const { limit, page, sort, username } = request.query;
+        const {
+          limit = defaultLimit,
+          page,
+          sort,
+          username,
+          campaignId
+        } = request.query;
         const offset = limit * (page - 1);
         let orderBy = [
           { column: 'isAdmin', order: 'desc' },
-          { column: 'osmCreatedAt', order: 'asc' }
+          { column: 'createdAt', order: 'asc' }
         ];
 
         /**
@@ -103,7 +116,7 @@ module.exports = [
 
             switch (sortKey) {
               case 'username':
-                column = 'users.osmDisplayName';
+                column = 'users.displayName';
                 break;
               case 'traces':
                 column = 'traces';
@@ -112,7 +125,10 @@ module.exports = [
                 column = 'photos';
                 break;
               case 'createdAt':
-                column = 'users.osmCreatedAt';
+                column = 'users.createdAt';
+                break;
+              case 'observations':
+                column = 'observations';
                 break;
               default:
                 column = sortKey;
@@ -126,7 +142,8 @@ module.exports = [
         }
 
         const filterBy = {
-          username
+          username,
+          campaignId
         };
 
         const results = await users.list({
@@ -135,7 +152,49 @@ module.exports = [
           orderBy,
           filterBy
         });
+
         const count = await users.count(filterBy);
+
+        return h.paginate(results, count);
+      } catch (error) {
+        logger.error(error);
+        return Boom.badImplementation('Unexpected error.');
+      }
+    }
+  },
+  {
+    path: '/top-surveyors',
+    method: ['GET'],
+    options: {
+      validate: {
+        query: Joi.object({
+          limit: Joi.number()
+            .integer()
+            .min(1)
+            .max(100),
+          page: Joi.number()
+            .integer()
+            .min(1),
+          campaignId: Joi.number()
+            .integer()
+        })
+      }
+    },
+    handler: async function (request, h) {
+      try {
+        // Get query params
+        const { limit = defaultLimit, page, campaignId } = request.query;
+        const offset = limit * (page - 1);
+        let orderBy = [{ column: 'observations', order: 'desc' }];
+        let filterBy = { campaignId };
+
+        const results = await users.list({
+          offset,
+          limit,
+          orderBy,
+          filterBy
+        });
+        const count = await users.count();
 
         return h.paginate(results, count);
       } catch (error) {

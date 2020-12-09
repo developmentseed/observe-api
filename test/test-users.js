@@ -5,6 +5,7 @@ import { expect } from 'chai';
 import { createMockUser } from './utils/mock-factory';
 import Client from './utils/http-client';
 import { delay } from '../app/utils';
+import logger from '../app/services/logger';
 const paginationLimit = config.get('pagination.limit');
 
 describe('Users endpoints', function () {
@@ -51,26 +52,26 @@ describe('Users endpoints', function () {
 
     it('should return 200 for regular user', async function () {
       const client = new Client();
-      await client.login(regularUser.osmId);
+      await client.login(regularUser.id);
       const { status } = await client.get('/users');
       expect(status).to.equal(200);
     });
 
     it('should return 200 for admin user', async function () {
       const client = new Client();
-      await client.login(adminUser.osmId);
+      await client.login(adminUser.id);
       const { status } = await client.get('/users');
       expect(status).to.equal(200);
     });
 
     it('follow default query order and default limit', async function () {
       const client = new Client();
-      await client.login(adminUser.osmId);
+      await client.login(adminUser.id);
 
       // Prepare expected response for default query
       let expectedResponse = orderBy(
         users,
-        ['isAdmin', 'osmCreatedAt'],
+        ['isAdmin', 'createdAt'],
         ['desc', 'asc']
       ).slice(0, paginationLimit);
 
@@ -86,6 +87,7 @@ describe('Users endpoints', function () {
         // Remove properties not covered by this test
         delete found.photos;
         delete found.traces;
+        delete found.observations;
 
         expect(expected).to.deep.equal(found);
       }
@@ -93,12 +95,12 @@ describe('Users endpoints', function () {
 
     it('check paginated query and sorting by one column', async function () {
       const client = new Client();
-      await client.login(adminUser.osmId);
+      await client.login(adminUser.id);
 
       // Prepare expected response for page 3, ordering by creation date
       const page = 3;
       const offset = paginationLimit * (page - 1);
-      const expectedResponse = orderBy(users, 'osmCreatedAt').slice(
+      const expectedResponse = orderBy(users, 'createdAt').slice(
         offset,
         offset + paginationLimit
       );
@@ -119,6 +121,7 @@ describe('Users endpoints', function () {
         // Remove properties not covered by this test
         delete found.photos;
         delete found.traces;
+        delete found.observations;
 
         expect(expected).to.deep.equal(found);
       }
@@ -126,14 +129,14 @@ describe('Users endpoints', function () {
 
     it('check another page and sorting by two columns', async function () {
       const client = new Client();
-      await client.login(adminUser.osmId);
+      await client.login(adminUser.id);
 
       // Prepare expected response for page 3, ordering by creation date
       const page = 2;
       const offset = paginationLimit * (page - 1);
       const expectedResponse = orderBy(
         users,
-        ['osmDisplayName', 'osmCreatedAt'],
+        ['displayName', 'createdAt'],
         ['desc', 'asc']
       ).slice(offset, offset + paginationLimit);
 
@@ -153,6 +156,7 @@ describe('Users endpoints', function () {
         // Remove properties not covered by this test
         delete found.photos;
         delete found.traces;
+        delete found.observations;
 
         expect(expected).to.deep.equal(found);
       }
@@ -161,7 +165,7 @@ describe('Users endpoints', function () {
     it('invalid query params should 400 and return proper error', async function () {
       try {
         const client = new Client();
-        await client.login(adminUser.osmId);
+        await client.login(adminUser.id);
 
         const page = 2;
         const invalidSort = {
@@ -187,6 +191,34 @@ describe('Users endpoints', function () {
     });
   });
 
+  describe('GET /users/id', async function () {
+    it('returns 200 for an existing user', async function () {
+      const client = new Client();
+      const user = await createMockUser();
+      const { data } = await client.get(`/users/${user.id}`);
+
+      expect(data).to.have.property('photos');
+      expect(data).to.have.property('traces');
+      expect(data).to.have.property('observations');
+      expect(data).to.have.property('surveys');
+      expect(data).to.have.property('badges');
+    });
+
+    it('returns 404 for a non-existent user', async function () {
+      try {
+        const client = new Client();
+        const maxId = (await db('users').max('id').first()).max;
+
+        await client.get(`/users/${maxId + 1}`);
+
+        // The test should never reach here, force execute catch block.
+        throw Error('An error was expected.');
+      } catch (error) {
+        expect(error.response.status).to.equal(404);
+      }
+    });
+  });
+
   describe('GET /profile', async function () {
     it('returns 401 for non-authenticated user', async function () {
       try {
@@ -196,6 +228,7 @@ describe('Users endpoints', function () {
         // The test should never reach here, force execute catch block.
         throw Error('An error was expected.');
       } catch (error) {
+        logger.error(error);
         // Check for the appropriate status response
         expect(error.response.status).to.equal(401);
       }
@@ -204,7 +237,7 @@ describe('Users endpoints', function () {
     it('returns 200 and profile for authenticated user', async function () {
       const user = await createMockUser();
       const client = new Client();
-      await client.login(user.osmId);
+      await client.login(user.id);
 
       // Default query, should be order by display name and match limit
       const { data } = await client.get('/profile');

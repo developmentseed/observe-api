@@ -15,6 +15,10 @@
     "clientSecret": "mockClientSecret",
     "clientId": "mockClientId"
   },
+  "googleOAuth": {
+    "clientSecret": "mockClientSecret",
+    "clientId": "mockClientId"
+  },
   "jwt": {
     "secret": "secret-test"
   },

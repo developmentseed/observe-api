@@ -8,15 +8,15 @@ import { remove } from 'fs-extra';
  * Default select fields for traces
  */
 const defaultSelect = [
-  'id',
+  'photos.id',
   db.raw('ST_AsGeoJSON(location) as location'),
   'heading',
-  'createdAt',
+  'photos.createdAt',
   'description',
   'osmElement',
   'ownerId',
   'uploadedAt',
-  'users.osmDisplayName as ownerDisplayName'
+  'users.displayName as ownerDisplayName'
 ];
 
 // Utility function for JSON responses
@@ -44,7 +44,7 @@ export function photoToJson (originalPhoto) {
 export function select () {
   return db('photos')
     .select(defaultSelect)
-    .join('users', 'users.osmId', '=', 'photos.ownerId');
+    .join('users', 'users.id', '=', 'photos.ownerId');
 }
 
 /**
@@ -55,7 +55,7 @@ export function select () {
  */
 export async function getPhoto (id) {
   const photo = await select()
-    .where('id', '=', id)
+    .where('photos.id', '=', id)
     .first();
 
   // Return formatted photo or null if not found
@@ -155,7 +155,7 @@ function whereBuilder (builder, filterBy) {
   } = filterBy;
 
   if (username) {
-    builder.where('users.osmDisplayName', 'ilike', `%${username}%`);
+    builder.where('users.displayName', 'ilike', `%${username}%`);
   }
 
   if (startDate) {
@@ -180,7 +180,7 @@ function whereBuilder (builder, filterBy) {
  */
 export async function countPhotos (filterBy = {}) {
   const countQuery = db('photos')
-    .join('users', 'users.osmId', '=', 'photos.ownerId')
+    .join('users', 'users.id', '=', 'photos.ownerId')
     .where(builder => whereBuilder(builder, filterBy))
     .count();
   return parseInt((await countQuery)[0].count);
@@ -194,7 +194,7 @@ export async function countPhotos (filterBy = {}) {
 export async function listPhotos ({ offset, limit, orderBy, filterBy }) {
   return db('photos')
     .select(defaultSelect)
-    .join('users', 'users.osmId', '=', 'photos.ownerId')
+    .join('users', 'users.id', '=', 'photos.ownerId')
     .where(builder => whereBuilder(builder, filterBy))
     .offset(offset)
     .orderBy(orderBy)

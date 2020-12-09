@@ -7,7 +7,7 @@ try {
   const config = require('config');
   config.get('jwt.secret');
 } catch (error) {
-  throw Error('Config property "jwtSecret" must be set.');
+  throw Error('Config property "jwt.secret" must be set.');
 }
 
 async function init () {

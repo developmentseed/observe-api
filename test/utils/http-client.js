@@ -17,13 +17,13 @@ export default class HttpClient {
     });
   }
 
-  async login (osmId) {
-    if (!osmId) {
-      throw Error('Client needs a osmId to login.');
+  async login (userId) {
+    if (!userId) {
+      throw Error('Client needs a userId to login.');
     }
     const {
       data: { accessToken }
-    } = await this.axios.get(`/login?osmId=${osmId}`);
+    } = await this.axios.get(`/login?userId=${userId}`);
 
     this.setAuthorizationHeader(accessToken);
   }
