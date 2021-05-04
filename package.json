@@ -59,7 +59,7 @@
     "date-fns": "^2.16.1",
     "esm": "^3.2.25",
     "exif-js": "^2.3.0",
-    "exiftool-vendored": "^8.22.0",
+    "exiftool-vendored": "^14.3.0",
     "fs-extra": "^8.1.0",
     "hapi-auth-jwt2": "^8.7.0",
     "hapi-pagination": "^3.0.0",
